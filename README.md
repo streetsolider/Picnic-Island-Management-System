@@ -1,59 +1,327 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Picnic Island Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+An online booking system for a theme park and picnic destination, featuring hotel reservations, ferry tickets, theme park activities, and beach events.
 
-## About Laravel
+## About the Project
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The Picnic Island Management System is a comprehensive web application designed to manage all aspects of a theme park island destination. The system supports multiple user roles and provides seamless booking experiences for visitors.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Key Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Hotel Booking System** - Book hotel stays with date selection and room preferences
+- **Ferry Ticketing** - Purchase ferry tickets (requires valid hotel booking)
+- **Theme Park Activities** - Book rides, shows, and events inside the theme park
+- **Beach Events** - Reserve spots for beach activities
+- **Multi-Role Support** - Different interfaces for Visitors, Hotel Staff, Ferry Operators, Theme Park Management, and Administrators
+- **Interactive Map** - View island locations and facilities
+- **Promotional System** - Manage and display advertisements and special offers
 
-## Learning Laravel
+## Tech Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- **Framework:** Laravel 11
+- **Frontend:** Livewire 3 + Tailwind CSS 4
+- **Database:** MySQL 8.0
+- **Search:** Meilisearch
+- **Cache:** Redis
+- **Mail:** Mailpit (Development)
+- **Containerization:** Docker via Laravel Sail
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Prerequisites
 
-## Laravel Sponsors
+Before you begin, ensure you have the following installed:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **Docker Desktop** (for Mac/Windows) or **Docker Engine** (for Linux)
+- **Git**
+- **Composer** (optional, can use via Sail)
+- **Node.js & NPM** (v18 or higher)
 
-### Premium Partners
+## Getting Started
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd Picnic-Island-Management-System
+```
+
+### 2. Environment Configuration
+
+Copy the example environment file and configure it:
+
+```bash
+cp .env.example .env
+```
+
+The default configuration is already set up for Laravel Sail. Update these values if needed:
+
+```env
+APP_NAME="Picnic Island Management System"
+DB_DATABASE=picnic_island_db
+DB_USERNAME=sail
+DB_PASSWORD=password
+```
+
+### 3. Install Dependencies
+
+Install PHP dependencies:
+
+```bash
+composer install
+```
+
+Install JavaScript dependencies:
+
+```bash
+npm install
+```
+
+### 4. Generate Application Key
+
+```bash
+php artisan key:generate
+```
+
+### 5. Start Docker Containers
+
+Start all Docker services using Laravel Sail:
+
+```bash
+./vendor/bin/sail up -d
+```
+
+**Services Available:**
+- Laravel Application: http://localhost
+- Mailpit (Email Testing): http://localhost:8025
+- Meilisearch: http://localhost:7700
+
+### 6. Run Database Migrations
+
+```bash
+./vendor/bin/sail artisan migrate
+```
+
+### 7. Build Frontend Assets
+
+For development:
+
+```bash
+npm run dev
+```
+
+For production:
+
+```bash
+npm run build
+```
+
+### 8. Access the Application
+
+Open your browser and navigate to:
+
+```
+http://localhost
+```
+
+## Development Workflow
+
+### Sail Alias (Recommended)
+
+To make commands shorter, add this alias to your shell configuration (~/.bashrc or ~/.zshrc):
+
+```bash
+alias sail='./vendor/bin/sail'
+```
+
+Then you can use:
+
+```bash
+sail up -d
+sail artisan migrate
+sail npm run dev
+```
+
+### Common Commands
+
+```bash
+# Start containers
+sail up -d
+
+# Stop containers
+sail down
+
+# View logs
+sail logs
+
+# Run artisan commands
+sail artisan [command]
+
+# Run composer commands
+sail composer [command]
+
+# Run npm commands
+sail npm [command]
+
+# Run tests
+sail artisan test
+
+# Access MySQL CLI
+sail mysql
+
+# Access Redis CLI
+sail redis
+
+# Access container bash
+sail bash
+```
+
+## Git Branching Strategy
+
+This project follows a three-tier branching strategy for organized development and deployment:
+
+```
+feature/* → development → staging → main
+```
+
+### Branch Structure
+
+- **main** - Production-ready code. Only merge from staging after thorough testing.
+- **staging** - Pre-production environment. Merge from development for final testing.
+- **development** - Active development branch. Merge feature branches here first.
+- **feature/** - Individual feature branches. Created from development.
+
+### Workflow
+
+1. **Create a Feature Branch**
+   ```bash
+   git checkout development
+   git pull origin development
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Work on Your Feature**
+   ```bash
+   git add .
+   git commit -m "Add feature description"
+   git push origin feature/your-feature-name
+   ```
+
+3. **Merge to Development**
+   ```bash
+   git checkout development
+   git merge feature/your-feature-name
+   git push origin development
+   ```
+
+4. **Promote to Staging**
+   ```bash
+   git checkout staging
+   git merge development
+   git push origin staging
+   ```
+
+5. **Deploy to Production**
+   ```bash
+   git checkout main
+   git merge staging
+   git push origin main
+   ```
+
+### Branch Protection
+
+- **main** and **staging** branches should be protected
+- Require pull request reviews before merging
+- Run automated tests before merging
+- Delete feature branches after merging
+
+## User Roles
+
+The system supports the following user roles:
+
+1. **Visitor/Customer** - Book hotels, ferry tickets, and activities
+2. **Hotel Manager** - Manage hotel rooms, bookings, and promotions
+3. **Ferry Operator** - Validate tickets and manage ferry schedules
+4. **Theme Park Staff** - Manage events, activities, and ticket sales
+5. **Administrator** - System-wide management and reporting
+
+## Project Structure
+
+```
+├── app/
+│   ├── Http/
+│   │   └── Controllers/
+│   ├── Livewire/           # Livewire components
+│   └── Models/
+├── database/
+│   ├── migrations/
+│   └── seeders/
+├── resources/
+│   ├── css/
+│   ├── js/
+│   └── views/
+│       └── livewire/       # Livewire views
+├── routes/
+│   └── web.php
+└── tests/
+```
+
+## Testing
+
+Run the test suite:
+
+```bash
+sail artisan test
+```
+
+Run with coverage:
+
+```bash
+sail artisan test --coverage
+```
+
+## Troubleshooting
+
+### Port Already in Use
+
+If ports 80, 3306, 6379, 7700, or 8025 are already in use, update the port mappings in `.env`:
+
+```env
+APP_PORT=8080
+FORWARD_DB_PORT=33060
+FORWARD_REDIS_PORT=63790
+FORWARD_MEILISEARCH_PORT=77000
+FORWARD_MAILPIT_DASHBOARD_PORT=8026
+```
+
+### Permission Issues
+
+If you encounter permission errors:
+
+```bash
+sail bash
+chmod -R 777 storage bootstrap/cache
+```
+
+### Clear Caches
+
+```bash
+sail artisan cache:clear
+sail artisan config:clear
+sail artisan route:clear
+sail artisan view:clear
+```
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. Follow the git branching strategy outlined above
+2. Write meaningful commit messages
+3. Include tests for new features
+4. Update documentation as needed
+5. Follow Laravel and PHP coding standards
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is proprietary software developed for Picnic Island Theme Park.
+
+## Support
+
+For issues and questions, please contact the development team or create an issue in the repository.
