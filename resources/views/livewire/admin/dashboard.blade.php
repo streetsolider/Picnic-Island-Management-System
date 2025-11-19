@@ -6,11 +6,13 @@
 
 <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <!-- Quick Actions -->
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
-            <div class="p-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        <div class="flex gap-6">
+            <!-- Left Sidebar - Quick Actions -->
+            <div class="w-64 flex-shrink-0">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg sticky top-6">
+                    <div class="p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h3>
+                        <nav class="flex flex-col gap-2">
                     <a href="{{ route('admin.staff.index') }}" class="block p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
                         <div class="flex items-center">
                             <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,12 +67,14 @@
                             <span class="text-sm font-medium text-gray-900 dark:text-gray-100">System Settings</span>
                         </div>
                     </a>
+                        </nav>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <!-- Right Content Area - Statistics Cards -->
+            <div class="flex-1">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Total Staff -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
