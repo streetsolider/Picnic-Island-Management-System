@@ -117,6 +117,7 @@ class Index extends Component
         $this->validate();
 
         Staff::create([
+            'staff_id' => Staff::generateStaffId(),
             'name' => $this->name,
             'email' => $this->email,
             'password' => Hash::make($this->password),
