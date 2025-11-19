@@ -46,10 +46,13 @@ Route::middleware(['auth:staff'])->group(function () {
         Route::get('/hotels', \App\Livewire\Admin\Hotels\Index::class)->name('hotels.index');
         Route::get('/theme-park/zones', \App\Livewire\Admin\ThemePark\Zones::class)->name('theme-park.zones');
         Route::get('/beach/areas', \App\Livewire\Admin\Beach\Areas::class)->name('beach.areas');
+
+        // Ferry Management
+        Route::get('ferry', App\Livewire\Admin\Ferry\Index::class)->name('ferry.index');
     });
 
     // Profile for staff
     Route::view('/staff/profile', 'profile')->name('staff.profile');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
