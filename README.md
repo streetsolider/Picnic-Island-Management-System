@@ -31,6 +31,7 @@ The Picnic Island Management System is a comprehensive web application designed 
 Before you begin, ensure you have the following installed:
 
 - **Docker Desktop** (for Mac/Windows) or **Docker Engine** (for Linux)
+  - **Windows users:** WSL 2 is required for Docker Desktop (installation instructions provided below)
 - **Git**
 - **Composer** (optional, can use via Sail)
 - **Node.js & NPM** (v18 or higher)
@@ -127,6 +128,136 @@ http://localhost
 ---
 
 ### Setup for Windows
+
+#### 0. Install WSL 2 (Required for Laravel Sail)
+
+**IMPORTANT:** Laravel Sail requires WSL 2 (Windows Subsystem for Linux) to run on Windows. You must install this first.
+
+##### Quick Install (Windows 10 version 2004+ or Windows 11)
+
+Open **PowerShell or Command Prompt as Administrator** and run:
+
+```powershell
+wsl --install
+```
+
+This command will:
+- Enable the required Windows features
+- Install the latest Linux kernel
+- Set WSL 2 as default
+- Install Ubuntu as the default Linux distribution
+
+**After installation, restart your computer.**
+
+##### After Restart - Set Up Ubuntu
+
+1. After reboot, Ubuntu will automatically launch and ask you to create a user account
+2. Enter a username (e.g., your Windows username)
+3. Enter a password (you'll use this for `sudo` commands)
+4. Confirm the password
+
+##### Verify WSL Installation
+
+Open PowerShell and run:
+
+```powershell
+wsl --list --verbose
+```
+
+You should see Ubuntu listed with version 2:
+
+```
+  NAME      STATE           VERSION
+* Ubuntu    Running         2
+```
+
+##### If You Already Have WSL 1 (Upgrade to WSL 2)
+
+If you have WSL 1 installed, upgrade to WSL 2:
+
+```powershell
+# Set WSL 2 as default version
+wsl --set-default-version 2
+
+# Update existing distribution to WSL 2
+wsl --set-version Ubuntu 2
+```
+
+##### Manual Installation (For Older Windows 10 Versions)
+
+If the quick install doesn't work, follow these steps:
+
+**1. Enable WSL Feature:**
+
+```powershell
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+```
+
+**2. Enable Virtual Machine Platform:**
+
+```powershell
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+```
+
+**3. Restart your computer**
+
+**4. Download and install the WSL 2 Linux kernel update:**
+
+```powershell
+# Download the kernel update package
+Invoke-WebRequest -Uri https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi -OutFile wsl_update_x64.msi
+
+# Install it
+Start-Process msiexec.exe -ArgumentList '/i wsl_update_x64.msi /quiet' -Wait
+```
+
+**5. Set WSL 2 as default:**
+
+```powershell
+wsl --set-default-version 2
+```
+
+**6. Install Ubuntu from Microsoft Store:**
+
+- Open Microsoft Store
+- Search for "Ubuntu"
+- Install "Ubuntu" (latest LTS version)
+- Launch Ubuntu and create your user account
+
+##### Install Docker Desktop for Windows
+
+After WSL 2 is installed:
+
+1. Download Docker Desktop from: https://www.docker.com/products/docker-desktop
+2. Run the installer
+3. During installation, ensure "Use WSL 2 instead of Hyper-V" is selected
+4. Restart your computer after installation
+5. Open Docker Desktop and go to **Settings → General**
+6. Ensure "Use the WSL 2 based engine" is checked
+7. Go to **Settings → Resources → WSL Integration**
+8. Enable integration with your Ubuntu distribution
+
+##### Troubleshooting WSL Installation
+
+**Check Windows Version:**
+```powershell
+winver
+```
+You need Windows 10 version 2004 (Build 19041) or higher, or Windows 11.
+
+**Enable Virtualization in BIOS:**
+- Restart your computer
+- Enter BIOS/UEFI (usually F2, F10, F12, or Del during boot)
+- Enable Intel VT-x or AMD-V virtualization
+- Save and exit
+
+**Update Windows:**
+```powershell
+# Check for Windows updates
+Start-Process ms-settings:windowsupdate
+```
+
+---
 
 #### 1. Clone the Repository
 
@@ -246,10 +377,18 @@ http://localhost
 
 #### Windows-Specific Notes
 
+**Recommended: Use WSL Ubuntu Terminal**
+- Since you have WSL 2 installed, you can use the Ubuntu terminal instead of Command Prompt/PowerShell
+- Open "Ubuntu" from the Start Menu
+- Navigate to your project: `cd /mnt/c/Users/YourUsername/Documents/Dev/Picnic-Island-Management-System`
+- Use all the Mac/Linux commands (with `./vendor/bin/sail`)
+- This is the easiest and most compatible option!
+
+**If using Command Prompt or PowerShell:**
 - Use backslashes (`\`) instead of forward slashes (`/`) in Command Prompt
 - Use `.\` prefix in PowerShell instead of `./`
 - If you encounter issues with Docker Desktop, make sure it's running and WSL 2 is properly configured
-- For easier command usage, consider using Windows Terminal or Git Bash
+- Consider using Windows Terminal for a better command-line experience
 
 ## Development Workflow
 
@@ -510,6 +649,29 @@ sail artisan test --coverage
 ```
 
 ## Troubleshooting
+
+### Windows: WSL 2 Issues
+
+**Docker not starting:**
+- Ensure WSL 2 is properly installed: `wsl --list --verbose`
+- Make sure Docker Desktop has WSL integration enabled
+- Restart Docker Desktop
+
+**"The WSL 2 Linux kernel is now installed" error:**
+- Run Windows Update
+- Manually download kernel: https://aka.ms/wsl2kernel
+
+**WSL not working:**
+```powershell
+# Restart WSL service
+wsl --shutdown
+wsl
+```
+
+**Performance issues:**
+- Clone the repository inside WSL Ubuntu (not in Windows filesystem)
+- In Ubuntu terminal: `cd ~` then clone the repo there
+- Windows filesystem (`/mnt/c/`) is slower than native Linux filesystem
 
 ### "vendor/autoload.php: Failed to open stream: No such file or directory"
 
