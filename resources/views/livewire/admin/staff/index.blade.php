@@ -9,7 +9,7 @@
         <!-- Debug Test -->
         @if($showCreateModal)
             <!-- Modal Overlay -->
-            <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" style="z-index: 99999;" wire:click="closeModals"></div>
+            <div class="fixed inset-0 transition-opacity" style="z-index: 99999; background: rgba(0, 0, 0, 0.5);" wire:click="closeModals"></div>
 
             <!-- Modal Content -->
             <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 min-w-[500px] max-w-[600px] max-h-[90vh] overflow-y-auto" style="z-index: 100000;" @click.stop>
@@ -208,88 +208,10 @@
     </div>
 </div>
 
-<!-- Create Staff Modal -->
-@if($showCreateModal)
-    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 99999; background: rgba(0,0,0,0.5);">
-        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: red; padding: 40px; z-index: 100000; min-width: 400px;">
-            <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6" @click.stop>
-                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Create New Staff Member</h3>
-
-                <form wire:submit="createStaff">
-                    <!-- Name -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
-                        <input wire:model="name" type="text"
-                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                        @error('name') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                    </div>
-
-                    <!-- Email -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                        <input wire:model="email" type="email"
-                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                        @error('email') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                    </div>
-
-                    <!-- Password -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
-                        <input wire:model="password" type="password"
-                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                        @error('password') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                    </div>
-
-                    <!-- Confirm Password -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm Password</label>
-                        <input wire:model="password_confirmation" type="password"
-                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                    </div>
-
-                    <!-- Role -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
-                        <select wire:model="role"
-                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                            <option value="">Select Role</option>
-                            @foreach($roles as $value => $label)
-                                <option value="{{ $value }}">{{ $label }}</option>
-                            @endforeach
-                        </select>
-                        @error('role') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                    </div>
-
-                    <!-- Status -->
-                    <div class="mb-4">
-                        <label class="flex items-center">
-                            <input wire:model="is_active" type="checkbox"
-                                class="rounded border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500">
-                            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Active</span>
-                        </label>
-                    </div>
-
-                    <!-- Buttons -->
-                    <div class="flex justify-end gap-3 mt-6">
-                        <button type="button" wire:click="closeModals"
-                            class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-md">
-                            Cancel
-                        </button>
-                        <button type="submit"
-                            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">
-                            Create Staff Member
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-@endif
-
 <!-- Edit Staff Modal -->
 @if($showEditModal)
     <div class="fixed inset-0 z-50 overflow-y-auto">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" wire:click="closeModals"></div>
+        <div class="fixed inset-0 transition-opacity" style="background: rgba(0, 0, 0, 0.5);" wire:click="closeModals"></div>
         <div class="flex min-h-full items-center justify-center p-4 relative z-10">
             <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6" @click.stop>
                 <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Edit Staff Member</h3>
@@ -368,7 +290,7 @@
 <!-- Delete Confirmation Modal -->
 @if($showDeleteModal)
     <div class="fixed inset-0 z-50 overflow-y-auto">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" wire:click="closeModals"></div>
+        <div class="fixed inset-0 transition-opacity" style="background: rgba(0, 0, 0, 0.5);" wire:click="closeModals"></div>
         <div class="flex min-h-full items-center justify-center p-4 relative z-10">
             <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6" @click.stop>
                 <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Delete Staff Member</h3>
