@@ -34,9 +34,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->middleware('role:theme_park_staff')->name('theme-park.dashboard');
 
     // Administrator Dashboard
-    Route::get('/admin/dashboard', function () {
-        return view('dashboard');
-    })->middleware('role:administrator')->name('admin.dashboard');
+    Route::get('/admin/dashboard', \App\Livewire\Admin\Dashboard::class)
+        ->middleware('role:administrator')
+        ->name('admin.dashboard');
 
     // Profile
     Route::view('profile', 'profile')->name('profile');
