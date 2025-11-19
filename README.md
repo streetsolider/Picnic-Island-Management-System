@@ -37,14 +37,16 @@ Before you begin, ensure you have the following installed:
 
 ## Getting Started
 
-### 1. Clone the Repository
+### Setup for Mac/Linux
+
+#### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/streetsolider/Picnic-Island-Management-System
 cd Picnic-Island-Management-System
 ```
 
-### 2. Environment Configuration
+#### 2. Environment Configuration
 
 Copy the example environment file and configure it:
 
@@ -61,7 +63,7 @@ DB_USERNAME=sail
 DB_PASSWORD=password
 ```
 
-### 3. Install Dependencies
+#### 3. Install Dependencies
 
 Install PHP dependencies:
 
@@ -75,13 +77,13 @@ Install JavaScript dependencies:
 npm install
 ```
 
-### 4. Generate Application Key
+#### 4. Generate Application Key
 
 ```bash
 php artisan key:generate
 ```
 
-### 5. Start Docker Containers
+#### 5. Start Docker Containers
 
 Start all Docker services using Laravel Sail:
 
@@ -94,13 +96,13 @@ Start all Docker services using Laravel Sail:
 - Mailpit (Email Testing): http://localhost:8025
 - Meilisearch: http://localhost:7700
 
-### 6. Run Database Migrations
+#### 6. Run Database Migrations
 
 ```bash
 ./vendor/bin/sail artisan migrate
 ```
 
-### 7. Build Frontend Assets
+#### 7. Build Frontend Assets
 
 For development:
 
@@ -114,13 +116,140 @@ For production:
 npm run build
 ```
 
-### 8. Access the Application
+#### 8. Access the Application
 
 Open your browser and navigate to:
 
 ```
 http://localhost
 ```
+
+---
+
+### Setup for Windows
+
+#### 1. Clone the Repository
+
+Open Command Prompt or PowerShell and run:
+
+```cmd
+git clone https://github.com/streetsolider/Picnic-Island-Management-System
+cd Picnic-Island-Management-System
+```
+
+#### 2. Environment Configuration
+
+Copy the example environment file:
+
+**Command Prompt:**
+```cmd
+copy .env.example .env
+```
+
+**PowerShell:**
+```powershell
+Copy-Item .env.example .env
+```
+
+The default configuration is already set up for Laravel Sail. Update these values if needed:
+
+```env
+APP_NAME="Picnic Island Management System"
+DB_DATABASE=picnic_island_db
+DB_USERNAME=sail
+DB_PASSWORD=password
+```
+
+#### 3. Install PHP Dependencies
+
+**IMPORTANT:** You must install Composer dependencies FIRST before running any artisan commands:
+
+```cmd
+composer install
+```
+
+If you don't have Composer installed locally, you can use Docker:
+
+```cmd
+docker run --rm -v "%cd%":/var/www/html -w /var/www/html laravelsail/php83-composer:latest composer install --ignore-platform-reqs
+```
+
+**For PowerShell:**
+```powershell
+docker run --rm -v ${PWD}:/var/www/html -w /var/www/html laravelsail/php83-composer:latest composer install --ignore-platform-reqs
+```
+
+#### 4. Install JavaScript Dependencies
+
+```cmd
+npm install
+```
+
+#### 5. Generate Application Key
+
+```cmd
+php artisan key:generate
+```
+
+#### 6. Start Docker Containers
+
+Start all Docker services using Laravel Sail:
+
+**Command Prompt:**
+```cmd
+vendor\bin\sail up -d
+```
+
+**PowerShell:**
+```powershell
+.\vendor\bin\sail up -d
+```
+
+**Services Available:**
+- Laravel Application: http://localhost
+- Mailpit (Email Testing): http://localhost:8025
+- Meilisearch: http://localhost:7700
+
+#### 7. Run Database Migrations
+
+**Command Prompt:**
+```cmd
+vendor\bin\sail artisan migrate
+```
+
+**PowerShell:**
+```powershell
+.\vendor\bin\sail artisan migrate
+```
+
+#### 8. Build Frontend Assets
+
+For development:
+
+```cmd
+npm run dev
+```
+
+For production:
+
+```cmd
+npm run build
+```
+
+#### 9. Access the Application
+
+Open your browser and navigate to:
+
+```
+http://localhost
+```
+
+#### Windows-Specific Notes
+
+- Use backslashes (`\`) instead of forward slashes (`/`) in Command Prompt
+- Use `.\` prefix in PowerShell instead of `./`
+- If you encounter issues with Docker Desktop, make sure it's running and WSL 2 is properly configured
+- For easier command usage, consider using Windows Terminal or Git Bash
 
 ## Development Workflow
 
@@ -381,6 +510,38 @@ sail artisan test --coverage
 ```
 
 ## Troubleshooting
+
+### "vendor/autoload.php: Failed to open stream: No such file or directory"
+
+This error means you haven't installed Composer dependencies yet. Run:
+
+```bash
+composer install
+```
+
+**On Windows without local Composer:**
+```cmd
+docker run --rm -v "%cd%":/var/www/html -w /var/www/html laravelsail/php83-composer:latest composer install --ignore-platform-reqs
+```
+
+### Windows: "'.' is not recognized as an internal or external command"
+
+This happens when using Unix-style commands on Windows. Use the Windows-specific commands instead:
+
+**Command Prompt:**
+```cmd
+vendor\bin\sail up -d
+```
+
+**PowerShell:**
+```powershell
+.\vendor\bin\sail up -d
+```
+
+**Git Bash (alternative):**
+```bash
+./vendor/bin/sail up -d
+```
 
 ### Port Already in Use
 
