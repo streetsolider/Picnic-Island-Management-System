@@ -43,6 +43,7 @@ Route::middleware(['auth:staff'])->group(function () {
     Route::middleware('role:administrator')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', \App\Livewire\Admin\Dashboard::class)->name('dashboard');
         Route::get('/staff', \App\Livewire\Admin\Staff\Index::class)->name('staff.index');
+        Route::get('/hotels', \App\Livewire\Admin\Hotels\Index::class)->name('hotels.index');
     });
 
     // Profile for staff

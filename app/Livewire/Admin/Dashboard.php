@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Models\Staff;
 use App\Models\Guest;
+use App\Models\Hotel;
 use App\Enums\StaffRole;
 use Livewire\Component;
 
@@ -22,6 +23,8 @@ class Dashboard extends Component
         $this->stats = [
             'total_staff' => Staff::count(),
             'total_guests' => Guest::count(),
+            'total_hotels' => Hotel::count(),
+            'active_hotels' => Hotel::where('is_active', true)->count(),
             'hotel_managers' => Staff::where('role', StaffRole::HOTEL_MANAGER)->count(),
             'ferry_operators' => Staff::where('role', StaffRole::FERRY_OPERATOR)->count(),
             'theme_park_staff' => Staff::where('role', StaffRole::THEME_PARK_STAFF)->count(),
