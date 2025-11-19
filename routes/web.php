@@ -6,17 +6,23 @@ use Illuminate\Support\Facades\Route;
 // Public home page
 Route::get('/', Home::class)->name('home');
 
-// Role-based dashboard routing
-Route::middleware(['auth', 'verified'])->group(function () {
-    // Main dashboard - redirects to role-specific dashboard
+// Guest (Customer) Routes
+Route::middleware(['auth:web', 'verified'])->group(function () {
+    // Guest Dashboard
     Route::get('/dashboard', function () {
-        return redirect()->route(auth()->user()->getDashboardRoute());
+        return view('dashboard');
     })->name('dashboard');
 
-    // Visitor Dashboard
-    Route::get('/visitor/dashboard', function () {
-        return view('dashboard');
-    })->middleware('role:visitor')->name('visitor.dashboard');
+    // Profile
+    Route::view('profile', 'profile')->name('profile');
+});
+
+// Staff Routes (using staff guard)
+Route::middleware(['auth:staff'])->group(function () {
+    // Main staff dashboard - redirects to role-specific dashboard
+    Route::get('/staff/dashboard', function () {
+        return redirect()->route(auth('staff')->user()->getDashboardRoute());
+    })->name('staff.dashboard');
 
     // Hotel Manager Dashboard
     Route::get('/hotel/dashboard', function () {
@@ -33,18 +39,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return view('dashboard');
     })->middleware('role:theme_park_staff')->name('theme-park.dashboard');
 
-    // Administrator Dashboard
-    Route::get('/admin/dashboard', \App\Livewire\Admin\Dashboard::class)
-        ->middleware('role:administrator')
-        ->name('admin.dashboard');
+    // Administrator Routes
+    Route::middleware('role:administrator')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', \App\Livewire\Admin\Dashboard::class)->name('dashboard');
+        Route::get('/staff', \App\Livewire\Admin\Staff\Index::class)->name('staff.index');
+    });
 
-    // Administrator - User Management
-    Route::get('/admin/users', \App\Livewire\Admin\Users\Index::class)
-        ->middleware('role:administrator')
-        ->name('admin.users.index');
-
-    // Profile
-    Route::view('profile', 'profile')->name('profile');
+    // Profile for staff
+    Route::view('/staff/profile', 'profile')->name('staff.profile');
 });
 
 require __DIR__.'/auth.php';

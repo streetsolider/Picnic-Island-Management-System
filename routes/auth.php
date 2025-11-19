@@ -18,6 +18,12 @@ Route::middleware('guest')->group(function () {
         ->name('password.reset');
 });
 
+// Staff authentication routes
+Route::middleware('guest:staff')->group(function () {
+    Volt::route('staff/login', 'pages.auth.staff-login')
+        ->name('staff.login');
+});
+
 Route::middleware('auth')->group(function () {
     Volt::route('verify-email', 'pages.auth.verify-email')
         ->name('verification.notice');

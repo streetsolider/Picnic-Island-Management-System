@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\User;
-use App\Enums\UserRole;
+use App\Models\Staff;
+use App\Models\Guest;
+use App\Enums\StaffRole;
 use Livewire\Component;
 
 class Dashboard extends Component
@@ -19,12 +20,12 @@ class Dashboard extends Component
     public function loadStats()
     {
         $this->stats = [
-            'total_users' => User::count(),
-            'visitors' => User::where('role', UserRole::VISITOR)->count(),
-            'hotel_managers' => User::where('role', UserRole::HOTEL_MANAGER)->count(),
-            'ferry_operators' => User::where('role', UserRole::FERRY_OPERATOR)->count(),
-            'theme_park_staff' => User::where('role', UserRole::THEME_PARK_STAFF)->count(),
-            'administrators' => User::where('role', UserRole::ADMINISTRATOR)->count(),
+            'total_staff' => Staff::count(),
+            'total_guests' => Guest::count(),
+            'hotel_managers' => Staff::where('role', StaffRole::HOTEL_MANAGER)->count(),
+            'ferry_operators' => Staff::where('role', StaffRole::FERRY_OPERATOR)->count(),
+            'theme_park_staff' => Staff::where('role', StaffRole::THEME_PARK_STAFF)->count(),
+            'administrators' => Staff::where('role', StaffRole::ADMINISTRATOR)->count(),
         ];
     }
 

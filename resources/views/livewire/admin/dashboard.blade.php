@@ -11,12 +11,12 @@
             <div class="p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <a href="{{ route('admin.users.index') }}" class="block p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
+                    <a href="{{ route('admin.staff.index') }}" class="block p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
                         <div class="flex items-center">
                             <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                             </svg>
-                            <span class="text-sm font-medium text-gray-900 dark:text-gray-100">Manage Users</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-gray-100">Manage Staff</span>
                         </div>
                     </a>
 
@@ -53,30 +53,30 @@
 
         <!-- Statistics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-            <!-- Total Users -->
+            <!-- Total Staff -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <div class="flex items-center">
                         <div class="flex-1">
-                            <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Total Users</h4>
-                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">{{ $stats['total_users'] }}</p>
+                            <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Total Staff</h4>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">{{ $stats['total_staff'] }}</p>
                         </div>
                         <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-full">
                             <svg class="w-8 h-8 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                             </svg>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Visitors -->
+            <!-- Total Guests -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <div class="flex items-center">
                         <div class="flex-1">
-                            <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Visitors</h4>
-                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">{{ $stats['visitors'] }}</p>
+                            <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Total Guests</h4>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">{{ $stats['total_guests'] }}</p>
                         </div>
                         <div class="bg-green-100 dark:bg-green-900 p-3 rounded-full">
                             <svg class="w-8 h-8 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
