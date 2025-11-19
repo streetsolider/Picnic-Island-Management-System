@@ -38,6 +38,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('role:administrator')
         ->name('admin.dashboard');
 
+    // Administrator - User Management
+    Route::get('/admin/users', \App\Livewire\Admin\Users\Index::class)
+        ->middleware('role:administrator')
+        ->name('admin.users.index');
+
     // Profile
     Route::view('profile', 'profile')->name('profile');
 });
