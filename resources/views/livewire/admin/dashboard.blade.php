@@ -10,7 +10,7 @@
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-6">
             <div class="p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
                     <a href="{{ route('admin.staff.index') }}" class="block p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
                         <div class="flex items-center">
                             <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -26,6 +26,24 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
                             <span class="text-sm font-medium text-gray-900 dark:text-gray-100">Manage Hotels</span>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('admin.theme-park.zones') }}" class="block p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-900 dark:text-gray-100">Theme Park Zones</span>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('admin.beach.areas') }}" class="block p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-teal-600 dark:text-teal-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-900 dark:text-gray-100">Beach Areas</span>
                         </div>
                     </a>
 
@@ -99,6 +117,42 @@
                         <div class="bg-orange-100 dark:bg-orange-900 p-3 rounded-full">
                             <svg class="w-8 h-8 text-orange-600 dark:text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme Park Zones -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6">
+                    <div class="flex items-center">
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Theme Park Zones</h4>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">{{ $stats['total_zones'] }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ $stats['active_zones'] }} active</p>
+                        </div>
+                        <div class="bg-indigo-100 dark:bg-indigo-900 p-3 rounded-full">
+                            <svg class="w-8 h-8 text-indigo-600 dark:text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Beach Areas -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6">
+                    <div class="flex items-center">
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Beach Areas</h4>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">{{ $stats['total_beaches'] }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ $stats['active_beaches'] }} active</p>
+                        </div>
+                        <div class="bg-teal-100 dark:bg-teal-900 p-3 rounded-full">
+                            <svg class="w-8 h-8 text-teal-600 dark:text-teal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
                             </svg>
                         </div>
                     </div>

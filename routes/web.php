@@ -44,6 +44,8 @@ Route::middleware(['auth:staff'])->group(function () {
         Route::get('/dashboard', \App\Livewire\Admin\Dashboard::class)->name('dashboard');
         Route::get('/staff', \App\Livewire\Admin\Staff\Index::class)->name('staff.index');
         Route::get('/hotels', \App\Livewire\Admin\Hotels\Index::class)->name('hotels.index');
+        Route::get('/theme-park/zones', \App\Livewire\Admin\ThemePark\Zones::class)->name('theme-park.zones');
+        Route::get('/beach/areas', \App\Livewire\Admin\Beach\Areas::class)->name('beach.areas');
     });
 
     // Profile for staff
