@@ -247,21 +247,123 @@ The system supports the following user roles:
 
 ```
 ├── app/
+│   ├── Enums/                          # Role enumerations
+│   │   ├── StaffRole.php               # Staff role types
+│   │   └── UserRole.php                # User role types
 │   ├── Http/
-│   │   └── Controllers/
-│   ├── Livewire/           # Livewire components
-│   └── Models/
+│   │   ├── Controllers/
+│   │   │   └── Auth/                   # Authentication controllers
+│   │   ├── Middleware/
+│   │   │   └── CheckRole.php           # Role-based access control
+│   │   ├── Requests/                   # Form request validators
+│   │   │   ├── Auth/
+│   │   │   ├── Beach/
+│   │   │   ├── Ferry/
+│   │   │   ├── Hotel/
+│   │   │   └── ThemePark/
+│   │   └── Resources/                  # API resources
+│   │       ├── Beach/
+│   │       ├── Ferry/
+│   │       ├── Hotel/
+│   │       └── ThemePark/
+│   ├── Livewire/                       # Livewire components by role
+│   │   ├── Actions/
+│   │   │   └── Logout.php
+│   │   ├── Admin/                      # Administrator components
+│   │   │   ├── Content/                # Content management
+│   │   │   ├── Dashboard/              # Admin dashboard
+│   │   │   ├── Map/                    # Island map management
+│   │   │   ├── Reports/                # System reports
+│   │   │   ├── Staff/                  # Staff management
+│   │   │   └── Users/                  # User management
+│   │   ├── Ferry/                      # Ferry Operator components
+│   │   │   ├── Dashboard/
+│   │   │   ├── Reports/
+│   │   │   ├── Schedules/
+│   │   │   ├── Tickets/
+│   │   │   └── Validation/
+│   │   ├── Forms/
+│   │   │   ├── LoginForm.php           # Visitor login
+│   │   │   └── StaffLoginForm.php      # Staff login
+│   │   ├── Hotel/                      # Hotel Manager components
+│   │   │   ├── Bookings/
+│   │   │   ├── Dashboard/
+│   │   │   ├── Promotions/
+│   │   │   ├── Reports/
+│   │   │   └── Rooms/
+│   │   ├── ThemePark/                  # Theme Park Staff components
+│   │   │   ├── Activities/
+│   │   │   ├── Dashboard/
+│   │   │   ├── Events/
+│   │   │   ├── Reports/
+│   │   │   └── Tickets/
+│   │   └── Visitor/                    # Visitor/Customer components
+│   │       ├── Beach/
+│   │       ├── Booking/
+│   │       ├── Ferry/
+│   │       ├── Profile/
+│   │       └── ThemePark/
+│   ├── Models/                         # Database models
+│   │   ├── Beach/                      # Beach-related models
+│   │   ├── Ferry/                      # Ferry-related models
+│   │   ├── Hotel/                      # Hotel-related models
+│   │   ├── Map/                        # Map-related models
+│   │   ├── Payment/                    # Payment models
+│   │   ├── ThemePark/                  # Theme park models
+│   │   ├── Guest.php                   # Guest/Visitor model
+│   │   ├── Staff.php                   # Staff model
+│   │   └── User.php                    # User model
+│   ├── Policies/                       # Authorization policies
+│   ├── Providers/
+│   │   ├── AppServiceProvider.php
+│   │   └── VoltServiceProvider.php
+│   ├── Services/                       # Business logic services
+│   │   ├── Beach/
+│   │   ├── Ferry/
+│   │   ├── Hotel/
+│   │   ├── Notification/
+│   │   ├── Payment/
+│   │   └── ThemePark/
+│   └── View/
+│       └── Components/
+│           ├── AppLayout.php           # Authenticated layout
+│           └── GuestLayout.php         # Guest layout
 ├── database/
-│   ├── migrations/
-│   └── seeders/
+│   ├── factories/                      # Model factories
+│   ├── migrations/                     # Database migrations
+│   └── seeders/                        # Database seeders
 ├── resources/
 │   ├── css/
+│   │   └── app.css                     # Main stylesheet
 │   ├── js/
+│   │   ├── app.js                      # Main JavaScript
+│   │   └── bootstrap.js                # Bootstrap JavaScript
 │   └── views/
-│       └── livewire/       # Livewire views
+│       ├── components/                 # Blade components
+│       │   ├── forms/                  # Form components
+│       │   ├── layout/                 # Layout components
+│       │   └── ui/                     # UI components
+│       ├── layouts/
+│       │   ├── app.blade.php           # Main app layout
+│       │   ├── guest.blade.php         # Guest layout
+│       │   └── home.blade.php          # Home layout
+│       └── livewire/                   # Livewire views
+│           ├── admin/                  # Admin views
+│           ├── ferry/                  # Ferry operator views
+│           ├── hotel/                  # Hotel manager views
+│           ├── theme-park/             # Theme park staff views
+│           ├── visitor/                # Visitor views
+│           └── pages/                  # Static pages
 ├── routes/
-│   └── web.php
-└── tests/
+│   ├── auth.php                        # Authentication routes
+│   ├── console.php                     # Console routes
+│   └── web.php                         # Web routes
+├── tests/
+│   ├── Feature/                        # Feature tests
+│   └── Unit/                           # Unit tests
+├── compose.yaml                        # Docker Compose configuration
+├── tailwind.config.js                  # Tailwind CSS configuration
+└── vite.config.js                      # Vite build configuration
 ```
 
 ## Testing
