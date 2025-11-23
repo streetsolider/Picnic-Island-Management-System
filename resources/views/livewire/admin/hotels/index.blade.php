@@ -33,9 +33,19 @@
 
                     <!-- Location -->
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
-                        <input wire:model="location" type="text" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                        @error('location') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location (Optional)</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Latitude</label>
+                                <input wire:model="latitude" type="number" step="0.00000001" placeholder="e.g., 6.5244" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                                @error('latitude') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Longitude</label>
+                                <input wire:model="longitude" type="number" step="0.00000001" placeholder="e.g., 3.3792" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                                @error('longitude') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Description -->
@@ -68,13 +78,6 @@
                             @endforeach
                         </select>
                         @error('manager_id') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                    </div>
-
-                    <!-- Policies -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hotel Policies</label>
-                        <textarea wire:model="policies" rows="3" placeholder="Enter hotel policies, rules, and guidelines..." class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"></textarea>
-                        @error('policies') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
 
                     <!-- Active Status -->
@@ -116,9 +119,19 @@
 
                     <!-- Location -->
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
-                        <input wire:model="location" type="text" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                        @error('location') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location (Optional)</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Latitude</label>
+                                <input wire:model="latitude" type="number" step="0.00000001" placeholder="e.g., 6.5244" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                                @error('latitude') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Longitude</label>
+                                <input wire:model="longitude" type="number" step="0.00000001" placeholder="e.g., 3.3792" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                                @error('longitude') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Description -->
@@ -151,13 +164,6 @@
                             @endforeach
                         </select>
                         @error('manager_id') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                    </div>
-
-                    <!-- Policies -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hotel Policies</label>
-                        <textarea wire:model="policies" rows="3" placeholder="Enter hotel policies, rules, and guidelines..." class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"></textarea>
-                        @error('policies') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
 
                     <!-- Active Status -->
@@ -238,7 +244,7 @@
                 <div class="flex flex-col md:flex-row gap-4 mb-4">
                     <!-- Search -->
                     <div class="flex-1">
-                        <input wire:model.live="search" type="text" placeholder="Search by hotel name or location..."
+                        <input wire:model.live="search" type="text" placeholder="Search by hotel name..."
                             class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 shadow-sm">
                     </div>
 
@@ -270,11 +276,9 @@
                     <thead class="bg-gray-50 dark:bg-gray-900">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Hotel Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Location</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Rating</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Manager</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Created</th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
@@ -286,9 +290,6 @@
                                     @if($hotel->description)
                                         <div class="text-xs text-gray-500 dark:text-gray-400">{{ Str::limit($hotel->description, 50) }}</div>
                                     @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900 dark:text-gray-100">{{ $hotel->location }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900 dark:text-gray-100">
@@ -310,9 +311,6 @@
                                         {{ $hotel->is_active ? 'Active' : 'Inactive' }}
                                     </button>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $hotel->created_at->format('M d, Y') }}
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <button wire:click="openEditModal({{ $hotel->id }})"
                                         class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
@@ -322,7 +320,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                                <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                                     No hotels found.
                                 </td>
                             </tr>

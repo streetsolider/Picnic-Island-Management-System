@@ -23,10 +23,10 @@ class Index extends Component
     // Form properties
     public $hotelId;
     public $name;
-    public $location;
+    public $latitude;
+    public $longitude;
     public $description;
     public $star_rating = 3;
-    public $policies;
     public $manager_id;
     public $is_active = true;
 
@@ -36,10 +36,10 @@ class Index extends Component
     {
         $rules = [
             'name' => 'required|string|max:255',
-            'location' => 'required|string|max:255',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             'description' => 'nullable|string',
             'star_rating' => 'required|integer|min:1|max:5',
-            'policies' => 'nullable|string',
             'manager_id' => 'nullable|exists:staff,id',
             'is_active' => 'boolean',
         ];
@@ -70,10 +70,10 @@ class Index extends Component
 
         $this->hotelId = $hotel->id;
         $this->name = $hotel->name;
-        $this->location = $hotel->location;
+        $this->latitude = $hotel->location['latitude'] ?? '';
+        $this->longitude = $hotel->location['longitude'] ?? '';
         $this->description = $hotel->description;
         $this->star_rating = $hotel->star_rating;
-        $this->policies = $hotel->policies;
         $this->manager_id = $hotel->manager_id;
         $this->is_active = $hotel->is_active;
 
@@ -98,10 +98,10 @@ class Index extends Component
     {
         $this->hotelId = null;
         $this->name = '';
-        $this->location = '';
+        $this->latitude = '';
+        $this->longitude = '';
         $this->description = '';
         $this->star_rating = 3;
-        $this->policies = '';
         $this->manager_id = null;
         $this->is_active = true;
         $this->resetValidation();
@@ -111,15 +111,25 @@ class Index extends Component
     {
         $this->validate();
 
-        Hotel::create([
+        $data = [
             'name' => $this->name,
-            'location' => $this->location,
             'description' => $this->description,
             'star_rating' => $this->star_rating,
-            'policies' => $this->policies,
             'manager_id' => $this->manager_id,
             'is_active' => $this->is_active,
-        ]);
+        ];
+
+        // Only add location if both latitude and longitude are provided
+        if ($this->latitude !== '' && $this->latitude !== null && $this->longitude !== '' && $this->longitude !== null) {
+            $data['location'] = [
+                'latitude' => $this->latitude,
+                'longitude' => $this->longitude,
+            ];
+        } else {
+            $data['location'] = null;
+        }
+
+        Hotel::create($data);
 
         session()->flash('message', 'Hotel created successfully.');
         $this->closeModals();
@@ -132,15 +142,25 @@ class Index extends Component
 
         $hotel = Hotel::findOrFail($this->hotelId);
 
-        $hotel->update([
+        $data = [
             'name' => $this->name,
-            'location' => $this->location,
             'description' => $this->description,
             'star_rating' => $this->star_rating,
-            'policies' => $this->policies,
             'manager_id' => $this->manager_id,
             'is_active' => $this->is_active,
-        ]);
+        ];
+
+        // Only add location if both latitude and longitude are provided
+        if ($this->latitude !== '' && $this->latitude !== null && $this->longitude !== '' && $this->longitude !== null) {
+            $data['location'] = [
+                'latitude' => $this->latitude,
+                'longitude' => $this->longitude,
+            ];
+        } else {
+            $data['location'] = null;
+        }
+
+        $hotel->update($data);
 
         session()->flash('message', 'Hotel updated successfully.');
         $this->closeModals();
@@ -170,10 +190,7 @@ class Index extends Component
         $hotels = Hotel::query()
             ->with('manager')
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('location', 'like', '%' . $this->search . '%');
-                });
+                $query->where('name', 'like', '%' . $this->search . '%');
             })
             ->when($this->statusFilter !== '', function ($query) {
                 $query->where('is_active', $this->statusFilter);

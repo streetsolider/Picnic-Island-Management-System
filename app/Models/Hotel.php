@@ -20,7 +20,6 @@ class Hotel extends Model
         'location',
         'description',
         'star_rating',
-        'policies',
         'manager_id',
         'is_active',
     ];
@@ -35,6 +34,7 @@ class Hotel extends Model
         return [
             'is_active' => 'boolean',
             'star_rating' => 'integer',
+            'location' => 'array',
         ];
     }
 

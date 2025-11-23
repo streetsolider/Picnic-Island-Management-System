@@ -14,10 +14,9 @@ return new class extends Migration
         Schema::create('hotels', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('location');
+            $table->json('location')->nullable(); // Stores {"latitude": x.xxxx, "longitude": y.yyyy}
             $table->text('description')->nullable();
             $table->integer('star_rating')->default(3); // 1-5 stars
-            $table->text('policies')->nullable();
             $table->foreignId('manager_id')->nullable()->constrained('staff')->nullOnDelete();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
