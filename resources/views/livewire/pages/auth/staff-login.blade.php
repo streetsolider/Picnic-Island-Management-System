@@ -67,12 +67,13 @@ new #[Layout('layouts.guest')] class extends Component
                 {{ __('Log in') }}
             </x-primary-button>
 
-            <div class="text-center text-sm text-gray-600 dark:text-gray-400">
+            {{-- Guest login temporarily disabled --}}
+            {{-- <div class="text-center text-sm text-gray-600 dark:text-gray-400">
                 <span>Not a staff member? </span>
                 <a class="underline hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}" wire:navigate>
                     Guest Login
                 </a>
-            </div>
+            </div> --}}
         </div>
     </form>
 </div>

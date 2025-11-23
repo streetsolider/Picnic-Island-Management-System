@@ -4,10 +4,8 @@ use App\Livewire\Home;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-// Public home page - show staff login directly
-Route::middleware('guest:staff')->group(function () {
-    Volt::route('/', 'pages.auth.staff-login')->name('home');
-});
+// Public home page
+Route::get('/', Home::class)->name('home');
 
 // Guest (Customer) Routes - Temporarily disabled
 // Route::middleware(['auth:web', 'verified'])->group(function () {
