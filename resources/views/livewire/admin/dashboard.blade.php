@@ -41,7 +41,7 @@
                                 </div>
                             </a>
 
-                            <a href="{{ route('admin.theme-park.zones') }}"
+                            <a href="{{ route('admin.theme-park') }}"
                                 class="block p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
                                 <div class="flex items-center">
                                     <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400 mr-3" fill="none"

@@ -25,21 +25,18 @@ class Zones extends Component
     public $name;
     public $zone_type;
     public $description;
-    public $capacity_limit = 100;
-    public $opening_time;
-    public $closing_time;
     public $assigned_staff_id;
     public $is_active = true;
 
-    // Zone types
+    // Zone types (the type itself is the name)
     public $zoneTypes = [
-        'Adventure Zone' => 'Adventure Zone',
+        'Adventure' => 'Adventure',
         'Water Park' => 'Water Park',
         'Kids Area' => 'Kids Area',
-        'Entertainment Zone' => 'Entertainment Zone',
-        'Dining Area' => 'Dining Area',
+        'Entertainment' => 'Entertainment',
+        'Dining' => 'Dining',
         'Thrill Rides' => 'Thrill Rides',
-        'Family Zone' => 'Family Zone',
+        'Family' => 'Family',
     ];
 
     protected $queryString = ['search', 'statusFilter'];
@@ -50,9 +47,6 @@ class Zones extends Component
             'name' => 'required|string|max:255',
             'zone_type' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'capacity_limit' => 'required|integer|min:0',
-            'opening_time' => 'nullable|date_format:H:i',
-            'closing_time' => 'nullable|date_format:H:i',
             'assigned_staff_id' => 'nullable|exists:staff,id',
             'is_active' => 'boolean',
         ];
@@ -83,9 +77,6 @@ class Zones extends Component
         $this->name = $zone->name;
         $this->zone_type = $zone->zone_type;
         $this->description = $zone->description;
-        $this->capacity_limit = $zone->capacity_limit;
-        $this->opening_time = $zone->opening_time;
-        $this->closing_time = $zone->closing_time;
         $this->assigned_staff_id = $zone->assigned_staff_id;
         $this->is_active = $zone->is_active;
 
@@ -112,9 +103,6 @@ class Zones extends Component
         $this->name = '';
         $this->zone_type = '';
         $this->description = '';
-        $this->capacity_limit = 100;
-        $this->opening_time = null;
-        $this->closing_time = null;
         $this->assigned_staff_id = null;
         $this->is_active = true;
         $this->resetValidation();
@@ -128,9 +116,6 @@ class Zones extends Component
             'name' => $this->name,
             'zone_type' => $this->zone_type,
             'description' => $this->description,
-            'capacity_limit' => $this->capacity_limit,
-            'opening_time' => $this->opening_time,
-            'closing_time' => $this->closing_time,
             'assigned_staff_id' => $this->assigned_staff_id,
             'is_active' => $this->is_active,
         ]);
@@ -150,9 +135,6 @@ class Zones extends Component
             'name' => $this->name,
             'zone_type' => $this->zone_type,
             'description' => $this->description,
-            'capacity_limit' => $this->capacity_limit,
-            'opening_time' => $this->opening_time,
-            'closing_time' => $this->closing_time,
             'assigned_staff_id' => $this->assigned_staff_id,
             'is_active' => $this->is_active,
         ]);

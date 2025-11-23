@@ -7,7 +7,7 @@
             </svg>
         </a>
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            Theme Park Zones Management
+            Theme Park Management
         </h2>
     </div>
 </x-slot>
@@ -22,7 +22,7 @@
                 <form wire:submit="createZone">
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Zone Name</label>
-                        <input wire:model="name" type="text" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <input wire:model="name" type="text" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm" placeholder="e.g., Adventure Zone 1, Water Park North">
                         @error('name') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div class="mb-4">
@@ -37,35 +37,19 @@
                     </div>
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
-                        <textarea wire:model="description" rows="3" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"></textarea>
+                        <textarea wire:model="description" rows="3" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm" placeholder="Optional description for this zone..."></textarea>
                         @error('description') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Capacity Limit</label>
-                        <input wire:model="capacity_limit" type="number" min="0" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                        @error('capacity_limit') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Opening Time</label>
-                            <input wire:model="opening_time" type="time" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                            @error('opening_time') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Closing Time</label>
-                            <input wire:model="closing_time" type="time" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                            @error('closing_time') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                        </div>
                     </div>
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assign Theme Park Staff (Optional)</label>
                         <select wire:model="assigned_staff_id" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                            <option value="">None</option>
+                            <option value="">None - Assign later</option>
                             @foreach($themeParkStaff as $staff)
                                 <option value="{{ $staff->id }}">{{ $staff->name }} ({{ $staff->email }})</option>
                             @endforeach
                         </select>
                         @error('assigned_staff_id') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Capacity and operating hours will be managed by the assigned staff member</p>
                     </div>
                     <div class="mb-4">
                         <label class="flex items-center">
@@ -89,7 +73,7 @@
                 <form wire:submit="updateZone">
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Zone Name</label>
-                        <input wire:model="name" type="text" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        <input wire:model="name" type="text" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm" placeholder="e.g., Adventure Zone 1, Water Park North">
                         @error('name') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div class="mb-4">
@@ -104,35 +88,19 @@
                     </div>
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
-                        <textarea wire:model="description" rows="3" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"></textarea>
+                        <textarea wire:model="description" rows="3" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm" placeholder="Optional description for this zone..."></textarea>
                         @error('description') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Capacity Limit</label>
-                        <input wire:model="capacity_limit" type="number" min="0" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                        @error('capacity_limit') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Opening Time</label>
-                            <input wire:model="opening_time" type="time" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                            @error('opening_time') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Closing Time</label>
-                            <input wire:model="closing_time" type="time" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                            @error('closing_time') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                        </div>
                     </div>
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assign Theme Park Staff (Optional)</label>
                         <select wire:model="assigned_staff_id" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                            <option value="">None</option>
+                            <option value="">None - Assign later</option>
                             @foreach($themeParkStaff as $staff)
                                 <option value="{{ $staff->id }}">{{ $staff->name }} ({{ $staff->email }})</option>
                             @endforeach
                         </select>
                         @error('assigned_staff_id') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Capacity and operating hours will be managed by the assigned staff member</p>
                     </div>
                     <div class="mb-4">
                         <label class="flex items-center">
@@ -202,8 +170,6 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Zone Name</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Capacity</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Hours</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Assigned Staff</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
@@ -219,13 +185,12 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">{{ $zone->zone_type }}</span>
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">{{ $zone->zone_type }}</span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ number_format($zone->capacity_limit) }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ $zone->operating_hours }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if($zone->assignedStaff)
                                         <div class="text-sm text-gray-900 dark:text-gray-100">{{ $zone->assignedStaff->name }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $zone->assignedStaff->email }}</div>
                                     @else
                                         <span class="text-sm text-gray-400 dark:text-gray-500 italic">Not assigned</span>
                                     @endif
@@ -241,7 +206,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No theme park zones found.</td>
+                                <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No theme park zones found.</td>
                             </tr>
                         @endforelse
                     </tbody>

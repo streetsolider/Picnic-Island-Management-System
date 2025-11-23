@@ -19,9 +19,6 @@ class ThemeParkZone extends Model
         'name',
         'zone_type',
         'description',
-        'capacity_limit',
-        'opening_time',
-        'closing_time',
         'assigned_staff_id',
         'is_active',
     ];
@@ -35,7 +32,6 @@ class ThemeParkZone extends Model
     {
         return [
             'is_active' => 'boolean',
-            'capacity_limit' => 'integer',
         ];
     }
 
@@ -53,16 +49,5 @@ class ThemeParkZone extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
-    }
-
-    /**
-     * Get operating hours as a formatted string
-     */
-    public function getOperatingHoursAttribute(): string
-    {
-        if ($this->opening_time && $this->closing_time) {
-            return date('g:i A', strtotime($this->opening_time)) . ' - ' . date('g:i A', strtotime($this->closing_time));
-        }
-        return 'Not set';
     }
 }
