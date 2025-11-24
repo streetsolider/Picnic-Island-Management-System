@@ -6,7 +6,7 @@ use App\Models\Staff;
 use App\Models\Guest;
 use App\Models\Hotel;
 use App\Models\ThemeParkZone;
-use App\Models\BeachArea;
+use App\Models\BeachService;
 use App\Enums\StaffRole;
 use Livewire\Component;
 
@@ -29,8 +29,8 @@ class Dashboard extends Component
             'active_hotels' => Hotel::where('is_active', true)->count(),
             'total_zones' => ThemeParkZone::count(),
             'active_zones' => ThemeParkZone::where('is_active', true)->count(),
-            'total_beaches' => BeachArea::count(),
-            'active_beaches' => BeachArea::where('is_active', true)->count(),
+            'total_beach_services' => BeachService::count(),
+            'active_beach_services' => BeachService::where('is_active', true)->count(),
             'hotel_managers' => Staff::where('role', StaffRole::HOTEL_MANAGER)->count(),
             'ferry_operators' => Staff::where('role', StaffRole::FERRY_OPERATOR)->count(),
             'theme_park_staff' => Staff::where('role', StaffRole::THEME_PARK_STAFF)->count(),

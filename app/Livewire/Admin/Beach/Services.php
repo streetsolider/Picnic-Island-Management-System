@@ -3,12 +3,12 @@
 namespace App\Livewire\Admin\Beach;
 
 use App\Enums\StaffRole;
-use App\Models\BeachArea;
+use App\Models\BeachService;
 use App\Models\Staff;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class Areas extends Component
+class Services extends Component
 {
     use WithPagination;
 
@@ -21,13 +21,10 @@ class Areas extends Component
     public $showDeleteModal = false;
 
     // Form properties
-    public $areaId;
+    public $serviceId;
     public $name;
-    public $location;
+    public $service_type;
     public $description;
-    public $capacity_limit = 100;
-    public $opening_time;
-    public $closing_time;
     public $assigned_staff_id;
     public $is_active = true;
 
@@ -37,11 +34,8 @@ class Areas extends Component
     {
         return [
             'name' => 'required|string|max:255',
-            'location' => 'required|string|max:255',
+            'service_type' => 'required|string|in:' . implode(',', BeachService::SERVICE_TYPES),
             'description' => 'nullable|string',
-            'capacity_limit' => 'required|integer|min:0',
-            'opening_time' => 'nullable|date_format:H:i',
-            'closing_time' => 'nullable|date_format:H:i',
             'assigned_staff_id' => 'nullable|exists:staff,id',
             'is_active' => 'boolean',
         ];
@@ -63,27 +57,24 @@ class Areas extends Component
         $this->showCreateModal = true;
     }
 
-    public function openEditModal($areaId)
+    public function openEditModal($serviceId)
     {
         $this->resetForm();
-        $area = BeachArea::findOrFail($areaId);
+        $service = BeachService::findOrFail($serviceId);
 
-        $this->areaId = $area->id;
-        $this->name = $area->name;
-        $this->location = $area->location;
-        $this->description = $area->description;
-        $this->capacity_limit = $area->capacity_limit;
-        $this->opening_time = $area->opening_time;
-        $this->closing_time = $area->closing_time;
-        $this->assigned_staff_id = $area->assigned_staff_id;
-        $this->is_active = $area->is_active;
+        $this->serviceId = $service->id;
+        $this->name = $service->name;
+        $this->service_type = $service->service_type;
+        $this->description = $service->description;
+        $this->assigned_staff_id = $service->assigned_staff_id;
+        $this->is_active = $service->is_active;
 
         $this->showEditModal = true;
     }
 
-    public function openDeleteModal($areaId)
+    public function openDeleteModal($serviceId)
     {
-        $this->areaId = $areaId;
+        $this->serviceId = $serviceId;
         $this->showDeleteModal = true;
     }
 
@@ -97,86 +88,78 @@ class Areas extends Component
 
     public function resetForm()
     {
-        $this->areaId = null;
+        $this->serviceId = null;
         $this->name = '';
-        $this->location = '';
+        $this->service_type = '';
         $this->description = '';
-        $this->capacity_limit = 100;
-        $this->opening_time = null;
-        $this->closing_time = null;
         $this->assigned_staff_id = null;
         $this->is_active = true;
         $this->resetValidation();
     }
 
-    public function createArea()
+    public function createService()
     {
         $this->validate();
 
-        BeachArea::create([
+        BeachService::create([
             'name' => $this->name,
-            'location' => $this->location,
+            'service_type' => $this->service_type,
             'description' => $this->description,
-            'capacity_limit' => $this->capacity_limit,
-            'opening_time' => $this->opening_time,
-            'closing_time' => $this->closing_time,
             'assigned_staff_id' => $this->assigned_staff_id,
             'is_active' => $this->is_active,
         ]);
 
-        session()->flash('message', 'Beach area created successfully.');
+        session()->flash('message', 'Beach service created successfully.');
         $this->closeModals();
         $this->resetPage();
     }
 
-    public function updateArea()
+    public function updateService()
     {
         $this->validate();
 
-        $area = BeachArea::findOrFail($this->areaId);
+        $service = BeachService::findOrFail($this->serviceId);
 
-        $area->update([
+        $service->update([
             'name' => $this->name,
-            'location' => $this->location,
+            'service_type' => $this->service_type,
             'description' => $this->description,
-            'capacity_limit' => $this->capacity_limit,
-            'opening_time' => $this->opening_time,
-            'closing_time' => $this->closing_time,
             'assigned_staff_id' => $this->assigned_staff_id,
             'is_active' => $this->is_active,
         ]);
 
-        session()->flash('message', 'Beach area updated successfully.');
+        session()->flash('message', 'Beach service updated successfully.');
         $this->closeModals();
     }
 
-    public function deleteArea()
+    public function deleteService()
     {
-        $area = BeachArea::findOrFail($this->areaId);
-        $area->delete();
+        $service = BeachService::findOrFail($this->serviceId);
+        $service->delete();
 
-        session()->flash('message', 'Beach area deleted successfully.');
+        session()->flash('message', 'Beach service deleted successfully.');
         $this->closeModals();
         $this->resetPage();
     }
 
-    public function toggleStatus($areaId)
+    public function toggleStatus($serviceId)
     {
-        $area = BeachArea::findOrFail($areaId);
-        $area->update(['is_active' => !$area->is_active]);
+        $service = BeachService::findOrFail($serviceId);
+        $service->update(['is_active' => !$service->is_active]);
 
-        $status = $area->is_active ? 'activated' : 'deactivated';
-        session()->flash('message', "Beach area {$status} successfully.");
+        $status = $service->is_active ? 'activated' : 'deactivated';
+        session()->flash('message', "Beach service {$status} successfully.");
     }
 
     public function render()
     {
-        $beachAreas = BeachArea::query()
+        $beachServices = BeachService::query()
             ->with('assignedStaff')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('location', 'like', '%' . $this->search . '%');
+                      ->orWhere('service_type', 'like', '%' . $this->search . '%')
+                      ->orWhere('description', 'like', '%' . $this->search . '%');
                 });
             })
             ->when($this->statusFilter !== '', function ($query) {
@@ -185,14 +168,15 @@ class Areas extends Component
             ->latest()
             ->paginate(10);
 
-        // Get all theme park staff for the dropdown (they can manage beaches too)
-        $themeParkStaff = Staff::where('role', StaffRole::THEME_PARK_STAFF)
+        // Get all beach staff for the dropdown
+        $beachStaff = Staff::where('role', StaffRole::BEACH_STAFF)
             ->where('is_active', true)
             ->get();
 
-        return view('livewire.admin.beach.areas', [
-            'beachAreas' => $beachAreas,
-            'themeParkStaff' => $themeParkStaff,
+        return view('livewire.admin.beach.services', [
+            'beachServices' => $beachServices,
+            'beachStaff' => $beachStaff,
+            'serviceTypes' => BeachService::SERVICE_TYPES,
         ])->layout('layouts.app');
     }
 }

@@ -111,6 +111,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user is beach staff
+     */
+    public function isBeachStaff(): bool
+    {
+        return $this->role === UserRole::BEACH_STAFF;
+    }
+
+    /**
      * Check if user is an administrator
      */
     public function isAdministrator(): bool
@@ -136,6 +144,7 @@ class User extends Authenticatable
             UserRole::HOTEL_MANAGER => 'hotel.dashboard',
             UserRole::FERRY_OPERATOR => 'ferry.dashboard',
             UserRole::THEME_PARK_STAFF => 'theme-park.dashboard',
+            UserRole::BEACH_STAFF => 'beach.dashboard',
             UserRole::ADMINISTRATOR => 'admin.dashboard',
         };
     }

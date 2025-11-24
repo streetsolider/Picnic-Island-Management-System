@@ -55,7 +55,7 @@
                                 </div>
                             </a>
 
-                            <a href="{{ route('admin.beach.areas') }}"
+                            <a href="{{ route('admin.beach.services') }}"
                                 class="block p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
                                 <div class="flex items-center">
                                     <svg class="w-6 h-6 text-teal-600 dark:text-teal-400 mr-3" fill="none"
@@ -65,7 +65,7 @@
                                         </path>
                                     </svg>
                                     <span class="text-sm font-medium text-gray-900 dark:text-gray-100">Beach
-                                        Areas</span>
+                                        Services</span>
                                 </div>
                             </a>
 
@@ -218,18 +218,18 @@
                         </div>
                     </div>
 
-                    <!-- Beach Areas -->
+                    <!-- Beach Services -->
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6">
                             <div class="flex items-center">
                                 <div class="flex-1">
                                     <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Beach
-                                        Areas</h4>
+                                        Services</h4>
                                     <p class="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-2">
-                                        {{ $stats['total_beaches'] }}
+                                        {{ $stats['total_beach_services'] }}
                                     </p>
                                     <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                        {{ $stats['active_beaches'] }} active
+                                        {{ $stats['active_beach_services'] }} active
                                     </p>
                                 </div>
                                 <div class="bg-teal-100 dark:bg-teal-900 p-3 rounded-full">
