@@ -3,8 +3,6 @@
 namespace App\Livewire\Admin\Ferry\Routes;
 
 use App\Models\Ferry\FerryRoute;
-use App\Models\Staff;
-use App\Enums\StaffRole;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -27,7 +25,6 @@ class Index extends Component
     public $destination;
     public $duration_minutes;
     public $base_price;
-    public $operator_id;
     public $is_active = true;
 
     protected $queryString = ['search', 'statusFilter'];
@@ -40,7 +37,6 @@ class Index extends Component
             'destination' => 'required|string|max:255',
             'duration_minutes' => 'required|integer|min:1',
             'base_price' => 'required|numeric|min:0',
-            'operator_id' => 'nullable|exists:staff,id',
             'is_active' => 'boolean',
         ];
     }
@@ -72,7 +68,6 @@ class Index extends Component
         $this->destination = $route->destination;
         $this->duration_minutes = $route->duration_minutes;
         $this->base_price = $route->base_price;
-        $this->operator_id = $route->operator_id;
         $this->is_active = $route->is_active;
 
         $this->showEditModal = true;
@@ -100,7 +95,6 @@ class Index extends Component
         $this->destination = '';
         $this->duration_minutes = '';
         $this->base_price = '';
-        $this->operator_id = null;
         $this->is_active = true;
         $this->resetValidation();
     }
@@ -115,7 +109,6 @@ class Index extends Component
             'destination' => $this->destination,
             'duration_minutes' => $this->duration_minutes,
             'base_price' => $this->base_price,
-            'operator_id' => $this->operator_id,
             'is_active' => $this->is_active,
         ]);
 
@@ -136,7 +129,6 @@ class Index extends Component
             'destination' => $this->destination,
             'duration_minutes' => $this->duration_minutes,
             'base_price' => $this->base_price,
-            'operator_id' => $this->operator_id,
             'is_active' => $this->is_active,
         ]);
 
@@ -177,13 +169,8 @@ class Index extends Component
             ->latest()
             ->paginate(10);
 
-        $ferryOperators = Staff::where('role', StaffRole::FERRY_OPERATOR)
-            ->where('is_active', true)
-            ->get();
-
         return view('livewire.admin.ferry.routes.index', [
             'routes' => $routes,
-            'ferryOperators' => $ferryOperators,
         ]);
     }
 }

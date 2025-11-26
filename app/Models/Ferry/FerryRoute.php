@@ -15,7 +15,6 @@ class FerryRoute extends Model
         'destination',
         'duration_minutes',
         'base_price',
-        'operator_id',
         'is_active',
     ];
 
@@ -27,10 +26,5 @@ class FerryRoute extends Model
     public function schedules()
     {
         return $this->hasMany(FerrySchedule::class);
-    }
-
-    public function operator()
-    {
-        return $this->belongsTo(\App\Models\Staff::class, 'operator_id');
     }
 }

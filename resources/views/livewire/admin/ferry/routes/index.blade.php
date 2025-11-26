@@ -54,9 +54,6 @@
                             Destination</th>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Operator</th>
-                        <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Duration</th>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -82,10 +79,6 @@
                                 <div class="text-sm text-gray-500 dark:text-gray-400">{{ $route->destination }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $route->operator ? $route->operator->name : 'Unassigned' }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-500 dark:text-gray-400">{{ $route->duration_minutes }} mins
                                 </div>
                             </td>
@@ -108,7 +101,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                            <td colspan="7" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                                 No routes found.
                             </td>
                         </tr>
@@ -162,21 +155,6 @@
                                 class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 shadow-sm">
                             @error('destination') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                         </div>
-                    </div>
-
-                    <!-- Operator -->
-                    <div>
-                        <label for="operator_id"
-                            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assigned
-                            Operator</label>
-                        <select wire:model="operator_id" id="operator_id"
-                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 shadow-sm">
-                            <option value="">Select Operator</option>
-                            @foreach($ferryOperators as $operator)
-                                <option value="{{ $operator->id }}">{{ $operator->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('operator_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
 
                     <!-- Duration & Price -->

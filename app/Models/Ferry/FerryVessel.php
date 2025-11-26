@@ -11,7 +11,10 @@ class FerryVessel extends Model
 
     protected $fillable = [
         'name',
+        'registration_number',
+        'vessel_type',
         'capacity',
+        'operator_id',
         'is_active',
     ];
 
@@ -22,5 +25,10 @@ class FerryVessel extends Model
     public function schedules()
     {
         return $this->hasMany(FerrySchedule::class);
+    }
+
+    public function operator()
+    {
+        return $this->belongsTo(\App\Models\Staff::class, 'operator_id');
     }
 }

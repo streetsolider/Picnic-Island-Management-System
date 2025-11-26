@@ -3,6 +3,8 @@
 namespace App\Livewire\Admin\Ferry\Vessels;
 
 use App\Models\Ferry\FerryVessel;
+use App\Models\Staff;
+use App\Enums\StaffRole;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -21,16 +23,28 @@ class Index extends Component
     // Form properties
     public $vesselId;
     public $name;
+    public $registration_number;
+    public $vessel_type = 'Ferry';
     public $capacity;
+    public $operator_id;
     public $is_active = true;
 
     protected $queryString = ['search', 'statusFilter'];
 
     public function rules()
     {
+        $registrationRule = 'required|string|max:255|unique:ferry_vessels,registration_number';
+
+        if ($this->vesselId) {
+            $registrationRule .= ',' . $this->vesselId;
+        }
+
         return [
             'name' => 'required|string|max:255',
+            'registration_number' => $registrationRule,
+            'vessel_type' => 'required|in:Ferry,Speed Boat,Boat',
             'capacity' => 'required|integer|min:1',
+            'operator_id' => 'nullable|exists:staff,id',
             'is_active' => 'boolean',
         ];
     }
@@ -58,7 +72,10 @@ class Index extends Component
 
         $this->vesselId = $vessel->id;
         $this->name = $vessel->name;
+        $this->registration_number = $vessel->registration_number;
+        $this->vessel_type = $vessel->vessel_type;
         $this->capacity = $vessel->capacity;
+        $this->operator_id = $vessel->operator_id;
         $this->is_active = $vessel->is_active;
 
         $this->showEditModal = true;
@@ -82,7 +99,10 @@ class Index extends Component
     {
         $this->vesselId = null;
         $this->name = '';
+        $this->registration_number = '';
+        $this->vessel_type = 'Ferry';
         $this->capacity = '';
+        $this->operator_id = null;
         $this->is_active = true;
         $this->resetValidation();
     }
@@ -93,7 +113,10 @@ class Index extends Component
 
         FerryVessel::create([
             'name' => $this->name,
+            'registration_number' => $this->registration_number,
+            'vessel_type' => $this->vessel_type,
             'capacity' => $this->capacity,
+            'operator_id' => $this->operator_id,
             'is_active' => $this->is_active,
         ]);
 
@@ -110,7 +133,10 @@ class Index extends Component
 
         $vessel->update([
             'name' => $this->name,
+            'registration_number' => $this->registration_number,
+            'vessel_type' => $this->vessel_type,
             'capacity' => $this->capacity,
+            'operator_id' => $this->operator_id,
             'is_active' => $this->is_active,
         ]);
 
@@ -140,8 +166,10 @@ class Index extends Component
     public function render()
     {
         $vessels = FerryVessel::query()
+            ->with('operator')
             ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%');
+                $query->where('name', 'like', '%' . $this->search . '%')
+                    ->orWhere('registration_number', 'like', '%' . $this->search . '%');
             })
             ->when($this->statusFilter !== '', function ($query) {
                 $query->where('is_active', $this->statusFilter);
@@ -149,8 +177,13 @@ class Index extends Component
             ->latest()
             ->paginate(10);
 
+        $ferryOperators = Staff::where('role', StaffRole::FERRY_OPERATOR)
+            ->where('is_active', true)
+            ->get();
+
         return view('livewire.admin.ferry.vessels.index', [
             'vessels' => $vessels,
+            'ferryOperators' => $ferryOperators,
         ]);
     }
 }

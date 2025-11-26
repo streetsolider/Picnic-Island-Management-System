@@ -49,7 +49,19 @@
                         </th>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Registration Number
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Type
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Capacity
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Operator
                         </th>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -68,7 +80,18 @@
                                 <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $vessel->name }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $vessel->registration_number }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $vessel->vessel_type }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-500 dark:text-gray-400">{{ $vessel->capacity }} passengers
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500 dark:text-gray-400">
+                                    {{ $vessel->operator ? $vessel->operator->name : 'Not Assigned' }}
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -90,7 +113,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                            <td colspan="7" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                                 No vessels found.
                             </td>
                         </tr>
@@ -127,6 +150,28 @@
                     @error('name') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
 
+                <!-- Registration Number -->
+                <div class="mb-4">
+                    <label for="registration_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Registration Number</label>
+                    <input type="text" wire:model="registration_number" id="registration_number"
+                        class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 shadow-sm">
+                    @error('registration_number') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+
+                <!-- Vessel Type -->
+                <div class="mb-4">
+                    <label for="vessel_type"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vessel Type</label>
+                    <select wire:model="vessel_type" id="vessel_type"
+                        class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 shadow-sm">
+                        <option value="Ferry">Ferry</option>
+                        <option value="Speed Boat">Speed Boat</option>
+                        <option value="Boat">Boat</option>
+                    </select>
+                    @error('vessel_type') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+
                 <!-- Capacity -->
                 <div class="mb-4">
                     <label for="capacity"
@@ -134,6 +179,20 @@
                     <input type="number" wire:model="capacity" id="capacity"
                         class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 shadow-sm">
                     @error('capacity') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                </div>
+
+                <!-- Ferry Operator -->
+                <div class="mb-4">
+                    <label for="operator_id"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assign Ferry Operator</label>
+                    <select wire:model="operator_id" id="operator_id"
+                        class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 shadow-sm">
+                        <option value="">-- No Operator --</option>
+                        @foreach($ferryOperators as $operator)
+                            <option value="{{ $operator->id }}">{{ $operator->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('operator_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                 </div>
 
                 <!-- Active Status -->
