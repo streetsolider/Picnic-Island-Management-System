@@ -23,6 +23,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'staff_id',
+        'is_active',
     ];
 
     /**
@@ -46,6 +48,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => UserRole::class,
+            'is_active' => 'boolean',
         ];
     }
 
@@ -108,6 +111,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user is beach staff
+     */
+    public function isBeachStaff(): bool
+    {
+        return $this->role === UserRole::BEACH_STAFF;
+    }
+
+    /**
      * Check if user is an administrator
      */
     public function isAdministrator(): bool
@@ -133,7 +144,69 @@ class User extends Authenticatable
             UserRole::HOTEL_MANAGER => 'hotel.dashboard',
             UserRole::FERRY_OPERATOR => 'ferry.dashboard',
             UserRole::THEME_PARK_STAFF => 'theme-park.dashboard',
+            UserRole::BEACH_STAFF => 'beach.dashboard',
             UserRole::ADMINISTRATOR => 'admin.dashboard',
         };
+    }
+
+    /**
+     * Generate a unique staff ID (unified for all staff roles)
+     */
+    public static function generateStaffId(): string
+    {
+        $prefix = 'SID';
+
+        // Get the last staff ID
+        $lastUser = self::whereNotNull('staff_id')
+            ->orderByRaw('CAST(SUBSTRING(staff_id, 5) AS UNSIGNED) DESC')
+            ->first();
+
+        if ($lastUser && $lastUser->staff_id) {
+            // Extract the number from the last staff ID and increment
+            $number = (int) substr($lastUser->staff_id, 4); // Skip 'SID-'
+            $newNumber = $number + 1;
+        } else {
+            // First staff member
+            $newNumber = 1;
+        }
+
+        // Format: SID-001, SID-002, etc.
+        return $prefix . '-' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Boot method to auto-generate staff ID
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            // Auto-generate staff ID if not provided and user is staff
+            if (empty($user->staff_id) && $user->role && $user->role->isStaff()) {
+                $user->staff_id = self::generateStaffId();
+            }
+        });
+
+        static::updating(function ($user) {
+            // If role changed from visitor to staff, generate staff_id
+            if ($user->isDirty('role')) {
+                $oldRole = $user->getOriginal('role');
+                $newRole = $user->role;
+
+                // Converting visitor to staff - generate new staff ID
+                if ($oldRole === UserRole::VISITOR->value && $newRole->isStaff() && empty($user->staff_id)) {
+                    $user->staff_id = self::generateStaffId();
+                }
+
+                // Converting staff to visitor - remove staff_id
+                if ($oldRole !== UserRole::VISITOR->value && $newRole === UserRole::VISITOR) {
+                    $user->staff_id = null;
+                }
+
+                // Changing between staff roles - KEEP the same staff_id
+                // No action needed, staff_id is preserved automatically
+            }
+        });
     }
 }

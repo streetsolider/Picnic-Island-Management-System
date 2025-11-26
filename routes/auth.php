@@ -4,18 +4,25 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::middleware('guest')->group(function () {
-    Volt::route('register', 'pages.auth.register')
-        ->name('register');
+// Guest/User authentication routes - Temporarily disabled
+// Route::middleware('guest')->group(function () {
+//     Volt::route('register', 'pages.auth.register')
+//         ->name('register');
+//
+//     Volt::route('login', 'pages.auth.login')
+//         ->name('login');
+//
+//     Volt::route('forgot-password', 'pages.auth.forgot-password')
+//         ->name('password.request');
+//
+//     Volt::route('reset-password/{token}', 'pages.auth.reset-password')
+//         ->name('password.reset');
+// });
 
-    Volt::route('login', 'pages.auth.login')
-        ->name('login');
-
-    Volt::route('forgot-password', 'pages.auth.forgot-password')
-        ->name('password.request');
-
-    Volt::route('reset-password/{token}', 'pages.auth.reset-password')
-        ->name('password.reset');
+// Staff authentication routes
+Route::middleware('guest:staff')->group(function () {
+    Volt::route('staff-login', 'pages.auth.staff-login')
+        ->name('staff.login');
 });
 
 Route::middleware('auth')->group(function () {
