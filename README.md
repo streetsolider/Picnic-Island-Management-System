@@ -129,139 +129,27 @@ http://localhost
 
 ### Setup for Windows
 
-#### 0. Install WSL 2 (Required for Laravel Sail)
+#### Prerequisites for Windows
 
-**IMPORTANT:** Laravel Sail requires WSL 2 (Windows Subsystem for Linux) to run on Windows. You must install this first.
+Before starting, ensure you have:
 
-##### Quick Install (Windows 10 version 2004+ or Windows 11)
+1. **Docker Desktop for Windows** - Download from https://www.docker.com/products/docker-desktop
+   - Make sure Docker Desktop is running
+   - WSL 2 backend is recommended (Docker Desktop will prompt you to install WSL 2 if needed)
 
-Open **PowerShell or Command Prompt as Administrator** and run:
+2. **Git for Windows** - Download from https://git-scm.com/download/win
 
-```powershell
-wsl --install
-```
+3. **Node.js & NPM** - Download from https://nodejs.org (v18 or higher)
 
-This command will:
-- Enable the required Windows features
-- Install the latest Linux kernel
-- Set WSL 2 as default
-- Install Ubuntu as the default Linux distribution
+4. **Composer** (optional) - Download from https://getcomposer.org/download
 
-**After installation, restart your computer.**
-
-##### After Restart - Set Up Ubuntu
-
-1. After reboot, Ubuntu will automatically launch and ask you to create a user account
-2. Enter a username (e.g., your Windows username)
-3. Enter a password (you'll use this for `sudo` commands)
-4. Confirm the password
-
-##### Verify WSL Installation
-
-Open PowerShell and run:
-
-```powershell
-wsl --list --verbose
-```
-
-You should see Ubuntu listed with version 2:
-
-```
-  NAME      STATE           VERSION
-* Ubuntu    Running         2
-```
-
-##### If You Already Have WSL 1 (Upgrade to WSL 2)
-
-If you have WSL 1 installed, upgrade to WSL 2:
-
-```powershell
-# Set WSL 2 as default version
-wsl --set-default-version 2
-
-# Update existing distribution to WSL 2
-wsl --set-version Ubuntu 2
-```
-
-##### Manual Installation (For Older Windows 10 Versions)
-
-If the quick install doesn't work, follow these steps:
-
-**1. Enable WSL Feature:**
-
-```powershell
-dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-```
-
-**2. Enable Virtual Machine Platform:**
-
-```powershell
-dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-```
-
-**3. Restart your computer**
-
-**4. Download and install the WSL 2 Linux kernel update:**
-
-```powershell
-# Download the kernel update package
-Invoke-WebRequest -Uri https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi -OutFile wsl_update_x64.msi
-
-# Install it
-Start-Process msiexec.exe -ArgumentList '/i wsl_update_x64.msi /quiet' -Wait
-```
-
-**5. Set WSL 2 as default:**
-
-```powershell
-wsl --set-default-version 2
-```
-
-**6. Install Ubuntu from Microsoft Store:**
-
-- Open Microsoft Store
-- Search for "Ubuntu"
-- Install "Ubuntu" (latest LTS version)
-- Launch Ubuntu and create your user account
-
-##### Install Docker Desktop for Windows
-
-After WSL 2 is installed:
-
-1. Download Docker Desktop from: https://www.docker.com/products/docker-desktop
-2. Run the installer
-3. During installation, ensure "Use WSL 2 instead of Hyper-V" is selected
-4. Restart your computer after installation
-5. Open Docker Desktop and go to **Settings → General**
-6. Ensure "Use the WSL 2 based engine" is checked
-7. Go to **Settings → Resources → WSL Integration**
-8. Enable integration with your Ubuntu distribution
-
-##### Troubleshooting WSL Installation
-
-**Check Windows Version:**
-```powershell
-winver
-```
-You need Windows 10 version 2004 (Build 19041) or higher, or Windows 11.
-
-**Enable Virtualization in BIOS:**
-- Restart your computer
-- Enter BIOS/UEFI (usually F2, F10, F12, or Del during boot)
-- Enable Intel VT-x or AMD-V virtualization
-- Save and exit
-
-**Update Windows:**
-```powershell
-# Check for Windows updates
-Start-Process ms-settings:windowsupdate
-```
+> **Note:** If Docker Desktop prompts you to install WSL 2, follow the on-screen instructions. For detailed WSL 2 setup, see the [Microsoft WSL documentation](https://learn.microsoft.com/en-us/windows/wsl/install).
 
 ---
 
 #### 1. Clone the Repository
 
-Open Command Prompt or PowerShell and run:
+Open Command Prompt or PowerShell:
 
 ```cmd
 git clone https://github.com/streetsolider/Picnic-Island-Management-System
@@ -272,28 +160,19 @@ cd Picnic-Island-Management-System
 
 Copy the example environment file:
 
-**Command Prompt:**
-```cmd
+```powershell
+# PowerShell
+Copy-Item .env.example .env
+
+# OR Command Prompt
 copy .env.example .env
 ```
 
-**PowerShell:**
-```powershell
-Copy-Item .env.example .env
-```
-
-The default configuration is already set up for Laravel Sail. Update these values if needed:
-
-```env
-APP_NAME="Picnic Island Management System"
-DB_DATABASE=picnic_island_db
-DB_USERNAME=sail
-DB_PASSWORD=password
-```
+The default configuration is already set up for Laravel Sail.
 
 #### 3. Install PHP Dependencies
 
-**IMPORTANT:** You must install Composer dependencies FIRST before running any artisan commands:
+**IMPORTANT:** Install Composer dependencies first before any other steps:
 
 ```cmd
 composer install
@@ -305,35 +184,30 @@ If you don't have Composer installed locally, you can use Docker:
 docker run --rm -v "%cd%":/var/www/html -w /var/www/html laravelsail/php83-composer:latest composer install --ignore-platform-reqs
 ```
 
-**For PowerShell:**
-```powershell
-docker run --rm -v ${PWD}:/var/www/html -w /var/www/html laravelsail/php83-composer:latest composer install --ignore-platform-reqs
-```
+#### 4. Install Sail Configuration
 
-#### 4. Install JavaScript Dependencies
+Generate the Docker Compose configuration:
 
 ```cmd
-npm install
+php artisan sail:install
 ```
 
-#### 5. Generate Application Key
+When prompted, select the services you need (use arrow keys and spacebar):
+- mysql (required)
+- redis (recommended)
+- meilisearch (recommended)
+- mailpit (recommended for email testing)
+
+#### 5. Publish Sail Docker Files
 
 ```cmd
-php artisan key:generate
+php artisan sail:publish
 ```
 
 #### 6. Start Docker Containers
 
-Start all Docker services using Laravel Sail:
-
-**Command Prompt:**
 ```cmd
-vendor\bin\sail up -d
-```
-
-**PowerShell:**
-```powershell
-.\vendor\bin\sail up -d
+docker compose up -d
 ```
 
 **Services Available:**
@@ -341,33 +215,45 @@ vendor\bin\sail up -d
 - Mailpit (Email Testing): http://localhost:8025
 - Meilisearch: http://localhost:7700
 
-#### 7. Run Database Migrations
-
-**Command Prompt:**
-```cmd
-vendor\bin\sail artisan migrate
-```
-
-**PowerShell:**
-```powershell
-.\vendor\bin\sail artisan migrate
-```
-
-#### 8. Build Frontend Assets
-
-For development:
+#### 7. Install Node Dependencies Inside Container
 
 ```cmd
-npm run dev
+docker compose exec laravel.test npm install
 ```
 
-For production:
+#### 8. Run Database Migrations
 
 ```cmd
-npm run build
+docker compose exec laravel.test php artisan migrate
 ```
 
-#### 9. Access the Application
+#### 9. Seed the Database
+
+Create default users and sample data:
+
+```cmd
+docker compose exec laravel.test php artisan db:seed
+```
+
+This will create:
+- **Admin**: admin@picnicisland.com (password: `password`)
+- **Hotel Manager**: hotel@picnicisland.com (password: `password`)
+- **Ferry Operator**: ferry@picnicisland.com (password: `password`)
+- **Theme Park Staff**: themepark@picnicisland.com (password: `password`)
+
+#### 10. Build Frontend Assets
+
+```cmd
+docker compose exec laravel.test npm run build
+```
+
+For development with hot-reload:
+
+```cmd
+docker compose exec laravel.test npm run dev
+```
+
+#### 11. Access the Application
 
 Open your browser and navigate to:
 
@@ -375,20 +261,28 @@ Open your browser and navigate to:
 http://localhost
 ```
 
-#### Windows-Specific Notes
+Log in with the admin account:
+- Email: `admin@picnicisland.com`
+- Password: `password`
 
-**Recommended: Use WSL Ubuntu Terminal**
-- Since you have WSL 2 installed, you can use the Ubuntu terminal instead of Command Prompt/PowerShell
-- Open "Ubuntu" from the Start Menu
-- Navigate to your project: `cd /mnt/c/Users/YourUsername/Documents/Dev/Picnic-Island-Management-System`
-- Use all the Mac/Linux commands (with `./vendor/bin/sail`)
-- This is the easiest and most compatible option!
+#### Managing Docker Containers
 
-**If using Command Prompt or PowerShell:**
-- Use backslashes (`\`) instead of forward slashes (`/`) in Command Prompt
-- Use `.\` prefix in PowerShell instead of `./`
-- If you encounter issues with Docker Desktop, make sure it's running and WSL 2 is properly configured
-- Consider using Windows Terminal for a better command-line experience
+```cmd
+# Stop containers
+docker compose down
+
+# View container logs
+docker compose logs -f laravel.test
+
+# Restart containers
+docker compose restart
+
+# Access container shell
+docker compose exec laravel.test bash
+
+# Run artisan commands
+docker compose exec laravel.test php artisan [command]
+```
 
 ## Development Workflow
 
@@ -650,34 +544,20 @@ sail artisan test --coverage
 
 ## Troubleshooting
 
-### Windows: WSL 2 Issues
+### "Vite manifest not found" Error
 
-**Docker not starting:**
-- Ensure WSL 2 is properly installed: `wsl --list --verbose`
-- Make sure Docker Desktop has WSL integration enabled
-- Restart Docker Desktop
+If you see this error when accessing the application, you need to build the frontend assets:
 
-**"The WSL 2 Linux kernel is now installed" error:**
-- Run Windows Update
-- Manually download kernel: https://aka.ms/wsl2kernel
-
-**WSL not working:**
-```powershell
-# Restart WSL service
-wsl --shutdown
-wsl
+```cmd
+docker compose exec laravel.test npm install
+docker compose exec laravel.test npm run build
 ```
-
-**Performance issues:**
-- Clone the repository inside WSL Ubuntu (not in Windows filesystem)
-- In Ubuntu terminal: `cd ~` then clone the repo there
-- Windows filesystem (`/mnt/c/`) is slower than native Linux filesystem
 
 ### "vendor/autoload.php: Failed to open stream: No such file or directory"
 
 This error means you haven't installed Composer dependencies yet. Run:
 
-```bash
+```cmd
 composer install
 ```
 
@@ -686,28 +566,25 @@ composer install
 docker run --rm -v "%cd%":/var/www/html -w /var/www/html laravelsail/php83-composer:latest composer install --ignore-platform-reqs
 ```
 
-### Windows: "'.' is not recognized as an internal or external command"
+### Database Connection Issues
 
-This happens when using Unix-style commands on Windows. Use the Windows-specific commands instead:
+If migrations fail or the database connection is refused:
 
-**Command Prompt:**
-```cmd
-vendor\bin\sail up -d
-```
+1. Wait for MySQL to fully start (may take 30-60 seconds on first run)
+2. Check container status: `docker compose ps`
+3. View MySQL logs: `docker compose logs mysql`
+4. Restart containers: `docker compose restart`
 
-**PowerShell:**
-```powershell
-.\vendor\bin\sail up -d
-```
+### Windows: Docker Desktop Not Starting
 
-**Git Bash (alternative):**
-```bash
-./vendor/bin/sail up -d
-```
+- Ensure Docker Desktop is installed and running
+- Check if WSL 2 is installed (Docker Desktop will prompt if needed)
+- Restart Docker Desktop from the system tray
+- If issues persist, restart your computer
 
 ### Port Already in Use
 
-If ports 80, 3306, 6379, 7700, or 8025 are already in use, update the port mappings in `.env`:
+If you see "port is already allocated" errors, you can change the ports in your `.env` file:
 
 ```env
 APP_PORT=8080
@@ -717,23 +594,53 @@ FORWARD_MEILISEARCH_PORT=77000
 FORWARD_MAILPIT_DASHBOARD_PORT=8026
 ```
 
+**Windows - Check what's using a port:**
+```cmd
+netstat -ano | findstr :80
+```
+
+**Mac/Linux - Check what's using a port:**
+```bash
+lsof -i :80
+```
+
+Then restart containers: `docker compose down && docker compose up -d`
+
 ### Permission Issues
 
-If you encounter permission errors:
+If you encounter permission errors on Mac/Linux:
 
 ```bash
-sail bash
-chmod -R 777 storage bootstrap/cache
+docker compose exec laravel.test chmod -R 777 storage bootstrap/cache
 ```
+
+On Windows, permission issues are rare with Docker Desktop.
 
 ### Clear Caches
 
 ```bash
-sail artisan cache:clear
-sail artisan config:clear
-sail artisan route:clear
-sail artisan view:clear
+# Using docker compose
+docker compose exec laravel.test php artisan cache:clear
+docker compose exec laravel.test php artisan config:clear
+docker compose exec laravel.test php artisan route:clear
+docker compose exec laravel.test php artisan view:clear
+
+# Or using sail (Mac/Linux)
+./vendor/bin/sail artisan cache:clear
+./vendor/bin/sail artisan config:clear
+./vendor/bin/sail artisan route:clear
+./vendor/bin/sail artisan view:clear
 ```
+
+### No Users / Cannot Login
+
+If you can't log in or no users exist in the database:
+
+```cmd
+docker compose exec laravel.test php artisan db:seed
+```
+
+This creates default admin and staff accounts (see Step 9 in Windows setup).
 
 ## Contributing
 
