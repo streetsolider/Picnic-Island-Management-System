@@ -68,6 +68,13 @@
                         @error('star_rating') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
 
+                    <!-- Room Capacity -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Room Capacity</label>
+                        <input wire:model="room_capacity" type="number" min="0" step="1" placeholder="Enter total number of rooms" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        @error('room_capacity') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
                     <!-- Hotel Manager -->
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assign Hotel Manager (Optional)</label>
@@ -152,6 +159,13 @@
                             <option value="5">5 Stars</option>
                         </select>
                         @error('star_rating') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <!-- Room Capacity -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Room Capacity</label>
+                        <input wire:model="room_capacity" type="number" min="0" step="1" placeholder="Enter total number of rooms" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                        @error('room_capacity') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
 
                     <!-- Hotel Manager -->
@@ -277,6 +291,7 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Hotel Name</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Rating</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Capacity</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Manager</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
@@ -295,6 +310,9 @@
                                     <div class="text-sm text-gray-900 dark:text-gray-100">
                                         {{ str_repeat('⭐', $hotel->star_rating) }}
                                     </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">{{ $hotel->room_capacity }} rooms</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if($hotel->manager)
@@ -320,7 +338,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                                <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                                     No hotels found.
                                 </td>
                             </tr>

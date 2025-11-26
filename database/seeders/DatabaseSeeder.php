@@ -74,6 +74,9 @@ class DatabaseSeeder extends Seeder
             Guest::create($guestData);
         }
 
+        // Seed hotels
+        $this->call(HotelSeeder::class);
+
         $this->command->info('Sample data created successfully!');
         $this->command->info('');
         $this->command->info('STAFF ACCOUNTS:');

@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => CheckRole::class,
             'guest' => RedirectIfAuthenticated::class,
         ]);
+
+        // Configure authentication redirects
+        $middleware->redirectGuestsTo(fn ($request) => route('staff.login'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

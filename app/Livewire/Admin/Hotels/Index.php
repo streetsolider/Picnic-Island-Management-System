@@ -27,6 +27,7 @@ class Index extends Component
     public $longitude;
     public $description;
     public $star_rating = 3;
+    public $room_capacity = 0;
     public $manager_id;
     public $is_active = true;
 
@@ -40,6 +41,7 @@ class Index extends Component
             'longitude' => 'nullable|numeric|between:-180,180',
             'description' => 'nullable|string',
             'star_rating' => 'required|integer|min:1|max:5',
+            'room_capacity' => 'required|integer|min:0',
             'manager_id' => 'nullable|exists:staff,id',
             'is_active' => 'boolean',
         ];
@@ -74,6 +76,7 @@ class Index extends Component
         $this->longitude = $hotel->location['longitude'] ?? '';
         $this->description = $hotel->description;
         $this->star_rating = $hotel->star_rating;
+        $this->room_capacity = $hotel->room_capacity;
         $this->manager_id = $hotel->manager_id;
         $this->is_active = $hotel->is_active;
 
@@ -102,6 +105,7 @@ class Index extends Component
         $this->longitude = '';
         $this->description = '';
         $this->star_rating = 3;
+        $this->room_capacity = 0;
         $this->manager_id = null;
         $this->is_active = true;
         $this->resetValidation();
@@ -115,6 +119,7 @@ class Index extends Component
             'name' => $this->name,
             'description' => $this->description,
             'star_rating' => $this->star_rating,
+            'room_capacity' => $this->room_capacity,
             'manager_id' => $this->manager_id,
             'is_active' => $this->is_active,
         ];
@@ -146,6 +151,7 @@ class Index extends Component
             'name' => $this->name,
             'description' => $this->description,
             'star_rating' => $this->star_rating,
+            'room_capacity' => $this->room_capacity,
             'manager_id' => $this->manager_id,
             'is_active' => $this->is_active,
         ];

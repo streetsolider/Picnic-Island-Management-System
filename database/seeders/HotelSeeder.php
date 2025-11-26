@@ -29,6 +29,7 @@ class HotelSeeder extends Seeder
                 ],
                 'description' => 'A luxurious beachfront resort with stunning ocean views and world-class amenities.',
                 'star_rating' => 5,
+                'room_capacity' => 150,
                 'is_active' => true,
             ],
             [
@@ -39,6 +40,7 @@ class HotelSeeder extends Seeder
                 ],
                 'description' => 'Modern hotel in the heart of the island with easy access to all attractions.',
                 'star_rating' => 4,
+                'room_capacity' => 100,
                 'is_active' => true,
             ],
             [
@@ -49,6 +51,7 @@ class HotelSeeder extends Seeder
                 ],
                 'description' => 'Cozy boutique hotel perfect for couples and small families.',
                 'star_rating' => 3,
+                'room_capacity' => 50,
                 'is_active' => true,
             ],
             [
@@ -59,6 +62,7 @@ class HotelSeeder extends Seeder
                 ],
                 'description' => 'Premium hotel offering luxury accommodations and exceptional service.',
                 'star_rating' => 5,
+                'room_capacity' => 200,
                 'is_active' => true,
             ],
             [
@@ -69,6 +73,7 @@ class HotelSeeder extends Seeder
                 ],
                 'description' => 'Affordable accommodation for budget-conscious travelers.',
                 'star_rating' => 2,
+                'room_capacity' => 30,
                 'is_active' => false,
             ],
         ];

@@ -25,6 +25,16 @@ Route::middleware('guest:staff')->group(function () {
         ->name('staff.login');
 });
 
+// Staff logout route
+Route::middleware('auth:staff')->group(function () {
+    Route::post('staff-logout', function () {
+        auth('staff')->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect()->route('staff.login');
+    })->name('staff.logout');
+});
+
 Route::middleware('auth')->group(function () {
     Volt::route('verify-email', 'pages.auth.verify-email')
         ->name('verification.notice');

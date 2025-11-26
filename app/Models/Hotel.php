@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Hotel extends Model
 {
@@ -20,6 +21,7 @@ class Hotel extends Model
         'location',
         'description',
         'star_rating',
+        'room_capacity',
         'manager_id',
         'is_active',
     ];
@@ -34,6 +36,7 @@ class Hotel extends Model
         return [
             'is_active' => 'boolean',
             'star_rating' => 'integer',
+            'room_capacity' => 'integer',
             'location' => 'array',
         ];
     }
@@ -60,5 +63,37 @@ class Hotel extends Model
     public function getStarRatingDisplayAttribute(): string
     {
         return str_repeat('⭐', $this->star_rating);
+    }
+
+    /**
+     * Get the rooms for this hotel
+     */
+    public function rooms(): HasMany
+    {
+        return $this->hasMany(Room::class);
+    }
+
+    /**
+     * Get the room views for this hotel
+     */
+    public function roomViews(): HasMany
+    {
+        return $this->hasMany(RoomView::class);
+    }
+
+    /**
+     * Get the amenity categories for this hotel
+     */
+    public function amenityCategories(): HasMany
+    {
+        return $this->hasMany(AmenityCategory::class)->orderBy('sort_order');
+    }
+
+    /**
+     * Get the amenities for this hotel
+     */
+    public function amenities(): HasMany
+    {
+        return $this->hasMany(Amenity::class);
     }
 }
