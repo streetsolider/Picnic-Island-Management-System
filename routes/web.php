@@ -25,10 +25,22 @@ Route::middleware(['auth:staff'])->group(function () {
         return redirect()->route(auth('staff')->user()->getDashboardRoute());
     })->name('staff.dashboard');
 
-    // Hotel Manager Dashboard
-    Route::get('/hotel/dashboard', function () {
-        return view('dashboard');
-    })->middleware('role:hotel_manager')->name('hotel.dashboard');
+    // Hotel Manager Routes
+    Route::middleware('role:hotel_manager')->prefix('hotel')->name('hotel.')->group(function () {
+        Route::get('/dashboard', \App\Livewire\Hotel\Dashboard::class)->name('dashboard');
+
+        // Room Management
+        Route::get('/rooms', \App\Livewire\Hotel\Rooms\Index::class)->name('rooms.index');
+        Route::get('/rooms/create', \App\Livewire\Hotel\Rooms\Create::class)->name('rooms.create');
+        Route::get('/rooms/{room}/edit', \App\Livewire\Hotel\Rooms\Edit::class)->name('rooms.edit');
+
+        // Room Views Management
+        Route::get('/views', \App\Livewire\Hotel\Views\Manage::class)->name('views.manage');
+
+        // Amenity Management
+        Route::get('/amenities/categories', \App\Livewire\Hotel\Amenities\Categories::class)->name('amenities.categories');
+        Route::get('/amenities/items', \App\Livewire\Hotel\Amenities\Items::class)->name('amenities.items');
+    });
 
     // Ferry Operator Dashboard
     Route::get('/ferry/dashboard', function () {
