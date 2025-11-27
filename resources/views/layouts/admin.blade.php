@@ -66,7 +66,12 @@
 
         {{-- Top Bar --}}
         <x-slot:topBar>
-            <div class="flex items-center justify-end w-full">
+            <div class="flex items-center justify-between w-full">
+                <!-- Page Title -->
+                @if (isset($header))
+                    {{ $header }}
+                @endif
+
                 <!-- Settings Dropdown -->
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
                     <x-admin.theme.toggle />
@@ -108,14 +113,6 @@
 
         {{-- Main Content --}}
         <x-slot:content>
-            @if (isset($header))
-                <header class="bg-white dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endif
-
             <div class="py-12">
                 <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     {{ $slot }}
