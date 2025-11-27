@@ -1,4 +1,17 @@
-<div class="py-12">
+<div>
+    {{-- Toast Container --}}
+    <x-ui.toast-container>
+        @if($showToast)
+            <x-ui.toast
+                wire:key="toast-{{ $showToast }}"
+                :type="$toastType"
+                :title="$toastTitle"
+                :message="$toastMessage"
+            />
+        @endif
+    </x-ui.toast-container>
+
+    <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
 
         {{-- Page Header --}}
@@ -19,11 +32,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                     <div class="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
                         <h4 class="font-semibold text-indigo-900 dark:text-indigo-300 mb-2">✅ Completed</h4>
-                        <p class="text-sm text-indigo-700 dark:text-indigo-400">Buttons (6 variants), Cards (4 types)</p>
+                        <p class="text-sm text-indigo-700 dark:text-indigo-400">Buttons (6 variants), Cards (4 types), Alerts (4 types)</p>
                     </div>
                     <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
                         <h4 class="font-semibold text-yellow-900 dark:text-yellow-300 mb-2">🚧 In Progress</h4>
-                        <p class="text-sm text-yellow-700 dark:text-yellow-400">Alerts, Modals</p>
+                        <p class="text-sm text-yellow-700 dark:text-yellow-400">Modals</p>
                     </div>
                     <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                         <h4 class="font-semibold text-gray-900 dark:text-gray-300 mb-2">📋 Planned</h4>
@@ -390,5 +403,189 @@
             </div>
         </div>
 
+        {{-- Alert Components --}}
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6">
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Alert Components</h3>
+
+                <div class="space-y-8">
+                    {{-- Basic Alerts --}}
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Basic Alerts</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Alert messages with default icons for different notification types.</p>
+
+                        <div class="space-y-4">
+                            <x-ui.alert.info title="Information">
+                                This is an informational alert. Use it to provide helpful tips or general information to users.
+                            </x-ui.alert.info>
+
+                            <x-ui.alert.success title="Success">
+                                Operation completed successfully! Your changes have been saved and are now live.
+                            </x-ui.alert.success>
+
+                            <x-ui.alert.warning title="Warning">
+                                Please review this carefully. This action may have unintended consequences on system performance.
+                            </x-ui.alert.warning>
+
+                            <x-ui.alert.danger title="Error">
+                                An error occurred while processing your request. Please check your input and try again.
+                            </x-ui.alert.danger>
+                        </div>
+
+                        <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                            <code class="text-sm text-gray-800 dark:text-gray-200">
+                                &lt;x-ui.alert.success title="Success"&gt;Message here&lt;/x-ui.alert.success&gt;
+                            </code>
+                        </div>
+                    </div>
+
+                    {{-- Dismissible Alerts --}}
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Dismissible Alerts</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Alerts with a close button that can be dismissed by users.</p>
+
+                        <div class="space-y-4">
+                            <x-ui.alert.info title="Dismissible Info" :dismissible="true">
+                                Click the X button on the right to dismiss this alert.
+                            </x-ui.alert.info>
+
+                            <x-ui.alert.success :dismissible="true">
+                                This success alert has no title but can still be dismissed.
+                            </x-ui.alert.success>
+
+                            <x-ui.alert.warning title="Temporary Warning" :dismissible="true">
+                                This warning will disappear once you dismiss it.
+                            </x-ui.alert.warning>
+                        </div>
+
+                        <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                            <code class="text-sm text-gray-800 dark:text-gray-200">
+                                &lt;x-ui.alert.info title="Title" :dismissible="true"&gt;Message&lt;/x-ui.alert.info&gt;
+                            </code>
+                        </div>
+                    </div>
+
+                    {{-- Alerts Without Icons --}}
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Alerts Without Icons</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Simple alerts without icons for a cleaner look.</p>
+
+                        <div class="space-y-4">
+                            <x-ui.alert.info title="Simple Info" :icon="null">
+                                This alert has no icon, just the colored background and border.
+                            </x-ui.alert.info>
+
+                            <x-ui.alert.success :icon="null">
+                                Success message without an icon or title - very minimal.
+                            </x-ui.alert.success>
+                        </div>
+
+                        <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                            <code class="text-sm text-gray-800 dark:text-gray-200">
+                                &lt;x-ui.alert.info :icon="null"&gt;Message&lt;/x-ui.alert.info&gt;
+                            </code>
+                        </div>
+                    </div>
+
+                    {{-- Using Base Alert --}}
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Base Alert Component</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Use the base alert for more control over type and custom icons.</p>
+
+                        <div class="space-y-4">
+                            <x-ui.alert.base type="info" title="Custom Alert">
+                                You can use the base alert component and specify the type manually.
+                            </x-ui.alert.base>
+
+                            <x-ui.alert.base
+                                type="success"
+                                icon="🎉"
+                                title="Custom Icon"
+                                :dismissible="true"
+                            >
+                                Use custom emoji or SVG icons for unique alerts!
+                            </x-ui.alert.base>
+                        </div>
+
+                        <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                            <code class="text-sm text-gray-800 dark:text-gray-200">
+                                &lt;x-ui.alert.base type="success" icon="🎉" title="Title"&gt;Message&lt;/x-ui.alert.base&gt;
+                            </code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Toast Notifications --}}
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6">
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Toast Notifications</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                    Toast notifications are popup alerts that slide in from the top-right corner of the screen.
+                    They auto-dismiss after 5 seconds and can be manually closed by clicking the X button.
+                </p>
+
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Try Toast Notifications</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                            Click the buttons below to see toast notifications appear from the top-right corner:
+                        </p>
+
+                        <div class="flex flex-wrap gap-4">
+                            <button wire:click="testToast" type="button" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-sm text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                                TEST (No Params)
+                            </button>
+
+                            <button wire:click="triggerToast('info')" type="button" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-sm text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Show Info Toast
+                            </button>
+
+                            <button wire:click="triggerToast('success')" type="button" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-sm text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                Show Success Toast
+                            </button>
+
+                            <button wire:click="triggerToast('warning')" type="button" class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-sm text-white hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                                Show Warning Toast
+                            </button>
+
+                            <button wire:click="triggerToast('danger')" type="button" class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-sm text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                Show Error Toast
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Usage Example</h4>
+
+                        <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                            <code class="text-sm text-gray-800 dark:text-gray-200">
+                                {{-- In your Livewire component --}}<br>
+                                &lt;x-ui.toast-container&gt;<br>
+                                &nbsp;&nbsp;@if($showToast)<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&lt;x-ui.toast<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type="success"<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;title="Success!"<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;message="Operation completed"<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;/&gt;<br>
+                                &nbsp;&nbsp;@endif<br>
+                                &lt;/x-ui.toast-container&gt;
+                            </code>
+                        </div>
+
+                        <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                            <p class="text-sm text-blue-800 dark:text-blue-300">
+                                <strong>Note:</strong> Toast notifications automatically slide in from the top-right,
+                                stay visible for 5 seconds (configurable via <code class="bg-blue-100 dark:bg-blue-800 px-1 rounded">duration</code> prop),
+                                and can be dismissed manually. They stack on top of each other when multiple toasts are shown.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
     </div>
 </div>
