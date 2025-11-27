@@ -39,6 +39,9 @@ new class extends Component {
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <div class="mr-4">
+                    <x-ui.theme.toggle />
+                </div>
                 <x-overlays.dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button
@@ -74,6 +77,9 @@ new class extends Component {
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
+                <div class="mr-2">
+                    <x-ui.theme.toggle />
+                </div>
                 <button @click="open = ! open"
                     class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">

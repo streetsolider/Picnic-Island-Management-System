@@ -26,9 +26,7 @@
 
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-        <div class="absolute top-4 right-4 z-50">
-            <x-ui.theme.toggle />
-        </div>
+
         <livewire:layout.navigation />
 
         <!-- Page Heading -->
