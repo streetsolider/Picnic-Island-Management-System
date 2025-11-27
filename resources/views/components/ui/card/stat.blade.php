@@ -26,7 +26,7 @@ if ($badgeStyle) {
 @endphp
 
 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
-    <div class="p-6">
+    <div class="p-6 text-gray-700 dark:text-gray-300">
         @if($badgeStyle)
             {{-- Badge Style Layout: Text on left, Icon badge on right --}}
             <div class="flex items-center">

@@ -15,7 +15,7 @@ $attributes = $attributes->merge([
 @endphp
 
 <div {{ $attributes }}>
-    <div class="p-6 text-center">
+    <div class="p-6 text-center text-gray-700 dark:text-gray-300">
         {{-- Icon --}}
         @if($icon)
             <div class="mx-auto h-12 w-12 text-gray-400">

@@ -1,28 +1,12 @@
-<x-slot name="header">
-    <div class="flex items-center justify-between">
-        <div class="flex items-center gap-4">
-            <a href="{{ route('admin.dashboard') }}" wire:navigate
-               class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                </svg>
-            </a>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                UI Component Library - Demo & Documentation
-            </h2>
-        </div>
-    </div>
-</x-slot>
-
 <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
 
-        {{-- Flash Message --}}
-        @if (session()->has('message'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                <span class="block sm:inline">{{ session('message') }}</span>
+        {{-- Page Header --}}
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100">UI Component Library - Demo & Documentation</h2>
             </div>
-        @endif
+        </div>
 
         {{-- Introduction --}}
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
@@ -203,154 +187,204 @@
             </div>
         </div>
 
-        {{-- Component Features --}}
-        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+        {{-- Card Components --}}
+        <div class="bg-gray-50 dark:bg-gray-800/50 overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6">
-                <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Component Features</h3>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Card Components</h3>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {{-- Features List --}}
+                <div class="space-y-8">
+                    {{-- Base Card Examples --}}
                     <div>
-                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-3">Available Features</h4>
-                        <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                            <li class="flex items-start">
-                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
-                                <span>Three size variants: sm, md (default), lg</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
-                                <span>Loading state with animated spinner</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
-                                <span>Icon support (left/right positioning)</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
-                                <span>Disabled state styling</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
-                                <span>Full dark mode support</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
-                                <span>Livewire directive support (wire:click, wire:loading, etc.)</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
-                                <span>Can render as button or anchor tag (href support)</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
-                                <span>Focus rings and accessibility features</span>
-                            </li>
-                        </ul>
-                    </div>
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Base Card</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Flexible card component with optional title, body, and footer slots.</p>
 
-                    {{-- Props Documentation --}}
-                    <div>
-                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 mb-3">Available Props</h4>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full text-sm">
-                                <thead class="bg-gray-50 dark:bg-gray-700">
-                                    <tr>
-                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Prop</th>
-                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Type</th>
-                                        <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Default</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                    <tr>
-                                        <td class="px-3 py-2 text-gray-900 dark:text-gray-100 font-mono">type</td>
-                                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400">string</td>
-                                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400">'button'</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-3 py-2 text-gray-900 dark:text-gray-100 font-mono">size</td>
-                                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400">string</td>
-                                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400">'md'</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-3 py-2 text-gray-900 dark:text-gray-100 font-mono">disabled</td>
-                                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400">bool</td>
-                                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400">false</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-3 py-2 text-gray-900 dark:text-gray-100 font-mono">loading</td>
-                                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400">bool</td>
-                                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400">false</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-3 py-2 text-gray-900 dark:text-gray-100 font-mono">icon</td>
-                                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400">string</td>
-                                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400">null</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-3 py-2 text-gray-900 dark:text-gray-100 font-mono">iconPosition</td>
-                                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400">string</td>
-                                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400">'left'</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-3 py-2 text-gray-900 dark:text-gray-100 font-mono">href</td>
-                                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400">string</td>
-                                        <td class="px-3 py-2 text-gray-600 dark:text-gray-400">null</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {{-- Simple Card --}}
+                            <x-ui.card.base>
+                                This is a simple card with just body content. No title or footer.
+                            </x-ui.card.base>
+
+                            {{-- Card with Title --}}
+                            <x-ui.card.base>
+                                <x-slot name="title">Card with Title</x-slot>
+                                This card has a title slot. Perfect for section headings and organized content.
+                            </x-ui.card.base>
+
+                            {{-- Card with Footer --}}
+                            <x-ui.card.base>
+                                <x-slot name="title">Card with Footer</x-slot>
+                                This card demonstrates the footer slot, useful for actions or metadata.
+                                <x-slot name="footer">
+                                    <div class="flex justify-end gap-2">
+                                        <x-ui.button.secondary size="sm">Cancel</x-ui.button.secondary>
+                                        <x-ui.button.primary size="sm">Save</x-ui.button.primary>
+                                    </div>
+                                </x-slot>
+                            </x-ui.card.base>
+
+                            {{-- Card with All Slots --}}
+                            <x-ui.card.base>
+                                <x-slot name="title">Complete Card</x-slot>
+                                This card uses all available slots: title, body, and footer. It's great for forms or detailed content sections.
+                                <x-slot name="footer">
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">Last updated: 2 hours ago</span>
+                                </x-slot>
+                            </x-ui.card.base>
+                        </div>
+
+                        <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                            <code class="text-sm text-gray-800 dark:text-gray-200">
+                                &lt;x-ui.card.base&gt;<br>
+                                &nbsp;&nbsp;&lt;x-slot name="title"&gt;Title&lt;/x-slot&gt;<br>
+                                &nbsp;&nbsp;Body content here<br>
+                                &nbsp;&nbsp;&lt;x-slot name="footer"&gt;Footer content&lt;/x-slot&gt;<br>
+                                &lt;/x-ui.card.base&gt;
+                            </code>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        {{-- Coming Soon --}}
-        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 overflow-hidden shadow-sm sm:rounded-lg border border-indigo-200 dark:border-indigo-800">
-            <div class="p-6">
-                <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Coming Soon</h3>
-                <p class="text-gray-600 dark:text-gray-400 mb-4">
-                    The following components are planned and will be added to this demo page as they're completed:
-                </p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
-                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 text-sm mb-1">Cards</h4>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Base, Stat, Info, Empty State</p>
+                    {{-- Stat Cards - Badge Style --}}
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Stat Card - Badge Style</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Statistics cards with badge-style indicators.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <x-ui.card.stat
+                                label="Total Revenue"
+                                value="$45,231"
+                                change="+12.5%"
+                                changeType="increase"
+                                :badgeStyle="true"
+                            />
+                            <x-ui.card.stat
+                                label="Active Users"
+                                value="2,345"
+                                change="-3.2%"
+                                changeType="decrease"
+                                :badgeStyle="true"
+                                color="blue"
+                            />
+                            <x-ui.card.stat
+                                label="Pending Orders"
+                                value="156"
+                                change="No change"
+                                changeType="neutral"
+                                :badgeStyle="true"
+                                color="purple"
+                            />
+                        </div>
+
+                        <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                            <code class="text-sm text-gray-800 dark:text-gray-200">
+                                &lt;x-ui.card.stat label="Total Revenue" value="$45,231" change="+12.5%" changeType="increase" :badgeStyle="true" /&gt;
+                            </code>
+                        </div>
                     </div>
-                    <div class="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
-                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 text-sm mb-1">Alerts</h4>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Success, Error, Warning, Info</p>
+
+                    {{-- Stat Cards - Side Icon Style --}}
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Stat Card - Side Icon Style</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Statistics cards with side icon layout.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <x-ui.card.stat
+                                label="Total Sales"
+                                value="$125,430"
+                                change="+18.2%"
+                                changeType="increase"
+                                icon="📈"
+                            />
+                            <x-ui.card.stat
+                                label="New Customers"
+                                value="892"
+                                change="+5.4%"
+                                changeType="increase"
+                                icon="👥"
+                                color="green"
+                            />
+                            <x-ui.card.stat
+                                label="Support Tickets"
+                                value="23"
+                                change="-12%"
+                                changeType="decrease"
+                                icon="🎫"
+                                color="yellow"
+                            />
+                            <x-ui.card.stat
+                                label="Server Uptime"
+                                value="99.9%"
+                                change="Stable"
+                                changeType="neutral"
+                                icon="⚡"
+                                color="indigo"
+                            />
+                        </div>
+
+                        <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                            <code class="text-sm text-gray-800 dark:text-gray-200">
+                                &lt;x-ui.card.stat label="Total Sales" value="$125,430" change="+18.2%" changeType="increase" icon="📈" /&gt;
+                            </code>
+                        </div>
                     </div>
-                    <div class="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
-                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 text-sm mb-1">Modals</h4>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Base, Form, Confirmation</p>
+
+                    {{-- Info Cards --}}
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Info Cards</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Informational cards with colored left border accents.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <x-ui.card.info type="info" title="Information">
+                                This is an informational message. Use it for general notifications and helpful tips.
+                            </x-ui.card.info>
+
+                            <x-ui.card.info type="success" title="Success">
+                                Operation completed successfully! Your changes have been saved.
+                            </x-ui.card.info>
+
+                            <x-ui.card.info type="warning" title="Warning">
+                                Please review this carefully. Some settings may affect system performance.
+                            </x-ui.card.info>
+
+                            <x-ui.card.info type="danger" title="Error">
+                                An error occurred while processing your request. Please try again.
+                            </x-ui.card.info>
+                        </div>
+
+                        <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                            <code class="text-sm text-gray-800 dark:text-gray-200">
+                                &lt;x-ui.card.info type="success" title="Success"&gt;Message here&lt;/x-ui.card.info&gt;
+                            </code>
+                        </div>
                     </div>
-                    <div class="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
-                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 text-sm mb-1">Badges</h4>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Status, Role</p>
-                    </div>
-                    <div class="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
-                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 text-sm mb-1">Tables</h4>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Wrapper, Header, Row</p>
-                    </div>
-                    <div class="p-3 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
-                        <h4 class="font-semibold text-gray-800 dark:text-gray-200 text-sm mb-1">Skeletons</h4>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Card, Table, Text</p>
+
+                    {{-- Empty State Cards --}}
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Empty State Cards</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Cards for displaying empty states and "no data" scenarios.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <x-ui.card.empty-state
+                                icon="📭"
+                                title="No Messages"
+                                description="You don't have any messages yet. Check back later!"
+                            />
+
+                            <x-ui.card.empty-state
+                                icon="🎫"
+                                title="No Bookings Found"
+                                description="Start by creating your first booking to see it here."
+                            >
+                                <x-slot name="action">
+                                    <x-ui.button.primary>Create Booking</x-ui.button.primary>
+                                </x-slot>
+                            </x-ui.card.empty-state>
+                        </div>
+
+                        <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                            <code class="text-sm text-gray-800 dark:text-gray-200">
+                                &lt;x-ui.card.empty-state icon="📭" title="No Messages" description="Check back later!" /&gt;
+                            </code>
+                        </div>
                     </div>
                 </div>
             </div>

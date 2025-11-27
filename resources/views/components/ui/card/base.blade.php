@@ -30,7 +30,7 @@ $attributes = $attributes->merge([
     @endisset
 
     {{-- Card Body/Content --}}
-    <div class="{{ $padding }}">
+    <div class="{{ $padding }} text-gray-700 dark:text-gray-300">
         {{ $slot }}
     </div>
 

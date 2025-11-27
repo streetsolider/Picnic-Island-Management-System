@@ -67,10 +67,10 @@ Route::middleware(['auth:staff'])->group(function () {
 
         // Ferry Management
         Route::get('ferry', App\Livewire\Admin\Ferry\Index::class)->name('ferry.index');
-
-        // Component Library Demo
-        Route::get('/components-demo', \App\Livewire\Admin\ComponentsDemo::class)->name('components-demo');
     });
+
+    // Component Library Demo - Accessible to all staff
+    Route::get('/components-demo', \App\Livewire\Admin\ComponentsDemo::class)->name('components-demo');
 
     // Profile for staff
     Route::view('/staff/profile', 'profile')->name('staff.profile');
