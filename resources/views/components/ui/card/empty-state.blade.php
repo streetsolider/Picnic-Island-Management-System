@@ -6,7 +6,7 @@
 
 @php
 // Base card classes
-$classes = 'bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg';
+$classes = 'card rounded-lg';
 
 // Prepare attributes
 $attributes = $attributes->merge([

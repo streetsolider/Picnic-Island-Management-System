@@ -8,7 +8,7 @@
 use App\Helpers\UiHelper;
 
 // Base card classes
-$baseClasses = 'bg-white dark:bg-gray-800 overflow-hidden';
+$baseClasses = 'card';
 
 // Combine all classes
 $classes = trim("{$baseClasses} {$shadow} {$rounded}");
