@@ -86,6 +86,9 @@ class ComponentsDemo extends Component
         $this->showToast = uniqid(); // Unique ID to trigger re-render
     }
 
+    /**
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
         return view('livewire.admin.components-demo')

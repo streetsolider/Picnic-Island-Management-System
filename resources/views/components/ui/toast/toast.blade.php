@@ -61,7 +61,12 @@ $colors = match($type) {
     x-init="
         $nextTick(() => {
             show = true;
-            setTimeout(() => { show = false; }, {{ $duration }});
+            setTimeout(() => { 
+                show = false;
+                setTimeout(() => {
+                    $wire.set('showToast', null);
+                }, 300);
+            }, {{ $duration }});
         });
     "
     x-show="show"
@@ -97,7 +102,7 @@ $colors = match($type) {
             {{-- Close Button --}}
             <div class="ml-4 flex-shrink-0 flex">
                 <button
-                    @click="show = false"
+                    @click="show = false; setTimeout(() => { $wire.set('showToast', null); }, 300);"
                     class="{{ $colors['button'] }} rounded-md inline-flex focus:outline-none focus:ring-2 focus:ring-offset-2"
                 >
                     <span class="sr-only">Close</span>
@@ -109,3 +114,4 @@ $colors = match($type) {
         </div>
     </div>
 </div>
+
