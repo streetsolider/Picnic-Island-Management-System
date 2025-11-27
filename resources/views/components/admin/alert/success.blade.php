@@ -4,6 +4,6 @@
     'dismissible' => false,
 ])
 
-<x-ui.alert.base type="success" :icon="$icon" :title="$title" :dismissible="$dismissible" {{ $attributes }}>
+<x-admin.alert.base type="success" :icon="$icon" :title="$title" :dismissible="$dismissible" {{ $attributes }}>
     {{ $slot }}
-</x-ui.alert.base>
+</x-admin.alert.base>

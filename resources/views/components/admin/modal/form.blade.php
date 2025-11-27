@@ -9,7 +9,7 @@
     'loading' => null, // Target for wire:loading
 ])
 
-<x-ui.modal.base
+<x-admin.modal.base
     :name="$name"
     :show="$show"
     :title="$title"
@@ -22,48 +22,48 @@
         </div>
 
         <div class="mt-6 flex justify-end gap-3">
-            <x-ui.button.secondary
+            <x-admin.button.secondary
                 type="button"
                 x-on:click="$dispatch('close')"
                 wire:loading.attr="disabled"
                 :wire:target="$loading"
             >
                 {{ $cancelText }}
-            </x-ui.button.secondary>
+            </x-admin.button.secondary>
 
             @if($submitColor === 'danger')
-                <x-ui.button.danger
+                <x-admin.button.danger
                     type="submit"
                     wire:loading.attr="disabled"
                     :wire:target="$loading"
                 >
                     {{ $submitText }}
-                </x-ui.button.danger>
+                </x-admin.button.danger>
             @elseif($submitColor === 'warning')
-                <x-ui.button.warning
+                <x-admin.button.warning
                     type="submit"
                     wire:loading.attr="disabled"
                     :wire:target="$loading"
                 >
                     {{ $submitText }}
-                </x-ui.button.warning>
+                </x-admin.button.warning>
             @elseif($submitColor === 'success')
-                <x-ui.button.success
+                <x-admin.button.success
                     type="submit"
                     wire:loading.attr="disabled"
                     :wire:target="$loading"
                 >
                     {{ $submitText }}
-                </x-ui.button.success>
+                </x-admin.button.success>
             @else
-                <x-ui.button.primary
+                <x-admin.button.primary
                     type="submit"
                     wire:loading.attr="disabled"
                     :wire:target="$loading"
                 >
                     {{ $submitText }}
-                </x-ui.button.primary>
+                </x-admin.button.primary>
             @endif
         </div>
     </form>
-</x-ui.modal.base>
+</x-admin.modal.base>

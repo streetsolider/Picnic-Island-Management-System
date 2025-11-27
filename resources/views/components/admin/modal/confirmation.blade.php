@@ -14,7 +14,7 @@
 $buttonAttributes = $method ? ['wire:click' => $method] : [];
 @endphp
 
-<x-ui.modal.base
+<x-admin.modal.base
     :name="$name"
     :show="$show"
     maxWidth="md"
@@ -44,38 +44,38 @@ $buttonAttributes = $method ? ['wire:click' => $method] : [];
 
     <x-slot name="footer">
         <div class="flex justify-end gap-3">
-            <x-ui.button.secondary
+            <x-admin.button.secondary
                 x-on:click="$dispatch('close')"
                 wire:loading.attr="disabled"
             >
                 {{ $cancelText }}
-            </x-ui.button.secondary>
+            </x-admin.button.secondary>
 
             @if($confirmColor === 'danger')
-                <x-ui.button.danger
+                <x-admin.button.danger
                     x-on:click="$dispatch('close')"
                     :attributes="new \Illuminate\View\ComponentAttributeBag($buttonAttributes)"
                     wire:loading.attr="disabled"
                 >
                     {{ $confirmText }}
-                </x-ui.button.danger>
+                </x-admin.button.danger>
             @elseif($confirmColor === 'warning')
-                <x-ui.button.warning
+                <x-admin.button.warning
                     x-on:click="$dispatch('close')"
                     :attributes="new \Illuminate\View\ComponentAttributeBag($buttonAttributes)"
                     wire:loading.attr="disabled"
                 >
                     {{ $confirmText }}
-                </x-ui.button.warning>
+                </x-admin.button.warning>
             @else
-                <x-ui.button.primary
+                <x-admin.button.primary
                     x-on:click="$dispatch('close')"
                     :attributes="new \Illuminate\View\ComponentAttributeBag($buttonAttributes)"
                     wire:loading.attr="disabled"
                 >
                     {{ $confirmText }}
-                </x-ui.button.primary>
+                </x-admin.button.primary>
             @endif
         </div>
     </x-slot>
-</x-ui.modal.base>
+</x-admin.modal.base>

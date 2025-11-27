@@ -117,7 +117,7 @@
                                     Hotel Manager
                                 </div>
                             </div>
-                            <x-ui.theme.toggle />
+                            <x-admin.theme.toggle />
                             <form method="POST" action="{{ route('staff.logout') }}">
                                 @csrf
                                 <button type="submit"

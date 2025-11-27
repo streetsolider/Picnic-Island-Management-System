@@ -63,9 +63,9 @@ new #[Layout('layouts.guest')] class extends Component {
         </div>
 
         <div class="flex flex-col items-center justify-end mt-4 space-y-3">
-            <x-buttons.primary-button class="w-full justify-center">
+            <x-admin.button.primary class="w-full justify-center" type="submit">
                 {{ __('Log in') }}
-            </x-buttons.primary-button>
+            </x-admin.button.primary>
 
             {{-- Guest login temporarily disabled --}}
             {{-- <div class="text-center text-sm text-gray-600 dark:text-gray-400">
