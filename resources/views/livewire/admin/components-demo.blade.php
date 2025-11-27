@@ -45,6 +45,126 @@
                 </div>
             </div>
 
+            {{-- Navigation Components --}}
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Navigation Components</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                        Responsive navigation templates for top bar and sidebar layouts.
+                    </p>
+
+                    <div class="space-y-8">
+                        {{-- Top Navigation Preview --}}
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Top Navigation</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                Horizontal navigation bar with logo, links, and mobile menu.
+                            </p>
+
+                            <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                                <x-ui.navigation.top-nav appName="Demo App">
+                                    <x-slot:navigation>
+                                        <x-ui.navigation.nav-link href="#"
+                                            :active="true">Dashboard</x-ui.navigation.nav-link>
+                                        <x-ui.navigation.nav-link href="#">Users</x-ui.navigation.nav-link>
+                                        <x-ui.navigation.nav-link href="#">Settings</x-ui.navigation.nav-link>
+                                    </x-slot:navigation>
+
+                                    <x-slot:actions>
+                                        <x-ui.badge.status :active="true" />
+                                        <x-ui.theme.toggle />
+                                    </x-slot:actions>
+
+                                    <x-slot:mobileMenu>
+                                        <a href="#"
+                                            class="block px-4 py-2 text-base font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20">Dashboard</a>
+                                        <a href="#"
+                                            class="block px-4 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Users</a>
+                                        <a href="#"
+                                            class="block px-4 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Settings</a>
+                                    </x-slot:mobileMenu>
+                                </x-ui.navigation.top-nav>
+                            </div>
+
+                            <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                                <code class="text-sm text-gray-800 dark:text-gray-200">
+                                    &lt;x-ui.navigation.top-nav&gt;<br>
+                                    &nbsp;&nbsp;&lt;x-slot:navigation&gt;<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;x-ui.navigation.nav-link :active="true"&gt;Dashboard&lt;/x-ui.navigation.nav-link&gt;<br>
+                                    &nbsp;&nbsp;&lt;/x-slot:navigation&gt;<br>
+                                    &lt;/x-ui.navigation.top-nav&gt;
+                                </code>
+                            </div>
+                        </div>
+
+                        {{-- Side Navigation Preview --}}
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Side Navigation</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                Collapsible sidebar layout with navigation links and content area.
+                            </p>
+
+                            <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden h-96">
+                                <x-ui.navigation.side-nav appName="Demo App">
+                                    <x-ui.navigation.nav-link href="#" :active="true">
+                                        <x-slot:icon>
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                            </svg>
+                                        </x-slot:icon>
+                                        Dashboard
+                                    </x-ui.navigation.nav-link>
+                                    <x-ui.navigation.nav-link href="#">
+                                        <x-slot:icon>
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                            </svg>
+                                        </x-slot:icon>
+                                        Users
+                                    </x-ui.navigation.nav-link>
+                                    <x-ui.navigation.nav-link href="#">
+                                        <x-slot:icon>
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                        </x-slot:icon>
+                                        Settings
+                                    </x-ui.navigation.nav-link>
+
+                                    <x-slot:topBar>
+                                        <div class="flex-1"></div>
+                                        <x-ui.theme.toggle />
+                                    </x-slot:topBar>
+
+                                    <x-slot:content>
+                                        <div class="p-6">
+                                            <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Page
+                                                Content</h1>
+                                            <p class="text-gray-600 dark:text-gray-400">This is where your main content
+                                                would go.</p>
+                                        </div>
+                                    </x-slot:content>
+                                </x-ui.navigation.side-nav>
+                            </div>
+
+                            <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                                <code class="text-sm text-gray-800 dark:text-gray-200">
+                                    &lt;x-ui.navigation.side-nav&gt;<br>
+                                    &nbsp;&nbsp;&lt;x-ui.navigation.nav-link :active="true"&gt;Dashboard&lt;/x-ui.navigation.nav-link&gt;<br>
+                                    &nbsp;&nbsp;&lt;x-slot:content&gt;...&lt;/x-slot:content&gt;<br>
+                                    &lt;/x-ui.navigation.side-nav&gt;
+                                </code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- Button Components --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
@@ -696,6 +816,196 @@
                                 &lt;x-ui.badge.role role="administrator" /&gt;<br>
                                 &lt;x-ui.badge.role role="hotel_manager" /&gt;<br>
                                 &lt;x-ui.badge.role :role="$staff-&gt;role" /&gt;
+                            </code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Table Components --}}
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Table Components</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                        Responsive table components with striped rows, hover effects, and sortable headers.
+                    </p>
+
+                    <div class="space-y-8">
+                        {{-- Basic Table --}}
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Basic Table</h4>
+
+                            <x-ui.table.wrapper>
+                                <thead class="bg-gray-50 dark:bg-gray-900">
+                                    <tr>
+                                        <x-ui.table.header>Name</x-ui.table.header>
+                                        <x-ui.table.header>Email</x-ui.table.header>
+                                        <x-ui.table.header>Role</x-ui.table.header>
+                                        <x-ui.table.header>Status</x-ui.table.header>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <x-ui.table.row>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                            John Doe</td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            john@example.com</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm"><x-ui.badge.role
+                                                role="administrator" /></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm"><x-ui.badge.status
+                                                :active="true" /></td>
+                                    </x-ui.table.row>
+                                    <x-ui.table.row>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                            Jane Smith</td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            jane@example.com</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm"><x-ui.badge.role
+                                                role="hotel_manager" /></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm"><x-ui.badge.status
+                                                :active="true" /></td>
+                                    </x-ui.table.row>
+                                    <x-ui.table.row>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                            Bob Johnson</td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            bob@example.com</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm"><x-ui.badge.role
+                                                role="ferry_operator" /></td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm"><x-ui.badge.status
+                                                :active="false" /></td>
+                                    </x-ui.table.row>
+                                </tbody>
+                            </x-ui.table.wrapper>
+                        </div>
+
+                        {{-- Striped & Hoverable Table --}}
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Striped & Hoverable
+                                Table</h4>
+
+                            <x-ui.table.wrapper striped hoverable>
+                                <thead class="bg-gray-50 dark:bg-gray-900">
+                                    <tr>
+                                        <x-ui.table.header sortable direction="asc">Name</x-ui.table.header>
+                                        <x-ui.table.header sortable>Department</x-ui.table.header>
+                                        <x-ui.table.header>Status</x-ui.table.header>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <x-ui.table.row clickable wire:click="$set('showToast', uniqid())">
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                            Alice Williams</td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            Theme Park</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm"><x-ui.badge.status
+                                                :active="true" /></td>
+                                    </x-ui.table.row>
+                                    <x-ui.table.row clickable selected>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                            Charlie Brown</td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            Beach Services</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm"><x-ui.badge.status
+                                                :active="true" /></td>
+                                    </x-ui.table.row>
+                                    <x-ui.table.row clickable>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                                            Diana Prince</td>
+                                        <td
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            Hotel Management</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm"><x-ui.badge.status
+                                                :active="false" /></td>
+                                    </x-ui.table.row>
+                                </tbody>
+                            </x-ui.table.wrapper>
+                        </div>
+
+                        <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                            <code class="text-sm text-gray-800 dark:text-gray-200">
+                            &lt;x-ui.table.wrapper striped hoverable&gt;<br>
+                            &nbsp;&nbsp;&lt;thead&gt;<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&lt;tr&gt;<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;x-ui.table.header sortable&gt;Name&lt;/x-ui.table.header&gt;<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&lt;/tr&gt;<br>
+                            &nbsp;&nbsp;&lt;/thead&gt;<br>
+                            &nbsp;&nbsp;&lt;tbody&gt;<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&lt;x-ui.table.row clickable&gt;...&lt;/x-ui.table.row&gt;<br>
+                            &nbsp;&nbsp;&lt;/tbody&gt;<br>
+                            &lt;/x-ui.table.wrapper&gt;
+                        </code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Skeleton Components --}}
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Skeleton Components</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                        Loading skeletons provide visual feedback while content is being fetched.
+                    </p>
+
+                    <div class="space-y-8">
+                        {{-- Table Skeleton --}}
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Table Skeleton</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                Use while loading table data.
+                            </p>
+
+                            <x-ui.skeleton.table />
+
+                            <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                                <code class="text-sm text-gray-800 dark:text-gray-200">
+                                &lt;x-ui.skeleton.table /&gt;
+                            </code>
+                            </div>
+                        </div>
+
+                        {{-- Card Grid Skeleton --}}
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Card Grid Skeleton
+                            </h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                Use while loading stat cards or dashboard widgets.
+                            </p>
+
+                            <x-ui.skeleton.card-grid />
+
+                            <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                                <code class="text-sm text-gray-800 dark:text-gray-200">
+                                &lt;x-ui.skeleton.card-grid /&gt;
+                            </code>
+                            </div>
+                        </div>
+
+                        {{-- Form Skeleton --}}
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Form Skeleton</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                Use while loading form fields.
+                            </p>
+
+                            <x-ui.skeleton.form />
+
+                            <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                                <code class="text-sm text-gray-800 dark:text-gray-200">
+                                &lt;x-ui.skeleton.form /&gt;
                             </code>
                             </div>
                         </div>
