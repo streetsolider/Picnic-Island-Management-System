@@ -21,10 +21,9 @@
 
                 <!-- Create Button -->
                 <div>
-                    <button type="button" wire:click="openCreateModal"
-                        class="w-full md:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md shadow-sm">
+                    <x-admin.button.primary wire:click="openCreateModal" class="w-full md:w-auto font-semibold">
                         Add New Route
-                    </button>
+                    </x-admin.button.primary>
                 </div>
             </div>
         </div>
@@ -32,9 +31,9 @@
 
     <!-- Success Message -->
     @if (session()->has('message'))
-        <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-            <span class="block sm:inline">{{ session('message') }}</span>
-        </div>
+        <x-admin.alert.success class="mb-4">
+            {{ session('message') }}
+        </x-admin.alert.success>
     @endif
 
     <!-- Routes Table -->
@@ -189,13 +188,12 @@
 
                 <!-- Buttons -->
                 <div class="flex justify-end gap-3 mt-6">
-                    <button type="button" wire:click="closeModals"
-                        class="px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 rounded-md">
+                    <x-admin.button.secondary wire:click="closeModals">
                         Cancel
-                    </button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">
+                    </x-admin.button.secondary>
+                    <x-admin.button.primary type="submit">
                         {{ $showEditModal ? 'Update' : 'Create' }}
-                    </button>
+                    </x-admin.button.primary>
                 </div>
             </form>
         </div>
@@ -216,14 +214,12 @@
             </p>
 
             <div class="flex justify-end gap-3">
-                <button type="button" wire:click="closeModals"
-                    class="px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 rounded-md">
+                <x-admin.button.secondary wire:click="closeModals">
                     Cancel
-                </button>
-                <button type="button" wire:click="deleteRoute"
-                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">
+                </x-admin.button.secondary>
+                <x-admin.button.danger wire:click="deleteRoute">
                     Delete
-                </button>
+                </x-admin.button.danger>
             </div>
         </div>
     @endif

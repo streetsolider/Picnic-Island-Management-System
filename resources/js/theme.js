@@ -19,3 +19,8 @@ export function toggleTheme() {
 
 // Initialize on import
 initTheme();
+
+// Re-apply theme after Livewire navigation
+document.addEventListener('livewire:navigated', () => {
+    initTheme();
+});

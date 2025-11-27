@@ -88,12 +88,12 @@
                     </div>
 
                     <div class="flex justify-end gap-3 mt-6">
-                        <button type="button" wire:click="closeModals" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 rounded-md">
+                        <x-admin.button.secondary wire:click="closeModals">
                             Cancel
-                        </button>
-                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">
+                        </x-admin.button.secondary>
+                        <x-admin.button.primary type="submit">
                             Create Hotel
-                        </button>
+                        </x-admin.button.primary>
                     </div>
                 </form>
             </div>
@@ -184,22 +184,19 @@
                     <div class="flex justify-between items-center gap-3 mt-6">
                         <!-- Left side - Destructive actions -->
                         <div class="flex gap-3">
-                            <button type="button" wire:click="openDeleteModal({{ $this->hotelId }})"
-                                class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">
+                            <x-admin.button.danger wire:click="openDeleteModal({{ $this->hotelId }})">
                                 Delete
-                            </button>
+                            </x-admin.button.danger>
                         </div>
 
                         <!-- Right side - Primary actions -->
                         <div class="flex gap-3">
-                            <button type="button" wire:click="closeModals"
-                                class="px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 rounded-md">
+                            <x-admin.button.secondary wire:click="closeModals">
                                 Cancel
-                            </button>
-                            <button type="submit"
-                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md">
+                            </x-admin.button.secondary>
+                            <x-admin.button.primary type="submit">
                                 Update Hotel
-                            </button>
+                            </x-admin.button.primary>
                         </div>
                     </div>
                 </form>
@@ -219,29 +216,27 @@
                 </p>
 
                 <div class="flex justify-end gap-3">
-                    <button type="button" wire:click="closeModals"
-                        class="px-4 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-gray-200 rounded-md">
+                    <x-admin.button.secondary wire:click="closeModals">
                         Cancel
-                    </button>
-                    <button type="button" wire:click="deleteHotel"
-                        class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md">
+                    </x-admin.button.secondary>
+                    <x-admin.button.danger wire:click="deleteHotel">
                         Delete
-                    </button>
+                    </x-admin.button.danger>
                 </div>
             </div>
         @endif
 
         <!-- Flash Messages -->
         @if (session()->has('message'))
-            <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                <span class="block sm:inline">{{ session('message') }}</span>
-            </div>
+            <x-admin.alert.success class="mb-4">
+                {{ session('message') }}
+            </x-admin.alert.success>
         @endif
 
         @if (session()->has('error'))
-            <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                <span class="block sm:inline">{{ session('error') }}</span>
-            </div>
+            <x-admin.alert.danger class="mb-4">
+                {{ session('error') }}
+            </x-admin.alert.danger>
         @endif
 
         <!-- Filters and Search -->
@@ -266,10 +261,9 @@
 
                     <!-- Create Button -->
                     <div>
-                        <button type="button" wire:click="openCreateModal"
-                            class="w-full md:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md shadow-sm">
+                        <x-admin.button.primary wire:click="openCreateModal" class="w-full md:w-auto font-semibold">
                             Create Hotel
-                        </button>
+                        </x-admin.button.primary>
                     </div>
                 </div>
             </div>
