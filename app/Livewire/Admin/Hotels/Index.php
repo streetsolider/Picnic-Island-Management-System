@@ -212,6 +212,6 @@ class Index extends Component
         return view('livewire.admin.hotels.index', [
             'hotels' => $hotels,
             'hotelManagers' => $hotelManagers,
-        ])->layout('layouts.app');
+        ])->layout('layouts.admin');
     }
 }

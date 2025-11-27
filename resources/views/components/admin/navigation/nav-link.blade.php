@@ -10,7 +10,7 @@ $classes = $active
     : 'flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors';
 @endphp
 
-<a href="{{ $href }}" {{ $attributes->merge(['class' => $classes]) }}>
+<a href="{{ $href }}" wire:navigate {{ $attributes->merge(['class' => $classes]) }}>
     @if($icon)
         <span class="mr-3">
             {!! $icon !!}

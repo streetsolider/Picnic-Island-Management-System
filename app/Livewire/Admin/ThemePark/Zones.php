@@ -186,6 +186,6 @@ class Zones extends Component
         return view('livewire.admin.theme-park.zones', [
             'zones' => $zones,
             'themeParkStaff' => $themeParkStaff,
-        ])->layout('layouts.app');
+        ])->layout('layouts.admin');
     }
 }

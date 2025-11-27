@@ -177,6 +177,6 @@ class Services extends Component
             'beachServices' => $beachServices,
             'beachStaff' => $beachStaff,
             'serviceTypes' => BeachService::SERVICE_TYPES,
-        ])->layout('layouts.app');
+        ])->layout('layouts.admin');
     }
 }

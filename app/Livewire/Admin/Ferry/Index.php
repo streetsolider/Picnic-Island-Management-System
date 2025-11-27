@@ -5,7 +5,7 @@ namespace App\Livewire\Admin\Ferry;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
-#[Layout('layouts.app')]
+#[Layout('layouts.admin')]
 class Index extends Component
 {
     public $activeTab = 'vessels';

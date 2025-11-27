@@ -220,6 +220,6 @@ class Index extends Component
         return view('livewire.admin.staff.index', [
             'staff' => $staff,
             'roles' => StaffRole::options(),
-        ])->layout('layouts.app');
+        ])->layout('layouts.admin');
     }
 }

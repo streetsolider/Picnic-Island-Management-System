@@ -92,6 +92,6 @@ class ComponentsDemo extends Component
     public function render()
     {
         return view('livewire.admin.components-demo')
-            ->layout('layouts.app');
+            ->layout('layouts.admin');
     }
 }
