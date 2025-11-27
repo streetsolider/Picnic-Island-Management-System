@@ -57,10 +57,12 @@ $colors = match($type) {
 @endphp
 
 <div
-    x-data="{ show: true }"
+    x-data="{ show: false }"
     x-init="
-        setTimeout(() => { show = true; }, 100);
-        setTimeout(() => { show = false; }, {{ $duration }});
+        $nextTick(() => {
+            show = true;
+            setTimeout(() => { show = false; }, {{ $duration }});
+        });
     "
     x-show="show"
     x-transition:enter="transform ease-out duration-300 transition"
