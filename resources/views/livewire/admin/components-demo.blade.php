@@ -642,6 +642,67 @@
                 </div>
             </div>
 
+            {{-- Badge Components --}}
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Badge Components</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                        Badges are small status indicators for displaying information like active/inactive states or
+                        user roles.
+                    </p>
+
+                    <div class="space-y-8">
+                        {{-- Status Badges --}}
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Status Badge</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                Display active/inactive states with color-coded pills.
+                            </p>
+
+                            <div class="flex flex-wrap gap-4 items-center">
+                                <x-ui.badge.status :active="true" />
+                                <x-ui.badge.status :active="false" />
+                                <x-ui.badge.status :active="true" activeText="Online" />
+                                <x-ui.badge.status :active="false" inactiveText="Offline" />
+                                <x-ui.badge.status :active="true" clickable wire:click="$set('showToast', uniqid())" />
+                            </div>
+
+                            <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                                <code class="text-sm text-gray-800 dark:text-gray-200">
+                                &lt;x-ui.badge.status :active="true" /&gt;<br>
+                                &lt;x-ui.badge.status :active="false" /&gt;<br>
+                                &lt;x-ui.badge.status :active="true" clickable wire:click="toggle" /&gt;
+                            </code>
+                            </div>
+                        </div>
+
+                        {{-- Role Badges --}}
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                            <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Role Badge</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                Color-coded badges for different staff roles.
+                            </p>
+
+                            <div class="flex flex-wrap gap-3 items-center">
+                                <x-ui.badge.role role="administrator" />
+                                <x-ui.badge.role role="hotel_manager" />
+                                <x-ui.badge.role role="ferry_operator" />
+                                <x-ui.badge.role role="theme_park_staff" />
+                                <x-ui.badge.role role="beach_staff" />
+                            </div>
+
+                            <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded">
+                                <code class="text-sm text-gray-800 dark:text-gray-200">
+                                &lt;x-ui.badge.role role="administrator" /&gt;<br>
+                                &lt;x-ui.badge.role role="hotel_manager" /&gt;<br>
+                                &lt;x-ui.badge.role :role="$staff-&gt;role" /&gt;
+                            </code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- Toast Notifications --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
