@@ -19,6 +19,34 @@ class ComponentsDemo extends Component
     public $toastTitle = '';
     public $toastMessage = '';
 
+    // Modal demo properties
+    public $formName = '';
+    public $formEmail = '';
+
+    // Sample action for form modal
+    public function saveForm()
+    {
+        sleep(1); // Simulate processing
+
+        $this->triggerToast('success');
+        $this->toastTitle = 'Form Saved!';
+        $this->toastMessage = "Name: {$this->formName}, Email: {$this->formEmail}";
+
+        // Reset form
+        $this->formName = '';
+        $this->formEmail = '';
+    }
+
+    // Sample action for confirmation modal
+    public function deleteItem()
+    {
+        sleep(1); // Simulate processing
+
+        $this->triggerToast('success');
+        $this->toastTitle = 'Item Deleted';
+        $this->toastMessage = 'The item has been successfully deleted.';
+    }
+
     // Sample action for buttons
     public function sampleAction($type)
     {
