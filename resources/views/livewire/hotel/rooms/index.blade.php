@@ -144,7 +144,7 @@
                                     {{ $room->view ? $room->view . ' View' : 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    ${{ number_format($room->base_price, 2) }}
+                                    MVR {{ number_format($room->base_price, 2) }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <x-admin.badge.status
