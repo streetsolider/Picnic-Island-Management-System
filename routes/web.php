@@ -47,6 +47,9 @@ Route::middleware(['auth:staff'])->group(function () {
 
         // Policy Management
         Route::get('/policies', \App\Livewire\Hotel\Policies\Manage::class)->name('policies.manage');
+
+        // Pricing Management
+        Route::get('/pricing', \App\Livewire\Hotel\Pricing\Manage::class)->name('pricing.manage');
     });
 
     // Ferry Operator Dashboard
