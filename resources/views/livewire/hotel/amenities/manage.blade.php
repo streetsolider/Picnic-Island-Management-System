@@ -194,7 +194,9 @@
                         <x-admin.table.header>Category / Amenity</x-admin.table.header>
                         <x-admin.table.header>Description</x-admin.table.header>
                         <x-admin.table.header>Status</x-admin.table.header>
-                        <x-admin.table.header class="text-right">Actions</x-admin.table.header>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Actions
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -207,7 +209,7 @@
                                         {{ $category->name }}
                                     </h3>
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200">
-                                        {{ $category->amenities_count }} items
+                                        {{ $category->amenities->count() }} items
                                     </span>
                                 </div>
                             </td>
