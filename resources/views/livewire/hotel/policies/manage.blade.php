@@ -1,4 +1,15 @@
 <div>
+    {{-- Toast Notification --}}
+    @if($showToast)
+        <div class="fixed top-4 right-4 z-50">
+            <x-admin.toast.toast
+                :type="$showToast['type']"
+                :title="$showToast['title']"
+                :message="$showToast['message']"
+            />
+        </div>
+    @endif
+
     {{-- Header --}}
     <div class="mb-6 flex items-center justify-between">
         <div>

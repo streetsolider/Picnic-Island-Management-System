@@ -14,6 +14,7 @@ class Manage extends Component
     public $policyTypes;
     public $roomTypes;
     public $refreshKey = 0;
+    public $showToast = null;
 
     // Policy form properties
     public $selectedPolicyType = '';
@@ -101,6 +102,21 @@ class Manage extends Component
 
             session()->flash('success', 'Policy updated successfully!');
         } else {
+            // Check if policy already exists
+            $existingPolicy = HotelPolicy::where('hotel_id', $this->hotel->id)
+                ->where('policy_type', $this->selectedPolicyType)
+                ->first();
+
+            if ($existingPolicy) {
+                $policyTypeName = $this->policyTypes[$this->selectedPolicyType] ?? $this->selectedPolicyType;
+                $this->showToast = [
+                    'type' => 'warning',
+                    'title' => 'Policy Already Exists',
+                    'message' => "A {$policyTypeName} already exists for this hotel. Please edit the existing policy instead.",
+                ];
+                return;
+            }
+
             HotelPolicy::create([
                 'hotel_id' => $this->hotel->id,
                 'policy_type' => $this->selectedPolicyType,
@@ -204,6 +220,23 @@ class Manage extends Component
 
             session()->flash('success', 'Room type override updated successfully!');
         } else {
+            // Check if override already exists
+            $existingOverride = RoomTypePolicyOverride::where('hotel_id', $this->hotel->id)
+                ->where('room_type', $this->selectedOverrideRoomType)
+                ->where('policy_type', $this->selectedOverridePolicyType)
+                ->first();
+
+            if ($existingOverride) {
+                $policyTypeName = $this->policyTypes[$this->selectedOverridePolicyType] ?? $this->selectedOverridePolicyType;
+                $roomTypeName = $this->roomTypes[$this->selectedOverrideRoomType] ?? $this->selectedOverrideRoomType;
+                $this->showToast = [
+                    'type' => 'warning',
+                    'title' => 'Override Already Exists',
+                    'message' => "A {$policyTypeName} override for {$roomTypeName} rooms already exists. Please edit the existing override instead.",
+                ];
+                return;
+            }
+
             RoomTypePolicyOverride::create([
                 'hotel_id' => $this->hotel->id,
                 'room_type' => $this->selectedOverrideRoomType,
