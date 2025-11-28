@@ -39,7 +39,7 @@
         </x-admin.navigation.nav-link>
 
         {{-- Hotel Management Navigation (shown when managing a specific hotel) --}}
-        @if(request()->routeIs('hotel.manage') || request()->routeIs('hotel.rooms.*') || request()->routeIs('hotel.views.*') || request()->routeIs('hotel.amenities.*'))
+        @if(request()->routeIs('hotel.manage') || request()->routeIs('hotel.rooms.*') || request()->routeIs('hotel.views.*') || request()->routeIs('hotel.amenities.*') || request()->routeIs('hotel.policies.*'))
             {{-- Room Management Section --}}
             <div class="mt-4 px-3">
                 <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -62,7 +62,7 @@
                 {{ __('Pricing') }}
             </x-admin.navigation.nav-link>
 
-            <x-admin.navigation.nav-link href="#" :active="false"
+            <x-admin.navigation.nav-link :href="route('hotel.policies.manage')" :active="request()->routeIs('hotel.policies.*')"
                 icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>'>
                 {{ __('Policies') }}
             </x-admin.navigation.nav-link>

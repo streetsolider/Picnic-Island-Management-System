@@ -144,4 +144,28 @@ class Hotel extends Model
     {
         return $this->hasMany(DurationDiscount::class);
     }
+
+    /**
+     * Get the policies for this hotel
+     */
+    public function policies(): HasMany
+    {
+        return $this->hasMany(HotelPolicy::class);
+    }
+
+    /**
+     * Get the active policies for this hotel
+     */
+    public function activePolicies(): HasMany
+    {
+        return $this->hasMany(HotelPolicy::class)->where('is_active', true);
+    }
+
+    /**
+     * Get the room type policy overrides for this hotel
+     */
+    public function roomTypePolicyOverrides(): HasMany
+    {
+        return $this->hasMany(RoomTypePolicyOverride::class);
+    }
 }
