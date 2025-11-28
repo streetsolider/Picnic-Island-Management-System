@@ -39,7 +39,7 @@
         </x-admin.navigation.nav-link>
 
         {{-- Hotel Management Navigation (shown when managing a specific hotel) --}}
-        @if(request()->routeIs('hotel.manage') || request()->routeIs('hotel.rooms.*') || request()->routeIs('hotel.views.*') || request()->routeIs('hotel.amenities.*') || request()->routeIs('hotel.policies.*'))
+        @if(request()->routeIs('hotel.manage') || request()->routeIs('hotel.rooms.*') || request()->routeIs('hotel.views.*') || request()->routeIs('hotel.amenities.*') || request()->routeIs('hotel.pricing.*') || request()->routeIs('hotel.policies.*'))
             {{-- Room Management Section --}}
             <div class="mt-4 px-3">
                 <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
