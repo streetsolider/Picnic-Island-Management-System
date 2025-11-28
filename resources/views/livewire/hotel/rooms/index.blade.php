@@ -158,15 +158,13 @@
                                         class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
                                         Toggle
                                     </button>
-                                    <a
-                                        href="{{ route('hotel.rooms.edit', $room) }}"
-                                        wire:navigate
+                                    <button
+                                        wire:click="openEditModal({{ $room->id }})"
                                         class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
                                         Edit
-                                    </a>
+                                    </button>
                                     <button
-                                        wire:click="deleteRoom({{ $room->id }})"
-                                        wire:confirm="Are you sure you want to delete this room?"
+                                        wire:click="openDeleteModal({{ $room->id }})"
                                         class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
                                         Delete
                                     </button>
@@ -302,26 +300,66 @@
                     @enderror
                 </div>
 
-                {{-- Maximum Occupancy --}}
+                {{-- Floor Number & Maximum Occupancy --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="floor_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Floor Number
+                        </label>
+                        <input
+                            wire:model="floor_number"
+                            type="number"
+                            id="floor_number"
+                            min="1"
+                            placeholder="e.g., 1, 2, 3"
+                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                        >
+                        @error('floor_number')
+                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="max_occupancy" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Maximum Occupancy <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            wire:model="max_occupancy"
+                            type="number"
+                            id="max_occupancy"
+                            min="1"
+                            max="10"
+                            placeholder="e.g., 2, 4"
+                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                        >
+                        @error('max_occupancy')
+                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                {{-- Base Price --}}
                 <div>
-                    <label for="max_occupancy" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Maximum Occupancy <span class="text-red-500">*</span>
+                    <label for="base_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Base Price (per night) <span class="text-red-500">*</span>
                     </label>
-                    <input
-                        wire:model="max_occupancy"
-                        type="number"
-                        id="max_occupancy"
-                        min="1"
-                        max="10"
-                        placeholder="e.g., 2, 4"
-                        class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
-                    >
-                    @error('max_occupancy')
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 dark:text-gray-400">
+                            MVR
+                        </span>
+                        <input
+                            wire:model="base_price"
+                            type="number"
+                            id="base_price"
+                            min="0"
+                            step="0.01"
+                            placeholder="0.00"
+                            class="w-full pl-12 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                        >
+                    </div>
+                    @error('base_price')
                         <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
                     @enderror
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        Pricing will be managed through the Pricing section
-                    </p>
                 </div>
 
                 {{-- Form Actions --}}
@@ -341,6 +379,252 @@
                     </x-admin.button.primary>
                 </div>
             </form>
+        </div>
+    </x-overlays.modal>
+
+    {{-- Edit Room Modal --}}
+    <x-overlays.modal name="edit-room" maxWidth="2xl" focusable>
+        <div class="p-6">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                Edit Room @if($editingRoom) - {{ $editingRoom->room_number }} @endif
+            </h2>
+
+            <form wire:submit.prevent="updateRoom" class="space-y-4">
+                {{-- Room Number & Type --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="edit_room_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Room Number <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            wire:model="room_number"
+                            type="text"
+                            id="edit_room_number"
+                            placeholder="e.g., 101, A-205"
+                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                        >
+                        @error('room_number')
+                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="edit_room_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Room Type <span class="text-red-500">*</span>
+                        </label>
+                        <select
+                            wire:model="room_type"
+                            id="edit_room_type"
+                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                        >
+                            @foreach($roomTypes as $type)
+                                <option value="{{ $type }}">{{ $type }}</option>
+                            @endforeach
+                        </select>
+                        @error('room_type')
+                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                {{-- Bed Configuration --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="edit_bed_size" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Bed Size <span class="text-red-500">*</span>
+                        </label>
+                        <select
+                            wire:model="bed_size"
+                            id="edit_bed_size"
+                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                        >
+                            @foreach($bedSizes as $size)
+                                <option value="{{ $size }}">{{ $size }}</option>
+                            @endforeach
+                        </select>
+                        @error('bed_size')
+                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="edit_bed_count" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Bed Configuration <span class="text-red-500">*</span>
+                        </label>
+                        <select
+                            wire:model="bed_count"
+                            id="edit_bed_count"
+                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                        >
+                            @foreach($bedCounts as $count)
+                                <option value="{{ $count }}">{{ $count }}</option>
+                            @endforeach
+                        </select>
+                        @error('bed_count')
+                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                {{-- View --}}
+                <div>
+                    <label for="edit_view" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        View
+                    </label>
+                    <select
+                        wire:model="view"
+                        id="edit_view"
+                        class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                    >
+                        <option value="">Select a view</option>
+                        @foreach($views as $viewOption)
+                            <option value="{{ $viewOption }}">{{ $viewOption }} View</option>
+                        @endforeach
+                    </select>
+                    @error('view')
+                        <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                {{-- Floor Number & Maximum Occupancy --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="edit_floor_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Floor Number
+                        </label>
+                        <input
+                            wire:model="floor_number"
+                            type="number"
+                            id="edit_floor_number"
+                            min="1"
+                            placeholder="e.g., 1, 2, 3"
+                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                        >
+                        @error('floor_number')
+                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="edit_max_occupancy" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Maximum Occupancy <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            wire:model="max_occupancy"
+                            type="number"
+                            id="edit_max_occupancy"
+                            min="1"
+                            max="10"
+                            placeholder="e.g., 2, 4"
+                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                        >
+                        @error('max_occupancy')
+                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                {{-- Base Price --}}
+                <div>
+                    <label for="edit_base_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Base Price (per night) <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500 dark:text-gray-400">
+                            MVR
+                        </span>
+                        <input
+                            wire:model="base_price"
+                            type="number"
+                            id="edit_base_price"
+                            min="0"
+                            step="0.01"
+                            placeholder="0.00"
+                            class="w-full pl-12 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                        >
+                    </div>
+                    @error('base_price')
+                        <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                {{-- Form Actions --}}
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <x-admin.button.secondary
+                        type="button"
+                        x-on:click="$dispatch('close-modal', 'edit-room')"
+                        size="md">
+                        Cancel
+                    </x-admin.button.secondary>
+
+                    <x-admin.button.primary
+                        type="submit"
+                        size="md"
+                        icon='<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>'>
+                        Update Room
+                    </x-admin.button.primary>
+                </div>
+            </form>
+        </div>
+    </x-overlays.modal>
+
+    {{-- Delete Confirmation Modal --}}
+    <x-overlays.modal name="delete-room" maxWidth="md" focusable>
+        <div class="p-6">
+            <div class="sm:flex sm:items-start">
+                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/20 sm:mx-0 sm:h-10 sm:w-10">
+                    <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
+                        Delete Room
+                    </h3>
+                    <div class="mt-2">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            Are you sure you want to delete
+                            @if($deletingRoom)
+                                <span class="font-semibold text-gray-900 dark:text-gray-100">Room {{ $deletingRoom->room_number }}</span>
+                            @else
+                                this room
+                            @endif?
+                            This action cannot be undone.
+                        </p>
+                        @if($deletingRoom)
+                            <div class="mt-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
+                                <p class="text-xs text-gray-600 dark:text-gray-400">
+                                    <span class="font-medium">Room Details:</span><br>
+                                    Type: {{ $deletingRoom->room_type }} |
+                                    {{ $deletingRoom->bed_count }} {{ $deletingRoom->bed_size }} |
+                                    @if($deletingRoom->view)
+                                        {{ $deletingRoom->view }} View
+                                    @else
+                                        No View
+                                    @endif
+                                </p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-3">
+                <x-admin.button.danger
+                    wire:click="confirmDelete"
+                    wire:loading.attr="disabled"
+                    size="md"
+                    icon='<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>'>
+                    Delete Room
+                </x-admin.button.danger>
+
+                <x-admin.button.secondary
+                    x-on:click="$dispatch('close-modal', 'delete-room')"
+                    wire:loading.attr="disabled"
+                    size="md">
+                    Cancel
+                </x-admin.button.secondary>
+            </div>
         </div>
     </x-overlays.modal>
 </div>

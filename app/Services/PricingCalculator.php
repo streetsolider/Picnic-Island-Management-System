@@ -39,7 +39,7 @@ class PricingCalculator
         }
 
         // Step 2: Get view modifier
-        $viewModifier = $this->getViewModifier($hotel, $room->view_id);
+        $viewModifier = $this->getViewModifier($hotel, $room->view);
         $priceWithView = $basePrice;
         $viewAdjustment = 0;
 
@@ -115,7 +115,7 @@ class PricingCalculator
             // Base pricing
             'room_type' => $room->room_type,
             'base_price' => round($basePrice, 2),
-            'view_name' => $room->view?->name,
+            'view_name' => $room->view,
             'view_adjustment' => round($viewAdjustment, 2),
             'price_with_view' => round($priceWithView, 2),
 
@@ -158,13 +158,13 @@ class PricingCalculator
     /**
      * Get view pricing modifier
      */
-    public function getViewModifier(Hotel $hotel, ?int $viewId): ?ViewPricing
+    public function getViewModifier(Hotel $hotel, ?string $view): ?ViewPricing
     {
-        if (!$viewId) {
+        if (!$view) {
             return null;
         }
 
-        return ViewPricing::getModifierForView($hotel->id, $viewId);
+        return ViewPricing::getModifierForView($hotel->id, $view);
     }
 
     /**

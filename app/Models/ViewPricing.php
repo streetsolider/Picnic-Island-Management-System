@@ -11,7 +11,7 @@ class ViewPricing extends Model
 
     protected $fillable = [
         'hotel_id',
-        'view_id',
+        'view',
         'modifier_type',
         'modifier_value',
         'is_active',
@@ -28,14 +28,6 @@ class ViewPricing extends Model
     public function hotel(): BelongsTo
     {
         return $this->belongsTo(Hotel::class);
-    }
-
-    /**
-     * Get the room view
-     */
-    public function view(): BelongsTo
-    {
-        return $this->belongsTo(RoomView::class, 'view_id');
     }
 
     /**
@@ -62,10 +54,10 @@ class ViewPricing extends Model
     /**
      * Get modifier for a specific view and hotel
      */
-    public static function getModifierForView(int $hotelId, int $viewId): ?self
+    public static function getModifierForView(int $hotelId, string $view): ?self
     {
         return self::where('hotel_id', $hotelId)
-            ->where('view_id', $viewId)
+            ->where('view', $view)
             ->active()
             ->first();
     }

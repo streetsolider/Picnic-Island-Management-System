@@ -30,6 +30,16 @@ class Index extends Component
     public $bed_count = 'Single';
     public $view = '';
     public $max_occupancy = 2;
+    public $base_price = '';
+    public $floor_number = '';
+
+    // Room editing properties
+    public $editingRoomId = null;
+    public $editingRoom = null;
+
+    // Room deletion properties
+    public $deletingRoomId = null;
+    public $deletingRoom = null;
 
     // Available options
     public $roomTypes = ['Standard', 'Superior', 'Deluxe', 'Suite', 'Family'];
@@ -76,12 +86,37 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function deleteRoom($roomId)
+    public function openDeleteModal($roomId)
     {
-        $room = Room::where('hotel_id', $this->hotel->id)->findOrFail($roomId);
+        $this->deletingRoom = Room::where('hotel_id', $this->hotel->id)->findOrFail($roomId);
+        $this->deletingRoomId = $this->deletingRoom->id;
+
+        $this->dispatch('open-modal', 'delete-room');
+    }
+
+    public function cancelDelete()
+    {
+        $this->deletingRoomId = null;
+        $this->deletingRoom = null;
+        $this->dispatch('close-modal', 'delete-room');
+    }
+
+    public function confirmDelete()
+    {
+        if (!$this->deletingRoomId) {
+            session()->flash('error', 'No room selected for deletion.');
+            return;
+        }
+
+        $room = Room::where('hotel_id', $this->hotel->id)->findOrFail($this->deletingRoomId);
+        $roomNumber = $room->room_number;
         $room->delete();
 
-        session()->flash('success', 'Room deleted successfully!');
+        $this->deletingRoomId = null;
+        $this->deletingRoom = null;
+        $this->updateCapacity();
+        $this->dispatch('close-modal', 'delete-room');
+        session()->flash('success', "Room {$roomNumber} deleted successfully!");
     }
 
     public function toggleAvailability($roomId)
@@ -114,19 +149,30 @@ class Index extends Component
         $this->bed_count = 'Single';
         $this->view = '';
         $this->max_occupancy = 2;
+        $this->base_price = '';
+        $this->floor_number = '';
         $this->resetValidation();
     }
 
     protected function roomValidationRules()
     {
-        return [
+        $rules = [
             'room_number' => 'required|string|max:255|unique:rooms,room_number',
             'room_type' => 'required|in:' . implode(',', $this->roomTypes),
             'bed_size' => 'required|in:' . implode(',', $this->bedSizes),
             'bed_count' => 'required|in:' . implode(',', $this->bedCounts),
             'view' => 'nullable|in:' . implode(',', $this->views),
             'max_occupancy' => 'required|integer|min:1|max:10',
+            'base_price' => 'required|numeric|min:0',
+            'floor_number' => 'nullable|integer|min:1',
         ];
+
+        // For editing, exclude current room from unique validation
+        if ($this->editingRoomId) {
+            $rules['room_number'] = 'required|string|max:255|unique:rooms,room_number,' . $this->editingRoomId;
+        }
+
+        return $rules;
     }
 
     public function createRoom()
@@ -149,13 +195,73 @@ class Index extends Component
             'bed_count' => $this->bed_count,
             'view' => $this->view ?: null,
             'max_occupancy' => $this->max_occupancy,
-            'base_price' => 0, // Temporary until pricing system is fully implemented
+            'base_price' => $this->base_price,
+            'floor_number' => $this->floor_number ?: null,
         ]);
 
         $this->updateCapacity();
         $this->resetCreateForm();
         $this->dispatch('close-modal', 'create-room');
         session()->flash('success', 'Room created successfully!');
+    }
+
+    public function openEditModal($roomId)
+    {
+        $this->editingRoom = Room::where('hotel_id', $this->hotel->id)->findOrFail($roomId);
+        $this->editingRoomId = $this->editingRoom->id;
+
+        // Populate form fields
+        $this->room_number = $this->editingRoom->room_number;
+        $this->room_type = $this->editingRoom->room_type;
+        $this->bed_size = $this->editingRoom->bed_size;
+        $this->bed_count = $this->editingRoom->bed_count;
+        $this->view = $this->editingRoom->view ?? '';
+        $this->max_occupancy = $this->editingRoom->max_occupancy;
+        $this->base_price = $this->editingRoom->base_price;
+        $this->floor_number = $this->editingRoom->floor_number ?? '';
+
+        $this->dispatch('open-modal', 'edit-room');
+    }
+
+    public function resetEditForm()
+    {
+        $this->editingRoomId = null;
+        $this->editingRoom = null;
+        $this->room_number = '';
+        $this->room_type = 'Standard';
+        $this->bed_size = 'Queen';
+        $this->bed_count = 'Single';
+        $this->view = '';
+        $this->max_occupancy = 2;
+        $this->base_price = '';
+        $this->floor_number = '';
+        $this->resetValidation();
+    }
+
+    public function updateRoom()
+    {
+        if (!$this->editingRoomId) {
+            session()->flash('error', 'No room selected for editing.');
+            return;
+        }
+
+        $this->validate($this->roomValidationRules());
+
+        $room = Room::where('hotel_id', $this->hotel->id)->findOrFail($this->editingRoomId);
+        $room->update([
+            'room_number' => $this->room_number,
+            'room_type' => $this->room_type,
+            'bed_size' => $this->bed_size,
+            'bed_count' => $this->bed_count,
+            'view' => $this->view ?: null,
+            'max_occupancy' => $this->max_occupancy,
+            'base_price' => $this->base_price,
+            'floor_number' => $this->floor_number ?: null,
+        ]);
+
+        $this->resetEditForm();
+        $this->dispatch('close-modal', 'edit-room');
+        session()->flash('success', 'Room updated successfully!');
     }
 
     #[Layout('layouts.hotel')]
