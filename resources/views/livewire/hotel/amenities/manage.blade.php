@@ -18,152 +18,168 @@
 
     {{-- Category Form Modal --}}
     @if ($showCategoryForm)
-        <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div x-data="{ isOpen: true }"
+             x-init="
+                $nextTick(() => { isOpen = true; });
+                const handleEscape = (e) => { if (e.key === 'Escape') { $wire.closeCategoryForm(); } };
+                window.addEventListener('keydown', handleEscape);
+                $el._cleanup = () => window.removeEventListener('keydown', handleEscape);
+             "
+             x-on:click.self="$wire.closeCategoryForm()"
+             class="fixed inset-0 z-50 overflow-y-auto">
+
+            {{-- Backdrop --}}
+            <div class="fixed inset-0 bg-gray-500 dark:bg-gray-900 opacity-75 backdrop-blur-sm"
+                 @click="$wire.closeCategoryForm()">
+            </div>
+
+            {{-- Modal Content --}}
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
-                    wire:click="closeCategoryForm"></div>
-
-                <div
-                    class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+                     @click.stop>
                     <form wire:submit.prevent="saveCategory">
-                        <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                            <div class="mb-4">
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-white" id="modal-title">
-                                    {{ $editingCategoryId ? 'Edit Category' : 'Add New Category' }}
-                                </h3>
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="categoryName"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Category Name <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" id="categoryName" wire:model="categoryName"
-                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    placeholder="e.g., Bathroom, Electronics, Comfort">
-                                @error('categoryName')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="categoryDescription"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Description (Optional)
-                                </label>
-                                <textarea id="categoryDescription" wire:model="categoryDescription" rows="3"
-                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    placeholder="Brief description of this category"></textarea>
-                                @error('categoryDescription')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                            <button type="submit"
-                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm">
-                                {{ $editingCategoryId ? 'Update' : 'Create' }}
-                            </button>
-                            <button type="button" wire:click="closeCategoryForm"
-                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                                Cancel
-                            </button>
-                        </div>
-                    </form>
+                        <div class="bg-white dark:bg-gray-800 px-6 py-4">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-6">
+                                {{ $editingCategoryId ? 'Edit Category' : 'Add New Category' }}
+                            </h3>
+                {{-- Category Name --}}
+                <div>
+                    <label for="categoryName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Category Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="categoryName" wire:model="categoryName"
+                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        placeholder="e.g., Bathroom, Electronics, Comfort">
+                    @error('categoryName')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
+
+                {{-- Description --}}
+                <div>
+                    <label for="categoryDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Description (Optional)
+                    </label>
+                    <textarea id="categoryDescription" wire:model="categoryDescription" rows="3"
+                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        placeholder="Brief description of this category"></textarea>
+                            @error('categoryDescription')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    {{-- Footer --}}
+                    <div class="bg-gray-50 dark:bg-gray-700/50 px-6 py-4 flex justify-end gap-3">
+                        <x-admin.button.secondary type="button" wire:click="closeCategoryForm">
+                            Cancel
+                        </x-admin.button.secondary>
+                        <x-admin.button.primary type="submit" wire:loading.attr="disabled" wire:target="saveCategory">
+                            {{ $editingCategoryId ? 'Update' : 'Create' }}
+                        </x-admin.button.primary>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
     @endif
 
     {{-- Amenity Form Modal --}}
     @if ($showAmenityForm)
-        <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div x-data="{ isOpen: true }"
+             x-init="
+                $nextTick(() => { isOpen = true; });
+                const handleEscape = (e) => { if (e.key === 'Escape') { $wire.closeAmenityForm(); } };
+                window.addEventListener('keydown', handleEscape);
+                $el._cleanup = () => window.removeEventListener('keydown', handleEscape);
+             "
+             x-on:click.self="$wire.closeAmenityForm()"
+             class="fixed inset-0 z-50 overflow-y-auto">
+
+            {{-- Backdrop --}}
+            <div class="fixed inset-0 bg-gray-500 dark:bg-gray-900 opacity-75 backdrop-blur-sm"
+                 @click="$wire.closeAmenityForm()">
+            </div>
+
+            {{-- Modal Content --}}
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
-                    wire:click="closeAmenityForm"></div>
-
-                <div
-                    class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+                     @click.stop>
                     <form wire:submit.prevent="saveAmenity">
-                        <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                            <div class="mb-4">
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-white" id="modal-title">
-                                    {{ $editingAmenityId ? 'Edit Amenity Item' : 'Add New Amenity Item' }}
-                                </h3>
-                            </div>
+                        <div class="bg-white dark:bg-gray-800 px-6 py-4">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-6">
+                                {{ $editingAmenityId ? 'Edit Amenity Item' : 'Add New Amenity Item' }}
+                            </h3>
+        {{-- Category Selection --}}
+        <div>
+            <label for="selectedCategoryId" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Category <span class="text-red-500">*</span>
+            </label>
+            <select id="selectedCategoryId" wire:model="selectedCategoryId"
+                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                <option value="">Select a category</option>
+                @foreach ($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            </select>
+            @error('selectedCategoryId')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
 
-                            <div class="mb-4">
-                                <label for="selectedCategoryId"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Category <span class="text-red-500">*</span>
-                                </label>
-                                <select id="selectedCategoryId" wire:model="selectedCategoryId"
-                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                    <option value="">Select a category</option>
-                                    @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                    @endforeach
-                                </select>
-                                @error('selectedCategoryId')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+        {{-- Amenity Name --}}
+        <div>
+            <label for="amenityName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Amenity Name <span class="text-red-500">*</span>
+            </label>
+            <input type="text" id="amenityName" wire:model="amenityName"
+                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                placeholder="e.g., Shower, Bathtub, TV, Minibar">
+            @error('amenityName')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
 
-                            <div class="mb-4">
-                                <label for="amenityName"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Amenity Name <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" id="amenityName" wire:model="amenityName"
-                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    placeholder="e.g., Shower, Bathtub, TV, Minibar">
-                                @error('amenityName')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+        {{-- Description --}}
+        <div>
+            <label for="amenityDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Description (Optional)
+            </label>
+            <textarea id="amenityDescription" wire:model="amenityDescription" rows="3"
+                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                placeholder="Brief description of this amenity"></textarea>
+            @error('amenityDescription')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
 
-                            <div class="mb-4">
-                                <label for="amenityDescription"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Description (Optional)
-                                </label>
-                                <textarea id="amenityDescription" wire:model="amenityDescription" rows="3"
-                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    placeholder="Brief description of this amenity"></textarea>
-                                @error('amenityDescription')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="mb-4">
-                                <label for="amenityIcon"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Icon Class (Optional)
-                                </label>
-                                <input type="text" id="amenityIcon" wire:model="amenityIcon"
-                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    placeholder="e.g., fas fa-bath, fas fa-tv">
-                                @error('amenityIcon')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+        {{-- Icon Class --}}
+        <div>
+            <label for="amenityIcon" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Icon Class (Optional)
+            </label>
+            <input type="text" id="amenityIcon" wire:model="amenityIcon"
+                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                placeholder="e.g., fas fa-bath, fas fa-tv">
+                            @error('amenityIcon')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
                         </div>
+                    </div>
 
-                        <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                            <button type="submit"
-                                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm">
-                                {{ $editingAmenityId ? 'Update' : 'Create' }}
-                            </button>
-                            <button type="button" wire:click="closeAmenityForm"
-                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                                Cancel
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    {{-- Footer --}}
+                    <div class="bg-gray-50 dark:bg-gray-700/50 px-6 py-4 flex justify-end gap-3">
+                        <x-admin.button.secondary type="button" wire:click="closeAmenityForm">
+                            Cancel
+                        </x-admin.button.secondary>
+                        <x-admin.button.primary type="submit" wire:loading.attr="disabled" wire:target="saveAmenity">
+                            {{ $editingAmenityId ? 'Update' : 'Create' }}
+                        </x-admin.button.primary>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
     @endif
 
     {{-- Categories and Items List --}}
