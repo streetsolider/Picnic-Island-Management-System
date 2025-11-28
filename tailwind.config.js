@@ -14,6 +14,16 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                display: ['Outfit', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                brand: {
+                    primary: '#0EA5E9',   // Sky Blue
+                    secondary: '#F97316', // Orange
+                    accent: '#FCD34D',    // Amber
+                    dark: '#0F172A',      // Slate 900
+                    light: '#F8FAFC',     // Slate 50
+                }
             },
         },
     },

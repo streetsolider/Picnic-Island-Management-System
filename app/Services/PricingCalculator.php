@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\DayTypePricing;
-use App\Models\DurationDiscount;
+use App\Models\PromotionalDiscount;
 use App\Models\Hotel;
 use App\Models\Room;
 use App\Models\RoomTypePricing;
@@ -20,9 +20,19 @@ class PricingCalculator
      * @param Room $room
      * @param Carbon $checkIn
      * @param Carbon $checkOut
+     * @param int $numberOfRooms Number of rooms in this booking (for promotional discount calculation)
+     * @param string|null $promoCode Optional promotional code
+     * @param int|null $bookingAdvanceDays How many days before check-in is the booking made (for early bird)
      * @return array
      */
-    public function calculateRoomPrice(Room $room, Carbon $checkIn, Carbon $checkOut): array
+    public function calculateRoomPrice(
+        Room $room,
+        Carbon $checkIn,
+        Carbon $checkOut,
+        int $numberOfRooms = 1,
+        ?string $promoCode = null,
+        ?int $bookingAdvanceDays = null
+    ): array
     {
         $hotel = $room->hotel;
         $numberOfNights = $checkIn->diffInDays($checkOut);
@@ -93,13 +103,21 @@ class PricingCalculator
             $totalDayTypeAdjustment += $dayTypeAdj;
         }
 
-        // Step 5: Apply duration discount
-        $durationDiscount = DurationDiscount::getForDuration($hotel->id, $numberOfNights);
+        // Step 5: Apply promotional discount
+        $promotion = PromotionalDiscount::getBestForBooking(
+            $hotel->id,
+            $numberOfRooms,
+            $numberOfNights,
+            $room->room_type,
+            $checkIn,
+            $promoCode,
+            $bookingAdvanceDays
+        );
         $discountAmount = 0;
         $finalTotal = $totalBeforeDiscount;
 
-        if ($durationDiscount) {
-            $finalTotal = $durationDiscount->applyDiscount($totalBeforeDiscount);
+        if ($promotion) {
+            $finalTotal = $promotion->applyDiscount($totalBeforeDiscount);
             $discountAmount = $totalBeforeDiscount - $finalTotal;
         }
 
@@ -123,8 +141,9 @@ class PricingCalculator
             'total_seasonal_adjustment' => round($totalSeasonalAdjustment, 2),
             'total_day_type_adjustment' => round($totalDayTypeAdjustment, 2),
 
-            // Discount
-            'duration_discount_name' => $durationDiscount?->discount_name,
+            // Promotional Discount
+            'promotion_name' => $promotion?->promotion_name,
+            'promotion_description' => $promotion?->promotion_description,
             'discount_amount' => round($discountAmount, 2),
 
             // Totals
@@ -199,7 +218,7 @@ class PricingCalculator
         $summary[] = "Total for {$nights} night(s)";
 
         if ($discountAmount > 0) {
-            $summary[] = "Duration discount: -MVR " . number_format($discountAmount, 2);
+            $summary[] = "Promotional discount: -MVR " . number_format($discountAmount, 2);
         }
 
         return $summary;
@@ -207,14 +226,35 @@ class PricingCalculator
 
     /**
      * Calculate price for multiple rooms
+     *
+     * @param array $rooms Array of Room models
+     * @param Carbon $checkIn
+     * @param Carbon $checkOut
+     * @param string|null $promoCode Optional promotional code
+     * @param int|null $bookingAdvanceDays How many days before check-in
+     * @return array
      */
-    public function calculateMultipleRooms(array $rooms, Carbon $checkIn, Carbon $checkOut): array
-    {
+    public function calculateMultipleRooms(
+        array $rooms,
+        Carbon $checkIn,
+        Carbon $checkOut,
+        ?string $promoCode = null,
+        ?int $bookingAdvanceDays = null
+    ): array {
         $totalPrice = 0;
         $roomBreakdowns = [];
+        $numberOfRooms = count($rooms);
 
         foreach ($rooms as $room) {
-            $pricing = $this->calculateRoomPrice($room, $checkIn, $checkOut);
+            // Pass the total number of rooms so promotional discounts can be applied correctly
+            $pricing = $this->calculateRoomPrice(
+                $room,
+                $checkIn,
+                $checkOut,
+                $numberOfRooms,
+                $promoCode,
+                $bookingAdvanceDays
+            );
             $roomBreakdowns[] = [
                 'room_number' => $room->room_number,
                 'room_type' => $room->room_type,
@@ -226,7 +266,7 @@ class PricingCalculator
         return [
             'total_price' => round($totalPrice, 2),
             'currency' => 'MVR',
-            'number_of_rooms' => count($rooms),
+            'number_of_rooms' => $numberOfRooms,
             'rooms' => $roomBreakdowns,
         ];
     }

@@ -3,7 +3,7 @@
 namespace App\Livewire\Hotel\Pricing;
 
 use App\Models\DayTypePricing;
-use App\Models\DurationDiscount;
+use App\Models\PromotionalDiscount;
 use App\Models\Hotel;
 use App\Models\RoomTypePricing;
 use App\Models\SeasonalPricing;
@@ -14,7 +14,7 @@ use Livewire\Component;
 class Manage extends Component
 {
     public $hotel;
-    public $activeTab = 'room_types'; // room_types, views, seasonal, day_types, durations
+    public $activeTab = 'room_types'; // room_types, views, seasonal, day_types, promotions
     public $refreshKey = 0;
 
     // Room Types (enums)
@@ -85,16 +85,25 @@ class Manage extends Component
     public $showDayTypePricingForm = false;
     public $deletingDayTypePricingId = null;
 
-    // ==================== Duration Discounts ====================
-    public $durationDiscountName = '';
-    public $durationMinimumNights = '';
-    public $durationMaximumNights = '';
-    public $durationDiscountType = 'percentage';
-    public $durationDiscountValue = '';
-    public $durationIsActive = true;
-    public $editingDurationDiscountId = null;
-    public $showDurationDiscountForm = false;
-    public $deletingDurationDiscountId = null;
+    // ==================== Promotional Discounts ====================
+    public $promotionName = '';
+    public $promotionDescription = '';
+    public $promotionDiscountType = 'percentage';
+    public $promotionDiscountValue = '';
+    public $promotionStartDate = '';
+    public $promotionEndDate = '';
+    public $promotionMinimumRooms = '';
+    public $promotionMaximumRooms = '';
+    public $promotionMinimumNights = '';
+    public $promotionMaximumNights = '';
+    public $promotionBookingAdvanceDays = '';
+    public $promotionApplicableRoomTypes = [];
+    public $promotionPromoCode = '';
+    public $promotionPriority = 0;
+    public $promotionIsActive = true;
+    public $editingPromotionId = null;
+    public $showPromotionForm = false;
+    public $deletingPromotionId = null;
 
     public function mount()
     {
@@ -566,116 +575,151 @@ class Manage extends Component
             ->get();
     }
 
-    // ==================== DURATION DISCOUNTS METHODS ====================
+    // ==================== PROMOTIONAL DISCOUNTS METHODS ====================
 
-    protected function durationDiscountRules()
+    protected function promotionRules()
     {
         return [
-            'durationDiscountName' => 'required|string|max:255',
-            'durationMinimumNights' => 'required|integer|min:1',
-            'durationMaximumNights' => 'nullable|integer|min:' . ($this->durationMinimumNights ?: 1),
-            'durationDiscountType' => 'required|in:fixed,percentage',
-            'durationDiscountValue' => 'required|numeric|min:0',
-            'durationIsActive' => 'boolean',
+            'promotionName' => 'required|string|max:255',
+            'promotionDescription' => 'nullable|string',
+            'promotionDiscountType' => 'required|in:fixed,percentage',
+            'promotionDiscountValue' => 'required|numeric|min:0',
+            'promotionStartDate' => 'nullable|date',
+            'promotionEndDate' => 'nullable|date|after_or_equal:promotionStartDate',
+            'promotionMinimumRooms' => 'nullable|integer|min:1',
+            'promotionMaximumRooms' => 'nullable|integer|min:' . ($this->promotionMinimumRooms ?: 1),
+            'promotionMinimumNights' => 'nullable|integer|min:1',
+            'promotionMaximumNights' => 'nullable|integer|min:' . ($this->promotionMinimumNights ?: 1),
+            'promotionBookingAdvanceDays' => 'nullable|integer|min:1',
+            'promotionApplicableRoomTypes' => 'nullable|array',
+            'promotionPromoCode' => 'nullable|string|max:50',
+            'promotionPriority' => 'required|integer|min:0|max:100',
+            'promotionIsActive' => 'boolean',
         ];
     }
 
-    public function openDurationDiscountForm()
+    public function openPromotionForm()
     {
-        $this->showDurationDiscountForm = true;
-        $this->reset(['durationDiscountName', 'durationMinimumNights', 'durationMaximumNights', 'durationDiscountType', 'durationDiscountValue', 'editingDurationDiscountId']);
-        $this->durationDiscountType = 'percentage';
-        $this->durationIsActive = true;
+        $this->showPromotionForm = true;
+        $this->reset([
+            'promotionName', 'promotionDescription', 'promotionDiscountType', 'promotionDiscountValue',
+            'promotionStartDate', 'promotionEndDate', 'promotionMinimumRooms', 'promotionMaximumRooms',
+            'promotionMinimumNights', 'promotionMaximumNights', 'promotionBookingAdvanceDays',
+            'promotionApplicableRoomTypes', 'promotionPromoCode', 'promotionPriority', 'editingPromotionId'
+        ]);
+        $this->promotionDiscountType = 'percentage';
+        $this->promotionPriority = 0;
+        $this->promotionIsActive = true;
     }
 
-    public function closeDurationDiscountForm()
+    public function closePromotionForm()
     {
-        $this->showDurationDiscountForm = false;
-        $this->reset(['durationDiscountName', 'durationMinimumNights', 'durationMaximumNights', 'durationDiscountType', 'durationDiscountValue', 'durationIsActive', 'editingDurationDiscountId']);
+        $this->showPromotionForm = false;
+        $this->reset([
+            'promotionName', 'promotionDescription', 'promotionDiscountType', 'promotionDiscountValue',
+            'promotionStartDate', 'promotionEndDate', 'promotionMinimumRooms', 'promotionMaximumRooms',
+            'promotionMinimumNights', 'promotionMaximumNights', 'promotionBookingAdvanceDays',
+            'promotionApplicableRoomTypes', 'promotionPromoCode', 'promotionPriority',
+            'promotionIsActive', 'editingPromotionId'
+        ]);
     }
 
-    public function saveDurationDiscount()
+    public function savePromotion()
     {
-        $this->validate($this->durationDiscountRules());
+        $this->validate($this->promotionRules());
 
-        if ($this->editingDurationDiscountId) {
-            $discount = DurationDiscount::where('hotel_id', $this->hotel->id)
-                ->findOrFail($this->editingDurationDiscountId);
+        $data = [
+            'promotion_name' => $this->promotionName,
+            'promotion_description' => $this->promotionDescription,
+            'discount_type' => $this->promotionDiscountType,
+            'discount_value' => $this->promotionDiscountValue,
+            'start_date' => $this->promotionStartDate ?: null,
+            'end_date' => $this->promotionEndDate ?: null,
+            'minimum_rooms' => $this->promotionMinimumRooms ?: null,
+            'maximum_rooms' => $this->promotionMaximumRooms ?: null,
+            'minimum_nights' => $this->promotionMinimumNights ?: null,
+            'maximum_nights' => $this->promotionMaximumNights ?: null,
+            'booking_advance_days' => $this->promotionBookingAdvanceDays ?: null,
+            'applicable_room_types' => !empty($this->promotionApplicableRoomTypes) ? $this->promotionApplicableRoomTypes : null,
+            'promo_code' => $this->promotionPromoCode ?: null,
+            'priority' => $this->promotionPriority,
+            'is_active' => $this->promotionIsActive,
+        ];
 
-            $discount->update([
-                'discount_name' => $this->durationDiscountName,
-                'minimum_nights' => $this->durationMinimumNights,
-                'maximum_nights' => $this->durationMaximumNights ?: null,
-                'discount_type' => $this->durationDiscountType,
-                'discount_value' => $this->durationDiscountValue,
-                'is_active' => $this->durationIsActive,
-            ]);
+        if ($this->editingPromotionId) {
+            $promotion = PromotionalDiscount::where('hotel_id', $this->hotel->id)
+                ->findOrFail($this->editingPromotionId);
 
-            session()->flash('success', 'Duration discount updated successfully!');
+            $promotion->update($data);
+
+            session()->flash('success', 'Promotional discount updated successfully!');
         } else {
-            DurationDiscount::create([
-                'hotel_id' => $this->hotel->id,
-                'discount_name' => $this->durationDiscountName,
-                'minimum_nights' => $this->durationMinimumNights,
-                'maximum_nights' => $this->durationMaximumNights ?: null,
-                'discount_type' => $this->durationDiscountType,
-                'discount_value' => $this->durationDiscountValue,
-                'is_active' => $this->durationIsActive,
-            ]);
+            $data['hotel_id'] = $this->hotel->id;
+            PromotionalDiscount::create($data);
 
-            session()->flash('success', 'Duration discount created successfully!');
+            session()->flash('success', 'Promotional discount created successfully!');
         }
 
         $this->refreshKey++;
-        $this->closeDurationDiscountForm();
+        $this->closePromotionForm();
     }
 
-    public function editDurationDiscount($id)
+    public function editPromotion($id)
     {
-        $discount = DurationDiscount::where('hotel_id', $this->hotel->id)->findOrFail($id);
+        $promotion = PromotionalDiscount::where('hotel_id', $this->hotel->id)->findOrFail($id);
 
-        $this->editingDurationDiscountId = $discount->id;
-        $this->durationDiscountName = $discount->discount_name;
-        $this->durationMinimumNights = $discount->minimum_nights;
-        $this->durationMaximumNights = $discount->maximum_nights;
-        $this->durationDiscountType = $discount->discount_type;
-        $this->durationDiscountValue = $discount->discount_value;
-        $this->durationIsActive = $discount->is_active;
-        $this->showDurationDiscountForm = true;
+        $this->editingPromotionId = $promotion->id;
+        $this->promotionName = $promotion->promotion_name;
+        $this->promotionDescription = $promotion->promotion_description;
+        $this->promotionDiscountType = $promotion->discount_type;
+        $this->promotionDiscountValue = $promotion->discount_value;
+        $this->promotionStartDate = $promotion->start_date?->format('Y-m-d') ?? '';
+        $this->promotionEndDate = $promotion->end_date?->format('Y-m-d') ?? '';
+        $this->promotionMinimumRooms = $promotion->minimum_rooms ?? '';
+        $this->promotionMaximumRooms = $promotion->maximum_rooms ?? '';
+        $this->promotionMinimumNights = $promotion->minimum_nights ?? '';
+        $this->promotionMaximumNights = $promotion->maximum_nights ?? '';
+        $this->promotionBookingAdvanceDays = $promotion->booking_advance_days ?? '';
+        $this->promotionApplicableRoomTypes = $promotion->applicable_room_types ?? [];
+        $this->promotionPromoCode = $promotion->promo_code ?? '';
+        $this->promotionPriority = $promotion->priority;
+        $this->promotionIsActive = $promotion->is_active;
+        $this->showPromotionForm = true;
     }
 
-    public function confirmDeleteDurationDiscount($id)
+    public function confirmDeletePromotion($id)
     {
-        $this->deletingDurationDiscountId = $id;
+        $this->deletingPromotionId = $id;
     }
 
-    public function deleteDurationDiscount()
+    public function deletePromotion()
     {
-        if (!$this->deletingDurationDiscountId) {
+        if (!$this->deletingPromotionId) {
             return;
         }
 
-        $discount = DurationDiscount::where('hotel_id', $this->hotel->id)
-            ->findOrFail($this->deletingDurationDiscountId);
+        $promotion = PromotionalDiscount::where('hotel_id', $this->hotel->id)
+            ->findOrFail($this->deletingPromotionId);
 
-        $discount->delete();
+        $promotion->delete();
 
-        session()->flash('success', 'Duration discount deleted successfully!');
-        $this->deletingDurationDiscountId = null;
+        session()->flash('success', 'Promotional discount deleted successfully!');
+        $this->deletingPromotionId = null;
         $this->refreshKey++;
     }
 
-    public function toggleDurationDiscountStatus($id)
+    public function togglePromotionStatus($id)
     {
-        $discount = DurationDiscount::where('hotel_id', $this->hotel->id)->findOrFail($id);
-        $discount->update(['is_active' => !$discount->is_active]);
+        $promotion = PromotionalDiscount::where('hotel_id', $this->hotel->id)->findOrFail($id);
+        $promotion->update(['is_active' => !$promotion->is_active]);
         $this->refreshKey++;
     }
 
-    public function getDurationDiscounts()
+    public function getPromotions()
     {
-        return DurationDiscount::where('hotel_id', $this->hotel->id)
-            ->orderBy('minimum_nights')
+        return PromotionalDiscount::where('hotel_id', $this->hotel->id)
+            ->orderBy('priority', 'desc')
+            ->orderBy('promotion_name')
             ->get();
     }
 

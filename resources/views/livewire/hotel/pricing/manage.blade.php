@@ -33,9 +33,9 @@
                 class="@if($activeTab === 'day_types') border-indigo-500 text-indigo-600 dark:text-indigo-400 @else border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
                 Day Type Pricing
             </button>
-            <button wire:click="setActiveTab('durations')" type="button"
-                class="@if($activeTab === 'durations') border-indigo-500 text-indigo-600 dark:text-indigo-400 @else border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                Duration Discounts
+            <button wire:click="setActiveTab('promotions')" type="button"
+                class="@if($activeTab === 'promotions') border-indigo-500 text-indigo-600 dark:text-indigo-400 @else border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 @endif whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                Promotional Discounts
             </button>
         </nav>
     </div>
@@ -50,8 +50,8 @@
             @include('livewire.hotel.pricing.partials.seasonal')
         @elseif($activeTab === 'day_types')
             @include('livewire.hotel.pricing.partials.day-types')
-        @elseif($activeTab === 'durations')
-            @include('livewire.hotel.pricing.partials.durations')
+        @elseif($activeTab === 'promotions')
+            @include('livewire.hotel.pricing.partials.promotions')
         @endif
     </div>
 
@@ -86,13 +86,5 @@
         description="Are you sure you want to delete this day type pricing? This action cannot be undone."
         method="deleteDayTypePricing"
         confirmText="Yes, Delete Pricing"
-    />
-
-    <x-admin.modal.confirmation
-        name="delete-duration-discount-modal"
-        title="Delete Duration Discount?"
-        description="Are you sure you want to delete this discount? This action cannot be undone."
-        method="deleteDurationDiscount"
-        confirmText="Yes, Delete Discount"
     />
 </div>
