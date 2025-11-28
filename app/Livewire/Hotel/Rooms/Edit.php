@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Hotel\Rooms;
 
+use App\Models\AmenityCategory;
 use App\Models\Hotel;
 use App\Models\Room;
 use Livewire\Attributes\Layout;
@@ -21,6 +22,9 @@ class Edit extends Component
     public $base_price = '';
     public $max_occupancy = 2;
     public $floor_number = '';
+
+    // Amenities
+    public $selectedAmenities = [];
 
     // Available options
     public $roomTypes = ['Standard', 'Superior', 'Deluxe', 'Suite', 'Family'];
@@ -49,6 +53,9 @@ class Edit extends Component
         $this->base_price = $this->room->base_price;
         $this->max_occupancy = $this->room->max_occupancy;
         $this->floor_number = $this->room->floor_number ?? '';
+
+        // Load existing amenities
+        $this->selectedAmenities = $this->room->amenities->pluck('id')->toArray();
     }
 
     protected function rules()
@@ -63,6 +70,42 @@ class Edit extends Component
             'max_occupancy' => 'required|integer|min:1|max:10',
             'floor_number' => 'nullable|integer|min:1',
         ];
+    }
+
+    public function toggleCategory($categoryId)
+    {
+        // Get all amenity IDs in this category
+        $category = AmenityCategory::with('amenities')->find($categoryId);
+
+        if (!$category) {
+            return;
+        }
+
+        $amenityIds = $category->amenities->pluck('id')->toArray();
+
+        // Check if all amenities in this category are selected
+        $allSelected = !empty($amenityIds) && empty(array_diff($amenityIds, $this->selectedAmenities));
+
+        if ($allSelected) {
+            // Unselect all amenities in this category
+            $this->selectedAmenities = array_diff($this->selectedAmenities, $amenityIds);
+        } else {
+            // Select all amenities in this category
+            $this->selectedAmenities = array_unique(array_merge($this->selectedAmenities, $amenityIds));
+        }
+    }
+
+    public function isCategorySelected($categoryId)
+    {
+        $category = AmenityCategory::with('amenities')->find($categoryId);
+
+        if (!$category || $category->amenities->isEmpty()) {
+            return false;
+        }
+
+        $amenityIds = $category->amenities->pluck('id')->toArray();
+
+        return !empty($amenityIds) && empty(array_diff($amenityIds, $this->selectedAmenities));
     }
 
     public function save()
@@ -80,6 +123,9 @@ class Edit extends Component
             'floor_number' => $this->floor_number ?: null,
         ]);
 
+        // Sync amenities to the room
+        $this->room->amenities()->sync($this->selectedAmenities);
+
         session()->flash('success', 'Room updated successfully!');
 
         return redirect()->route('hotel.rooms.index');
@@ -88,6 +134,16 @@ class Edit extends Component
     #[Layout('layouts.hotel')]
     public function render()
     {
-        return view('livewire.hotel.rooms.edit');
+        $amenityCategories = AmenityCategory::where('hotel_id', $this->hotel->id)
+            ->where('is_active', true)
+            ->with(['amenities' => function ($query) {
+                $query->where('is_active', true)->orderBy('sort_order');
+            }])
+            ->orderBy('sort_order')
+            ->get();
+
+        return view('livewire.hotel.rooms.edit', [
+            'amenityCategories' => $amenityCategories,
+        ]);
     }
 }

@@ -206,6 +206,91 @@
                     </div>
                 </div>
 
+                {{-- Amenities Section --}}
+                @if($amenityCategories->isNotEmpty())
+                    <div class="pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                            Room Amenities
+                        </h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                            Select the amenities available in this room. You can select all amenities in a category or pick individual items.
+                        </p>
+
+                        <div class="space-y-4">
+                            @foreach($amenityCategories as $category)
+                                @if($category->amenities->isNotEmpty())
+                                    <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                        {{-- Category Header with Select All --}}
+                                        <div class="flex items-center justify-between mb-3">
+                                            <h4 class="text-md font-medium text-gray-900 dark:text-gray-100">
+                                                {{ $category->name }}
+                                                @if($category->description)
+                                                    <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                                                        - {{ $category->description }}
+                                                    </span>
+                                                @endif
+                                            </h4>
+                                            <label class="flex items-center cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    wire:click="toggleCategory({{ $category->id }})"
+                                                    @if($this->isCategorySelected($category->id)) checked @endif
+                                                    class="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700"
+                                                >
+                                                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Select All</span>
+                                            </label>
+                                        </div>
+
+                                        {{-- Amenity Items Grid --}}
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                            @foreach($category->amenities as $amenity)
+                                                <label class="flex items-center p-3 bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-750 cursor-pointer transition-colors">
+                                                    <input
+                                                        type="checkbox"
+                                                        wire:model="selectedAmenities"
+                                                        value="{{ $amenity->id }}"
+                                                        class="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700"
+                                                    >
+                                                    <div class="ml-3 flex-1">
+                                                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                            {{ $amenity->name }}
+                                                        </span>
+                                                        @if($amenity->description)
+                                                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                                                {{ $amenity->description }}
+                                                            </p>
+                                                        @endif
+                                                    </div>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+
+                        @if($amenityCategories->isEmpty() || $amenityCategories->every(fn($cat) => $cat->amenities->isEmpty()))
+                            <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-8 text-center">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
+                                    </path>
+                                </svg>
+                                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No amenities available</h3>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                    Create amenity categories and items first before assigning them to rooms.
+                                </p>
+                                <div class="mt-4">
+                                    <a href="{{ route('hotel.amenities.categories') }}" wire:navigate
+                                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                                        Manage Amenities
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                @endif
+
                 {{-- Form Actions --}}
                 <div class="flex items-center justify-end gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                     <x-admin.button.secondary

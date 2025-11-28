@@ -34,7 +34,6 @@ class Manage extends Component
     public function render()
     {
         $recentRooms = $this->hotel->rooms()
-            ->with('view')
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
