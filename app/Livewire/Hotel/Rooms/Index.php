@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Hotel\Rooms;
 
+use App\Models\Amenity;
+use App\Models\AmenityCategory;
 use App\Models\Hotel;
 use App\Models\Room;
 use Livewire\Attributes\Layout;
@@ -32,6 +34,7 @@ class Index extends Component
     public $max_occupancy = 2;
     public $base_price = '';
     public $floor_number = '';
+    public $selectedAmenities = [];
 
     // Room editing properties
     public $editingRoomId = null;
@@ -151,6 +154,7 @@ class Index extends Component
         $this->max_occupancy = 2;
         $this->base_price = '';
         $this->floor_number = '';
+        $this->selectedAmenities = [];
         $this->resetValidation();
     }
 
@@ -187,7 +191,7 @@ class Index extends Component
 
         $this->validate($this->roomValidationRules());
 
-        Room::create([
+        $room = Room::create([
             'hotel_id' => $this->hotel->id,
             'room_number' => $this->room_number,
             'room_type' => $this->room_type,
@@ -198,6 +202,11 @@ class Index extends Component
             'base_price' => $this->base_price,
             'floor_number' => $this->floor_number ?: null,
         ]);
+
+        // Sync amenities
+        if (!empty($this->selectedAmenities)) {
+            $room->amenities()->sync($this->selectedAmenities);
+        }
 
         $this->updateCapacity();
         $this->resetCreateForm();
@@ -219,6 +228,7 @@ class Index extends Component
         $this->max_occupancy = $this->editingRoom->max_occupancy;
         $this->base_price = $this->editingRoom->base_price;
         $this->floor_number = $this->editingRoom->floor_number ?? '';
+        $this->selectedAmenities = $this->editingRoom->amenities->pluck('id')->toArray();
 
         $this->dispatch('open-modal', 'edit-room');
     }
@@ -235,6 +245,7 @@ class Index extends Component
         $this->max_occupancy = 2;
         $this->base_price = '';
         $this->floor_number = '';
+        $this->selectedAmenities = [];
         $this->resetValidation();
     }
 
@@ -258,6 +269,9 @@ class Index extends Component
             'base_price' => $this->base_price,
             'floor_number' => $this->floor_number ?: null,
         ]);
+
+        // Sync amenities
+        $room->amenities()->sync($this->selectedAmenities ?? []);
 
         $this->resetEditForm();
         $this->dispatch('close-modal', 'edit-room');
@@ -284,10 +298,19 @@ class Index extends Component
             ->orderBy('room_number')
             ->paginate(10);
 
+        // Load amenities grouped by category for the checklist
+        $amenityCategories = AmenityCategory::where('hotel_id', $this->hotel->id)
+            ->with(['amenities' => function ($query) {
+                $query->where('is_active', true)->orderBy('sort_order');
+            }])
+            ->orderBy('sort_order')
+            ->get();
+
         return view('livewire.hotel.rooms.index', [
             'rooms' => $rooms,
             'roomTypes' => ['Standard', 'Superior', 'Deluxe', 'Suite', 'Family'],
             'bedSizes' => ['King', 'Queen', 'Twin'],
+            'amenityCategories' => $amenityCategories,
         ]);
     }
 }

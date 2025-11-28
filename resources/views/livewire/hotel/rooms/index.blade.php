@@ -362,6 +362,44 @@
                     @enderror
                 </div>
 
+                {{-- Amenities --}}
+                @if($amenityCategories->count() > 0)
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                            Room Amenities
+                        </label>
+                        <div class="max-h-64 overflow-y-auto space-y-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-md">
+                            @foreach($amenityCategories as $category)
+                                @if($category->amenities->count() > 0)
+                                    <div>
+                                        <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                                            {{ $category->name }}
+                                        </h4>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 ml-2">
+                                            @foreach($category->amenities as $amenity)
+                                                <label class="flex items-center space-x-2 cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        wire:model="selectedAmenities"
+                                                        value="{{ $amenity->id }}"
+                                                        class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
+                                                    >
+                                                    <span class="text-sm text-gray-700 dark:text-gray-300">
+                                                        {{ $amenity->name }}
+                                                    </span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                            Select all amenities available in this room
+                        </p>
+                    </div>
+                @endif
+
                 {{-- Form Actions --}}
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                     <x-admin.button.secondary
@@ -547,6 +585,44 @@
                         <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
                     @enderror
                 </div>
+
+                {{-- Amenities --}}
+                @if($amenityCategories->count() > 0)
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                            Room Amenities
+                        </label>
+                        <div class="max-h-64 overflow-y-auto space-y-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-md">
+                            @foreach($amenityCategories as $category)
+                                @if($category->amenities->count() > 0)
+                                    <div>
+                                        <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                                            {{ $category->name }}
+                                        </h4>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 ml-2">
+                                            @foreach($category->amenities as $amenity)
+                                                <label class="flex items-center space-x-2 cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        wire:model="selectedAmenities"
+                                                        value="{{ $amenity->id }}"
+                                                        class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
+                                                    >
+                                                    <span class="text-sm text-gray-700 dark:text-gray-300">
+                                                        {{ $amenity->name }}
+                                                    </span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                            Select all amenities available in this room
+                        </p>
+                    </div>
+                @endif
 
                 {{-- Form Actions --}}
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
