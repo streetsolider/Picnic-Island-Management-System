@@ -19,7 +19,6 @@ class Items extends Component
     public $category_id = '';
     public $name = '';
     public $description = '';
-    public $icon = '';
     public $editingId = null;
     public $showForm = false;
 
@@ -42,20 +41,19 @@ class Items extends Component
             'category_id' => 'required|exists:amenity_categories,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:500',
-            'icon' => 'nullable|string|max:255',
         ];
     }
 
     public function openForm()
     {
         $this->showForm = true;
-        $this->reset(['name', 'description', 'icon', 'category_id', 'editingId']);
+        $this->reset(['name', 'description', 'category_id', 'editingId']);
     }
 
     public function closeForm()
     {
         $this->showForm = false;
-        $this->reset(['name', 'description', 'icon', 'category_id', 'editingId']);
+        $this->reset(['name', 'description', 'category_id', 'editingId']);
     }
 
     public function save()
@@ -71,7 +69,6 @@ class Items extends Component
                 'category_id' => $this->category_id,
                 'name' => $this->name,
                 'description' => $this->description,
-                'icon' => $this->icon,
             ]);
 
             session()->flash('success', 'Amenity updated successfully!');
@@ -82,7 +79,6 @@ class Items extends Component
                 'category_id' => $this->category_id,
                 'name' => $this->name,
                 'description' => $this->description,
-                'icon' => $this->icon,
                 'sort_order' => Amenity::where('category_id', $this->category_id)->count(),
             ]);
 
@@ -101,7 +97,6 @@ class Items extends Component
         $this->category_id = $amenity->category_id;
         $this->name = $amenity->name;
         $this->description = $amenity->description;
-        $this->icon = $amenity->icon;
         $this->showForm = true;
     }
 

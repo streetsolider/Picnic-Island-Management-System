@@ -23,7 +23,6 @@ class Manage extends Component
     public $selectedCategoryId = '';
     public $amenityName = '';
     public $amenityDescription = '';
-    public $amenityIcon = '';
     public $editingAmenityId = null;
     public $showAmenityForm = false;
 
@@ -139,14 +138,13 @@ class Manage extends Component
             'selectedCategoryId' => 'required|exists:amenity_categories,id',
             'amenityName' => 'required|string|max:255',
             'amenityDescription' => 'nullable|string|max:500',
-            'amenityIcon' => 'nullable|string|max:255',
         ];
     }
 
     public function openAmenityForm($categoryId = null)
     {
         $this->showAmenityForm = true;
-        $this->reset(['amenityName', 'amenityDescription', 'amenityIcon', 'editingAmenityId']);
+        $this->reset(['amenityName', 'amenityDescription', 'editingAmenityId']);
 
         if ($categoryId) {
             $this->selectedCategoryId = $categoryId;
@@ -156,7 +154,7 @@ class Manage extends Component
     public function closeAmenityForm()
     {
         $this->showAmenityForm = false;
-        $this->reset(['selectedCategoryId', 'amenityName', 'amenityDescription', 'amenityIcon', 'editingAmenityId']);
+        $this->reset(['selectedCategoryId', 'amenityName', 'amenityDescription', 'editingAmenityId']);
     }
 
     public function saveAmenity()
@@ -171,7 +169,6 @@ class Manage extends Component
                 'category_id' => $this->selectedCategoryId,
                 'name' => $this->amenityName,
                 'description' => $this->amenityDescription,
-                'icon' => $this->amenityIcon,
             ]);
 
             session()->flash('success', 'Amenity updated successfully!');
@@ -181,7 +178,6 @@ class Manage extends Component
                 'category_id' => $this->selectedCategoryId,
                 'name' => $this->amenityName,
                 'description' => $this->amenityDescription,
-                'icon' => $this->amenityIcon,
                 'sort_order' => Amenity::where('category_id', $this->selectedCategoryId)->count(),
             ]);
 
@@ -201,7 +197,6 @@ class Manage extends Component
         $this->selectedCategoryId = $amenity->category_id;
         $this->amenityName = $amenity->name;
         $this->amenityDescription = $amenity->description;
-        $this->amenityIcon = $amenity->icon;
         $this->showAmenityForm = true;
     }
 

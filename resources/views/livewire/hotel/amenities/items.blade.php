@@ -54,11 +54,11 @@
                             {{-- Category Selection --}}
                             <div class="mb-4">
                                 <label for="category_id"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Category <span class="text-red-500">*</span>
                                 </label>
                                 <select id="category_id" wire:model="category_id"
-                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                     <option value="">Select a category</option>
                                     @foreach ($categories as $category)
                                         <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -71,11 +71,11 @@
 
                             {{-- Amenity Name --}}
                             <div class="mb-4">
-                                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Amenity Name <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" id="name" wire:model="name"
-                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                     placeholder="e.g., Shower, Bathtub, TV, Minibar">
                                 @error('name')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -85,31 +85,15 @@
                             {{-- Description --}}
                             <div class="mb-4">
                                 <label for="description"
-                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Description (Optional)
                                 </label>
                                 <textarea id="description" wire:model="description" rows="3"
-                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                     placeholder="Brief description of this amenity"></textarea>
                                 @error('description')
                                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
-                            </div>
-
-                            {{-- Icon (optional for future use) --}}
-                            <div class="mb-4">
-                                <label for="icon" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Icon Class (Optional)
-                                </label>
-                                <input type="text" id="icon" wire:model="icon"
-                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                    placeholder="e.g., fas fa-bath, fas fa-tv">
-                                @error('icon')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                    Optional: Add an icon class for visual representation
-                                </p>
                             </div>
                         </div>
 
@@ -192,13 +176,8 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    @if ($amenity->icon)
-                                        <i class="{{ $amenity->icon }} mr-2 text-gray-400"></i>
-                                    @endif
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
-                                        {{ $amenity->name }}
-                                    </div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ $amenity->name }}
                                 </div>
                             </td>
                             <td class="px-6 py-4">

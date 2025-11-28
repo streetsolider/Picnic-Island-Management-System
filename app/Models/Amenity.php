@@ -13,7 +13,6 @@ class Amenity extends Model
         'category_id',
         'name',
         'description',
-        'icon',
         'sort_order',
         'is_active',
     ];

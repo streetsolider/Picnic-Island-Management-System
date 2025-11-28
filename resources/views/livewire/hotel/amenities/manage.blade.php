@@ -42,31 +42,32 @@
                             <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-6">
                                 {{ $editingCategoryId ? 'Edit Category' : 'Add New Category' }}
                             </h3>
-                {{-- Category Name --}}
-                <div>
-                    <label for="categoryName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Category Name <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" id="categoryName" wire:model="categoryName"
-                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        placeholder="e.g., Bathroom, Electronics, Comfort">
-                    @error('categoryName')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
 
-                {{-- Description --}}
-                <div>
-                    <label for="categoryDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Description (Optional)
-                    </label>
-                    <textarea id="categoryDescription" wire:model="categoryDescription" rows="3"
-                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        placeholder="Brief description of this category"></textarea>
-                            @error('categoryDescription')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+                            {{-- Category Name --}}
+                            <div class="mb-4">
+                                <label for="categoryName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Category Name <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="categoryName" wire:model="categoryName"
+                                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    placeholder="e.g., Bathroom, Electronics, Comfort">
+                                @error('categoryName')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- Description --}}
+                            <div class="mb-4">
+                                <label for="categoryDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Description (Optional)
+                                </label>
+                                <textarea id="categoryDescription" wire:model="categoryDescription" rows="3"
+                                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    placeholder="Brief description of this category"></textarea>
+                                @error('categoryDescription')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
                     </div>
 
                     {{-- Footer --}}
@@ -110,61 +111,49 @@
                             <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-6">
                                 {{ $editingAmenityId ? 'Edit Amenity Item' : 'Add New Amenity Item' }}
                             </h3>
-        {{-- Category Selection --}}
-        <div>
-            <label for="selectedCategoryId" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Category <span class="text-red-500">*</span>
-            </label>
-            <select id="selectedCategoryId" wire:model="selectedCategoryId"
-                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                <option value="">Select a category</option>
-                @foreach ($categories as $category)
-                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                @endforeach
-            </select>
-            @error('selectedCategoryId')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
-        </div>
 
-        {{-- Amenity Name --}}
-        <div>
-            <label for="amenityName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Amenity Name <span class="text-red-500">*</span>
-            </label>
-            <input type="text" id="amenityName" wire:model="amenityName"
-                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder="e.g., Shower, Bathtub, TV, Minibar">
-            @error('amenityName')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
-        </div>
+                            {{-- Category Selection --}}
+                            <div class="mb-4">
+                                <label for="selectedCategoryId" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Category <span class="text-red-500">*</span>
+                                </label>
+                                <select id="selectedCategoryId" wire:model="selectedCategoryId"
+                                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                    <option value="">Select a category</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('selectedCategoryId')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
 
-        {{-- Description --}}
-        <div>
-            <label for="amenityDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Description (Optional)
-            </label>
-            <textarea id="amenityDescription" wire:model="amenityDescription" rows="3"
-                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder="Brief description of this amenity"></textarea>
-            @error('amenityDescription')
-                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-            @enderror
-        </div>
+                            {{-- Amenity Name --}}
+                            <div class="mb-4">
+                                <label for="amenityName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Amenity Name <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="amenityName" wire:model="amenityName"
+                                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    placeholder="e.g., Shower, Bathtub, TV, Minibar">
+                                @error('amenityName')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
 
-        {{-- Icon Class --}}
-        <div>
-            <label for="amenityIcon" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Icon Class (Optional)
-            </label>
-            <input type="text" id="amenityIcon" wire:model="amenityIcon"
-                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder="e.g., fas fa-bath, fas fa-tv">
-                            @error('amenityIcon')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+                            {{-- Description --}}
+                            <div class="mb-4">
+                                <label for="amenityDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Description (Optional)
+                                </label>
+                                <textarea id="amenityDescription" wire:model="amenityDescription" rows="3"
+                                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                    placeholder="Brief description of this amenity"></textarea>
+                                @error('amenityDescription')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
                     </div>
 
                     {{-- Footer --}}
@@ -271,9 +260,6 @@
                             @foreach ($category->amenities as $amenity)
                                 <div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-750">
                                     <div class="flex items-center gap-3">
-                                        @if ($amenity->icon)
-                                            <i class="{{ $amenity->icon }} text-gray-400 text-lg"></i>
-                                        @endif
                                         <div>
                                             <p class="text-sm font-medium text-gray-900 dark:text-white">
                                                 {{ $amenity->name }}
