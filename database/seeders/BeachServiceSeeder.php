@@ -43,6 +43,7 @@ class BeachServiceSeeder extends Seeder
         ];
 
         foreach ($staffData as $data) {
+            $data['staff_id'] = Staff::generateStaffId();
             $beachStaff[] = Staff::create($data);
         }
 

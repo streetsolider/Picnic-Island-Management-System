@@ -77,6 +77,15 @@ class DatabaseSeeder extends Seeder
         // Seed hotels
         $this->call(HotelSeeder::class);
 
+        // Seed ferry vessels
+        $this->call(FerryVesselSeeder::class);
+
+        // Seed theme park zones
+        $this->call(ThemeParkZoneSeeder::class);
+
+        // Seed beach services
+        $this->call(BeachServiceSeeder::class);
+
         $this->command->info('Sample data created successfully!');
         $this->command->info('');
         $this->command->info('STAFF ACCOUNTS:');
