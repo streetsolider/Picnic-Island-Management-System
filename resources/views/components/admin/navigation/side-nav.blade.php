@@ -82,7 +82,7 @@
                     </div>
 
                     {{-- Settings Dropdown (static) --}}
-                    <div class="hidden sm:flex sm:items-center sm:ms-6">
+                    <div class="hidden sm:flex sm:items-center sm:ms-6 gap-3">
                         <x-admin.theme.toggle />
 
                         <x-overlays.dropdown align="right" width="48">
