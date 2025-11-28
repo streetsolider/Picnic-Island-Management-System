@@ -26,6 +26,10 @@ class Manage extends Component
     public $editingAmenityId = null;
     public $showAmenityForm = false;
 
+    // Delete confirmation properties
+    public $deletingCategoryId = null;
+    public $deletingAmenityId = null;
+
     public function mount()
     {
         // Get the hotel managed by the current user
@@ -110,14 +114,24 @@ class Manage extends Component
         $this->showCategoryForm = true;
     }
 
-    public function deleteCategory($categoryId)
+    public function confirmDeleteCategory($categoryId)
     {
+        $this->deletingCategoryId = $categoryId;
+    }
+
+    public function deleteCategory()
+    {
+        if (!$this->deletingCategoryId) {
+            return;
+        }
+
         $category = AmenityCategory::where('hotel_id', $this->hotel->id)
-            ->findOrFail($categoryId);
+            ->findOrFail($this->deletingCategoryId);
 
         $category->delete();
 
         session()->flash('success', 'Category deleted successfully!');
+        $this->deletingCategoryId = null;
         $this->loadCategories();
     }
 
@@ -200,14 +214,24 @@ class Manage extends Component
         $this->showAmenityForm = true;
     }
 
-    public function deleteAmenity($amenityId)
+    public function confirmDeleteAmenity($amenityId)
     {
+        $this->deletingAmenityId = $amenityId;
+    }
+
+    public function deleteAmenity()
+    {
+        if (!$this->deletingAmenityId) {
+            return;
+        }
+
         $amenity = Amenity::where('hotel_id', $this->hotel->id)
-            ->findOrFail($amenityId);
+            ->findOrFail($this->deletingAmenityId);
 
         $amenity->delete();
 
         session()->flash('success', 'Amenity deleted successfully!');
+        $this->deletingAmenityId = null;
         $this->loadCategories();
     }
 
