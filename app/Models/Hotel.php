@@ -96,4 +96,52 @@ class Hotel extends Model
     {
         return $this->hasMany(Amenity::class);
     }
+
+    /**
+     * Get the room type images for this hotel
+     */
+    public function roomTypeImages(): HasMany
+    {
+        return $this->hasMany(RoomTypeImage::class)->orderBy('room_type')->orderBy('sort_order');
+    }
+
+    /**
+     * Get the room type pricing for this hotel
+     */
+    public function roomTypePricing(): HasMany
+    {
+        return $this->hasMany(RoomTypePricing::class);
+    }
+
+    /**
+     * Get the view pricing for this hotel
+     */
+    public function viewPricing(): HasMany
+    {
+        return $this->hasMany(ViewPricing::class);
+    }
+
+    /**
+     * Get the seasonal pricing for this hotel
+     */
+    public function seasonalPricing(): HasMany
+    {
+        return $this->hasMany(SeasonalPricing::class);
+    }
+
+    /**
+     * Get the day type pricing for this hotel
+     */
+    public function dayTypePricing(): HasMany
+    {
+        return $this->hasMany(DayTypePricing::class);
+    }
+
+    /**
+     * Get the duration discounts for this hotel
+     */
+    public function durationDiscounts(): HasMany
+    {
+        return $this->hasMany(DurationDiscount::class);
+    }
 }

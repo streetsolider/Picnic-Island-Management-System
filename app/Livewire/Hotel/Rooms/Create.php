@@ -4,29 +4,30 @@ namespace App\Livewire\Hotel\Rooms;
 
 use App\Models\Hotel;
 use App\Models\Room;
-use App\Models\RoomView;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
 class Create extends Component
 {
     public $hotel;
+    public $currentRoomCount = 0;
+    public $remainingCapacity = 0;
 
     // Room properties
     public $room_number = '';
     public $room_type = 'Standard';
     public $bed_size = 'Queen';
     public $bed_count = 'Single';
-    public $view_id = '';
+    public $view = '';
     public $base_price = '';
     public $max_occupancy = 2;
     public $floor_number = '';
-    public $description = '';
 
     // Available options
     public $roomTypes = ['Standard', 'Superior', 'Deluxe', 'Suite', 'Family'];
     public $bedSizes = ['King', 'Queen', 'Twin'];
     public $bedCounts = ['Single', 'Double', 'Triple', 'Quad'];
+    public $views = ['Garden', 'Beach'];
 
     public function mount()
     {
@@ -36,6 +37,10 @@ class Create extends Component
         if (!$this->hotel) {
             abort(403, 'You are not assigned to manage any hotel.');
         }
+
+        // Calculate current room count and remaining capacity
+        $this->currentRoomCount = $this->hotel->rooms()->count();
+        $this->remainingCapacity = $this->hotel->room_capacity - $this->currentRoomCount;
     }
 
     protected function rules()
@@ -45,16 +50,22 @@ class Create extends Component
             'room_type' => 'required|in:' . implode(',', $this->roomTypes),
             'bed_size' => 'required|in:' . implode(',', $this->bedSizes),
             'bed_count' => 'required|in:' . implode(',', $this->bedCounts),
-            'view_id' => 'nullable|exists:room_views,id',
+            'view' => 'nullable|in:' . implode(',', $this->views),
             'base_price' => 'required|numeric|min:0',
             'max_occupancy' => 'required|integer|min:1|max:10',
             'floor_number' => 'nullable|integer|min:1',
-            'description' => 'nullable|string|max:1000',
         ];
     }
 
     public function save()
     {
+        // Check capacity before validation
+        $currentCount = $this->hotel->rooms()->count();
+        if ($currentCount >= $this->hotel->room_capacity) {
+            session()->flash('error', 'Hotel has reached maximum room capacity. Cannot add more rooms.');
+            return;
+        }
+
         $this->validate();
 
         Room::create([
@@ -63,11 +74,10 @@ class Create extends Component
             'room_type' => $this->room_type,
             'bed_size' => $this->bed_size,
             'bed_count' => $this->bed_count,
-            'view_id' => $this->view_id ?: null,
+            'view' => $this->view ?: null,
             'base_price' => $this->base_price,
             'max_occupancy' => $this->max_occupancy,
             'floor_number' => $this->floor_number ?: null,
-            'description' => $this->description,
         ]);
 
         session()->flash('success', 'Room created successfully!');
@@ -78,12 +88,6 @@ class Create extends Component
     #[Layout('layouts.hotel')]
     public function render()
     {
-        $views = RoomView::where('hotel_id', $this->hotel->id)
-            ->where('is_active', true)
-            ->get();
-
-        return view('livewire.hotel.rooms.create', [
-            'views' => $views,
-        ]);
+        return view('livewire.hotel.rooms.create');
     }
 }

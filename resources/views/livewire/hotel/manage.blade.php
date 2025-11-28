@@ -23,13 +23,34 @@
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <!-- Total Rooms -->
-        <x-admin.card.stat title="Total Rooms" :value="$stats['total_rooms']" color="blue">
+        <!-- Total Rooms with Capacity -->
+        <x-admin.card.stat
+            title="Room Capacity"
+            :value="$stats['total_rooms'] . ' / ' . $hotel->room_capacity"
+            color="blue">
             <x-slot:icon>
                 <svg class="w-8 h-8 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                 </svg>
             </x-slot:icon>
+            <x-slot:footer>
+                <div class="mt-2">
+                    @php
+                        $capacityPercentage = $hotel->room_capacity > 0 ? ($stats['total_rooms'] / $hotel->room_capacity * 100) : 0;
+                        $remainingRooms = $hotel->room_capacity - $stats['total_rooms'];
+                    @endphp
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
+                        <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: {{ $capacityPercentage }}%"></div>
+                    </div>
+                    <p class="text-xs text-gray-600 dark:text-gray-400">
+                        @if($remainingRooms > 0)
+                            <span class="text-green-600 dark:text-green-400">{{ $remainingRooms }} rooms available</span>
+                        @else
+                            <span class="text-red-600 dark:text-red-400">Capacity reached</span>
+                        @endif
+                    </p>
+                </div>
+            </x-slot:footer>
         </x-admin.card.stat>
 
         <!-- Available Rooms -->
@@ -66,11 +87,12 @@
         <x-slot:title>Quick Actions</x-slot:title>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <x-admin.button.primary
-                :href="route('hotel.rooms.create')"
+                :href="route('hotel.rooms.index')"
+                wire:navigate
                 size="md"
                 class="w-full"
                 icon='<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>'>
-                Create New Room
+                Manage Rooms
             </x-admin.button.primary>
 
             <x-admin.button.success
