@@ -187,121 +187,103 @@
             </x-slot>
         </x-admin.card.empty-state>
     @else
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-            <x-admin.table.wrapper hoverable>
-                <thead class="bg-gray-50 dark:bg-gray-900">
-                    <tr>
-                        <x-admin.table.header>Category / Amenity</x-admin.table.header>
-                        <x-admin.table.header>Description</x-admin.table.header>
-                        <x-admin.table.header>Status</x-admin.table.header>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Actions
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($categories as $category)
-                        {{-- Category Row --}}
-                        <x-admin.table.row class="bg-gray-50 dark:bg-gray-700/50">
-                            <td class="px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <h3 class="text-base font-semibold text-gray-900 dark:text-white">
-                                        {{ $category->name }}
-                                    </h3>
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200">
-                                        {{ $category->amenities->count() }} items
-                                    </span>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                @if ($category->description)
-                                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ $category->description }}</p>
-                                @else
-                                    <span class="text-sm text-gray-400 dark:text-gray-500 italic">No description</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4">
-                                <button wire:click="toggleCategoryStatus({{ $category->id }})" type="button"
-                                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {{ $category->is_active ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' }}">
+        <x-admin.accordion.wrapper :allowMultiple="true">
+            @foreach ($categories as $category)
+                <x-admin.accordion.item :id="'category-' . $category->id">
+                            {{-- Custom Header --}}
+                            <x-slot:header>
+                                <h3 class="text-base font-semibold text-gray-900 dark:text-white">
+                                    {{ $category->name }}
+                                </h3>
+                            </x-slot:header>
+
+                            {{-- Actions in Header --}}
+                            <x-slot:actions>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200">
+                                    {{ $category->amenities->count() }} {{ Str::plural('item', $category->amenities->count()) }}
+                                </span>
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {{ $category->is_active ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' }} ml-2">
                                     {{ $category->is_active ? 'Active' : 'Inactive' }}
-                                </button>
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-3">
+                                </span>
+                            </x-slot:actions>
+
+                            {{-- Accordion Content --}}
+                            <div class="space-y-4">
+                                {{-- Action Buttons --}}
+                                <div class="flex items-center justify-end gap-3 pb-3 border-b border-gray-200 dark:border-gray-700">
                                     <button wire:click="openAmenityForm({{ $category->id }})" type="button"
                                         class="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300 text-sm font-medium">
                                         Add Item
                                     </button>
                                     <button wire:click="editCategory({{ $category->id }})" type="button"
                                         class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 text-sm font-medium">
-                                        Edit
+                                        Edit Category
                                     </button>
                                     <button wire:click="confirmDeleteCategory({{ $category->id }})"
                                         x-data
                                         x-on:click="$dispatch('open-modal', 'delete-category-modal')"
                                         type="button"
                                         class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 text-sm font-medium">
-                                        Delete
+                                        Delete Category
                                     </button>
                                 </div>
-                            </td>
-                        </x-admin.table.row>
 
-                        {{-- Amenity Items Rows --}}
-                        @if ($category->amenities->isEmpty())
-                            <x-admin.table.row>
-                                <td colspan="4" class="px-6 py-8 text-center">
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">No amenity items in this category yet.</p>
-                                    <x-admin.button.link wire:click="openAmenityForm({{ $category->id }})">
-                                        <span class="inline-flex items-center gap-1.5">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                                            </svg>
-                                            <span>Add first item</span>
-                                        </span>
-                                    </x-admin.button.link>
-                                </td>
-                            </x-admin.table.row>
-                        @else
-                            @foreach ($category->amenities as $amenity)
-                                <x-admin.table.row>
-                                    <td class="px-6 py-3 pl-12">
-                                        <div class="flex items-center gap-2">
-                                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                            </svg>
-                                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $amenity->name }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-3" colspan="2">
-                                        @if ($amenity->description)
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $amenity->description }}</p>
-                                        @else
-                                            <span class="text-xs text-gray-400 dark:text-gray-500 italic">No description</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-3 text-right">
-                                        <div class="flex items-center justify-end gap-3">
-                                            <button wire:click="editAmenity({{ $amenity->id }})" type="button"
-                                                class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 text-sm font-medium">
-                                                Edit
-                                            </button>
-                                            <button wire:click="confirmDeleteAmenity({{ $amenity->id }})"
-                                                x-data
-                                                x-on:click="$dispatch('open-modal', 'delete-amenity-modal')"
-                                                type="button"
-                                                class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 text-sm font-medium">
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </td>
-                                </x-admin.table.row>
-                            @endforeach
-                        @endif
-                    @endforeach
-                </tbody>
-            </x-admin.table.wrapper>
-        </div>
+                                {{-- Category Description --}}
+                                @if ($category->description)
+                                    <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ $category->description }}</p>
+                                    </div>
+                                @endif
+
+                                {{-- Amenity Items --}}
+                                @if ($category->amenities->isEmpty())
+                                    <div class="text-center py-8">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">No amenity items in this category yet.</p>
+                                        <x-admin.button.link wire:click="openAmenityForm({{ $category->id }})">
+                                            <span class="inline-flex items-center gap-1.5">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                                </svg>
+                                                <span>Add first item</span>
+                                            </span>
+                                        </x-admin.button.link>
+                                    </div>
+                                @else
+                                    <div class="space-y-2">
+                                        @foreach ($category->amenities as $amenity)
+                                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                                <div class="flex-1">
+                                                    <div class="flex items-center gap-2">
+                                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                        </svg>
+                                                        <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $amenity->name }}</span>
+                                                    </div>
+                                                    @if ($amenity->description)
+                                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-6">{{ $amenity->description }}</p>
+                                                    @endif
+                                                </div>
+                                                <div class="flex items-center gap-2 ml-4">
+                                                    <button wire:click="editAmenity({{ $amenity->id }})" type="button"
+                                                        class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 text-sm font-medium">
+                                                        Edit
+                                                    </button>
+                                                    <button wire:click="confirmDeleteAmenity({{ $amenity->id }})"
+                                                        x-data
+                                                        x-on:click="$dispatch('open-modal', 'delete-amenity-modal')"
+                                                        type="button"
+                                                        class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 text-sm font-medium">
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                </x-admin.accordion.item>
+            @endforeach
+        </x-admin.accordion.wrapper>
     @endif
 
     {{-- Delete Category Confirmation Modal --}}

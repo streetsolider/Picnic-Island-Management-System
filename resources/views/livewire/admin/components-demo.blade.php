@@ -1092,6 +1092,226 @@
                 </div>
             </div>
 
+            {{-- Accordion Components --}}
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Accordion Components</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">
+                        Collapsible accordion components for organizing content into expandable sections.
+                    </p>
+
+                    {{-- Basic Accordion --}}
+                    <div class="mb-8">
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Basic Accordion (Single Open)</h4>
+
+                        <x-admin.accordion.wrapper>
+                            <x-admin.accordion.item id="item-1" title="What is Picnic Island?">
+                                <p class="text-gray-600 dark:text-gray-400">
+                                    Picnic Island is a popular tourism destination featuring hotels, ferry services,
+                                    theme park activities, and beautiful beach events. Our management system helps
+                                    coordinate all these services efficiently.
+                                </p>
+                            </x-admin.accordion.item>
+
+                            <x-admin.accordion.item id="item-2" title="How do I book a hotel?">
+                                <p class="text-gray-600 dark:text-gray-400">
+                                    To book a hotel, navigate to the booking section, select your preferred dates,
+                                    choose a room type, and complete the reservation. You'll receive a confirmation
+                                    email with your booking details.
+                                </p>
+                            </x-admin.accordion.item>
+
+                            <x-admin.accordion.item id="item-3" title="What activities are available?">
+                                <p class="text-gray-600 dark:text-gray-400">
+                                    We offer a wide range of activities including:
+                                </p>
+                                <ul class="list-disc list-inside mt-2 text-gray-600 dark:text-gray-400 space-y-1">
+                                    <li>Theme park rides and shows</li>
+                                    <li>Water sports (jet skiing, banana boat, etc.)</li>
+                                    <li>Beach sports (volleyball, beach football)</li>
+                                    <li>Excursions and guided tours</li>
+                                </ul>
+                            </x-admin.accordion.item>
+                        </x-admin.accordion.wrapper>
+                    </div>
+
+                    {{-- Accordion with Multiple Open --}}
+                    <div class="mb-8">
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Accordion (Allow Multiple Open)</h4>
+
+                        <x-admin.accordion.wrapper :allowMultiple="true">
+                            <x-admin.accordion.item id="multi-1" title="Room Types" badge="5 types">
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-700 dark:text-gray-300">Standard</span>
+                                        <span class="text-gray-500 dark:text-gray-400">MVR 1,500/night</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-700 dark:text-gray-300">Superior</span>
+                                        <span class="text-gray-500 dark:text-gray-400">MVR 2,000/night</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-700 dark:text-gray-300">Deluxe</span>
+                                        <span class="text-gray-500 dark:text-gray-400">MVR 2,500/night</span>
+                                    </div>
+                                </div>
+                            </x-admin.accordion.item>
+
+                            <x-admin.accordion.item id="multi-2" title="Amenities" badge="12 items">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <span class="text-gray-600 dark:text-gray-400">✓ Free WiFi</span>
+                                    <span class="text-gray-600 dark:text-gray-400">✓ Air Conditioning</span>
+                                    <span class="text-gray-600 dark:text-gray-400">✓ TV</span>
+                                    <span class="text-gray-600 dark:text-gray-400">✓ Minibar</span>
+                                    <span class="text-gray-600 dark:text-gray-400">✓ Safe</span>
+                                    <span class="text-gray-600 dark:text-gray-400">✓ Hair Dryer</span>
+                                </div>
+                            </x-admin.accordion.item>
+
+                            <x-admin.accordion.item id="multi-3" title="Policies" :defaultOpen="true">
+                                <div class="space-y-3">
+                                    <div>
+                                        <h5 class="font-medium text-gray-900 dark:text-white mb-1">Check-in/out</h5>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">Check-in: 2:00 PM | Check-out: 12:00 PM</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-medium text-gray-900 dark:text-white mb-1">Cancellation</h5>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">Free cancellation up to 24 hours before check-in</p>
+                                    </div>
+                                </div>
+                            </x-admin.accordion.item>
+                        </x-admin.accordion.wrapper>
+                    </div>
+
+                    {{-- Accordion with Custom Header and Actions --}}
+                    <div class="mb-8">
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Accordion with Custom Header & Actions</h4>
+
+                        <x-admin.accordion.wrapper>
+                            <x-admin.accordion.item id="custom-1">
+                                <x-slot:header>
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-base font-semibold text-gray-900 dark:text-white">Bathroom Amenities</h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Premium toiletries and facilities</p>
+                                        </div>
+                                    </div>
+                                </x-slot:header>
+
+                                <x-slot:actions>
+                                    <button type="button" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 text-sm font-medium">
+                                        Edit
+                                    </button>
+                                    <button type="button" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 text-sm font-medium">
+                                        Delete
+                                    </button>
+                                </x-slot:actions>
+
+                                <div class="space-y-2 text-gray-600 dark:text-gray-400">
+                                    <p>• Bathtub with shower</p>
+                                    <p>• Premium toiletries (shampoo, conditioner, body wash)</p>
+                                    <p>• Fresh towels and bathrobes</p>
+                                    <p>• Hair dryer</p>
+                                </div>
+                            </x-admin.accordion.item>
+
+                            <x-admin.accordion.item id="custom-2">
+                                <x-slot:header>
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-base font-semibold text-gray-900 dark:text-white">Electronics</h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Modern entertainment and connectivity</p>
+                                        </div>
+                                    </div>
+                                </x-slot:header>
+
+                                <x-slot:actions>
+                                    <button type="button" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 text-sm font-medium">
+                                        Edit
+                                    </button>
+                                    <button type="button" class="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 text-sm font-medium">
+                                        Delete
+                                    </button>
+                                </x-slot:actions>
+
+                                <div class="space-y-2 text-gray-600 dark:text-gray-400">
+                                    <p>• 55" Smart TV with streaming services</p>
+                                    <p>• High-speed WiFi</p>
+                                    <p>• USB charging ports</p>
+                                    <p>• In-room safe</p>
+                                    <p>• Bluetooth speaker</p>
+                                </div>
+                            </x-admin.accordion.item>
+                        </x-admin.accordion.wrapper>
+                    </div>
+
+                    {{-- Usage Code --}}
+                    <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                        <h5 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">Usage</h5>
+                        <pre class="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto"><code>&lt;x-admin.accordion.wrapper :allowMultiple="false"&gt;
+    &lt;x-admin.accordion.item id="item-1" title="Title" badge="Optional"&gt;
+        Content goes here
+    &lt;/x-admin.accordion.item&gt;
+
+    &lt;x-admin.accordion.item id="item-2" :defaultOpen="true"&gt;
+        &lt;x-slot:header&gt;
+            Custom header HTML
+        &lt;/x-slot:header&gt;
+
+        &lt;x-slot:actions&gt;
+            Action buttons
+        &lt;/x-slot:actions&gt;
+
+        Content
+    &lt;/x-admin.accordion.item&gt;
+&lt;/x-admin.accordion.wrapper&gt;</code></pre>
+                    </div>
+
+                    {{-- Props Documentation --}}
+                    <div class="mt-6">
+                        <h5 class="font-semibold text-gray-900 dark:text-gray-100 mb-3">Props</h5>
+
+                        <div class="space-y-4">
+                            <div>
+                                <h6 class="font-medium text-gray-900 dark:text-white mb-2">Wrapper Props:</h6>
+                                <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                                    <li><code class="bg-gray-100 dark:bg-gray-800 px-1 rounded">allowMultiple</code> (boolean, default: false) - Allow multiple items to be open simultaneously</li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h6 class="font-medium text-gray-900 dark:text-white mb-2">Item Props:</h6>
+                                <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                                    <li><code class="bg-gray-100 dark:bg-gray-800 px-1 rounded">id</code> (string, required) - Unique identifier for the accordion item</li>
+                                    <li><code class="bg-gray-100 dark:bg-gray-800 px-1 rounded">title</code> (string) - Simple text title for the header</li>
+                                    <li><code class="bg-gray-100 dark:bg-gray-800 px-1 rounded">badge</code> (string) - Optional badge text/count to display</li>
+                                    <li><code class="bg-gray-100 dark:bg-gray-800 px-1 rounded">defaultOpen</code> (boolean, default: false) - Start expanded</li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h6 class="font-medium text-gray-900 dark:text-white mb-2">Slots:</h6>
+                                <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                                    <li><code class="bg-gray-100 dark:bg-gray-800 px-1 rounded">header</code> - Custom header content (overrides title)</li>
+                                    <li><code class="bg-gray-100 dark:bg-gray-800 px-1 rounded">actions</code> - Action buttons/links on the right side of header</li>
+                                    <li><code class="bg-gray-100 dark:bg-gray-800 px-1 rounded">default (slot)</code> - Main content of the accordion item</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
