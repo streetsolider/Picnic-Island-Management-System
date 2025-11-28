@@ -29,12 +29,12 @@
              class="fixed inset-0 z-50 overflow-y-auto">
 
             {{-- Backdrop --}}
-            <div class="fixed inset-0 bg-gray-500 dark:bg-gray-900 opacity-75 backdrop-blur-sm"
+            <div class="fixed inset-0 bg-gray-500 dark:bg-gray-900 opacity-75 backdrop-blur-sm z-40"
                  @click="$wire.closeCategoryForm()">
             </div>
 
             {{-- Modal Content --}}
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="relative z-50 flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
                      @click.stop>
                     <form wire:submit.prevent="saveCategory">
@@ -97,12 +97,12 @@
              class="fixed inset-0 z-50 overflow-y-auto">
 
             {{-- Backdrop --}}
-            <div class="fixed inset-0 bg-gray-500 dark:bg-gray-900 opacity-75 backdrop-blur-sm"
+            <div class="fixed inset-0 bg-gray-500 dark:bg-gray-900 opacity-75 backdrop-blur-sm z-40"
                  @click="$wire.closeAmenityForm()">
             </div>
 
             {{-- Modal Content --}}
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="relative z-50 flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
                      @click.stop>
                     <form wire:submit.prevent="saveAmenity">
