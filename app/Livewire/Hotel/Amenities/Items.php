@@ -29,7 +29,7 @@ class Items extends Component
     public function mount()
     {
         // Get the hotel managed by the current user
-        $this->hotel = Hotel::where('manager_id', auth()->user()->staff->id)->first();
+        $this->hotel = Hotel::where('manager_id', auth('staff')->user()->id)->first();
 
         if (!$this->hotel) {
             abort(403, 'You are not assigned to manage any hotel.');

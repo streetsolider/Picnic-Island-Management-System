@@ -29,6 +29,9 @@ Route::middleware(['auth:staff'])->group(function () {
     Route::middleware('role:hotel_manager')->prefix('hotel')->name('hotel.')->group(function () {
         Route::get('/dashboard', \App\Livewire\Hotel\Dashboard::class)->name('dashboard');
 
+        // Hotel Management (Specific Hotel)
+        Route::get('/{hotel}/manage', \App\Livewire\Hotel\Manage::class)->name('manage');
+
         // Room Management
         Route::get('/rooms', \App\Livewire\Hotel\Rooms\Index::class)->name('rooms.index');
         Route::get('/rooms/create', \App\Livewire\Hotel\Rooms\Create::class)->name('rooms.create');
