@@ -280,43 +280,44 @@
                     </div>
                 </div>
 
-                {{-- View --}}
-                <div>
-                    <label for="view" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        View
-                    </label>
-                    <select
-                        wire:model="view"
-                        id="view"
-                        class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
-                    >
-                        <option value="">Select a view</option>
-                        @foreach($views as $viewOption)
-                            <option value="{{ $viewOption }}">{{ $viewOption }} View</option>
-                        @endforeach
-                    </select>
-                    @error('view')
-                        <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
-                    @enderror
-                </div>
+                {{-- View & Maximum Occupancy --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="view" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            View
+                        </label>
+                        <select
+                            wire:model="view"
+                            id="view"
+                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                        >
+                            <option value="">Select a view</option>
+                            @foreach($views as $viewOption)
+                                <option value="{{ $viewOption }}">{{ $viewOption }} View</option>
+                            @endforeach
+                        </select>
+                        @error('view')
+                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
 
-                {{-- Maximum Occupancy --}}
-                <div>
-                    <label for="max_occupancy" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Maximum Occupancy <span class="text-red-500">*</span>
-                    </label>
-                    <input
-                        wire:model="max_occupancy"
-                        type="number"
-                        id="max_occupancy"
-                        min="1"
-                        max="10"
-                        placeholder="e.g., 2, 4"
-                        class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
-                    >
-                    @error('max_occupancy')
-                        <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
-                    @enderror
+                    <div>
+                        <label for="max_occupancy" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Maximum Occupancy <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            wire:model="max_occupancy"
+                            type="number"
+                            id="max_occupancy"
+                            min="1"
+                            max="10"
+                            placeholder="e.g., 2, 4"
+                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                        >
+                        @error('max_occupancy')
+                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
 
                 {{-- Base Price --}}
@@ -485,43 +486,44 @@
                     </div>
                 </div>
 
-                {{-- View --}}
-                <div>
-                    <label for="edit_view" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        View
-                    </label>
-                    <select
-                        wire:model="view"
-                        id="edit_view"
-                        class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
-                    >
-                        <option value="">Select a view</option>
-                        @foreach($views as $viewOption)
-                            <option value="{{ $viewOption }}">{{ $viewOption }} View</option>
-                        @endforeach
-                    </select>
-                    @error('view')
-                        <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
-                    @enderror
-                </div>
+                {{-- View & Maximum Occupancy --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="edit_view" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            View
+                        </label>
+                        <select
+                            wire:model="view"
+                            id="edit_view"
+                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                        >
+                            <option value="">Select a view</option>
+                            @foreach($views as $viewOption)
+                                <option value="{{ $viewOption }}">{{ $viewOption }} View</option>
+                            @endforeach
+                        </select>
+                        @error('view')
+                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
 
-                {{-- Maximum Occupancy --}}
-                <div>
-                    <label for="edit_max_occupancy" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Maximum Occupancy <span class="text-red-500">*</span>
-                    </label>
-                    <input
-                        wire:model="max_occupancy"
-                        type="number"
-                        id="edit_max_occupancy"
-                        min="1"
-                        max="10"
-                        placeholder="e.g., 2, 4"
-                        class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
-                    >
-                    @error('max_occupancy')
-                        <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
-                    @enderror
+                    <div>
+                        <label for="edit_max_occupancy" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Maximum Occupancy <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            wire:model="max_occupancy"
+                            type="number"
+                            id="edit_max_occupancy"
+                            min="1"
+                            max="10"
+                            placeholder="e.g., 2, 4"
+                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                        >
+                        @error('max_occupancy')
+                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
                 </div>
 
                 {{-- Base Price --}}
