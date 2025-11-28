@@ -300,42 +300,23 @@
                     @enderror
                 </div>
 
-                {{-- Floor Number & Maximum Occupancy --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="floor_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Floor Number
-                        </label>
-                        <input
-                            wire:model="floor_number"
-                            type="number"
-                            id="floor_number"
-                            min="1"
-                            placeholder="e.g., 1, 2, 3"
-                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
-                        >
-                        @error('floor_number')
-                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label for="max_occupancy" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Maximum Occupancy <span class="text-red-500">*</span>
-                        </label>
-                        <input
-                            wire:model="max_occupancy"
-                            type="number"
-                            id="max_occupancy"
-                            min="1"
-                            max="10"
-                            placeholder="e.g., 2, 4"
-                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
-                        >
-                        @error('max_occupancy')
-                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
-                        @enderror
-                    </div>
+                {{-- Maximum Occupancy --}}
+                <div>
+                    <label for="max_occupancy" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Maximum Occupancy <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                        wire:model="max_occupancy"
+                        type="number"
+                        id="max_occupancy"
+                        min="1"
+                        max="10"
+                        placeholder="e.g., 2, 4"
+                        class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                    >
+                    @error('max_occupancy')
+                        <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 {{-- Base Price --}}
@@ -524,42 +505,23 @@
                     @enderror
                 </div>
 
-                {{-- Floor Number & Maximum Occupancy --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="edit_floor_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Floor Number
-                        </label>
-                        <input
-                            wire:model="floor_number"
-                            type="number"
-                            id="edit_floor_number"
-                            min="1"
-                            placeholder="e.g., 1, 2, 3"
-                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
-                        >
-                        @error('floor_number')
-                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label for="edit_max_occupancy" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Maximum Occupancy <span class="text-red-500">*</span>
-                        </label>
-                        <input
-                            wire:model="max_occupancy"
-                            type="number"
-                            id="edit_max_occupancy"
-                            min="1"
-                            max="10"
-                            placeholder="e.g., 2, 4"
-                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
-                        >
-                        @error('max_occupancy')
-                            <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
-                        @enderror
-                    </div>
+                {{-- Maximum Occupancy --}}
+                <div>
+                    <label for="edit_max_occupancy" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Maximum Occupancy <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                        wire:model="max_occupancy"
+                        type="number"
+                        id="edit_max_occupancy"
+                        min="1"
+                        max="10"
+                        placeholder="e.g., 2, 4"
+                        class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"
+                    >
+                    @error('max_occupancy')
+                        <span class="text-red-600 text-sm mt-1">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 {{-- Base Price --}}

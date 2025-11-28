@@ -19,7 +19,6 @@ class Room extends Model
         'view',
         'base_price',
         'max_occupancy',
-        'floor_number',
         'is_available',
         'is_active',
     ];
@@ -27,7 +26,6 @@ class Room extends Model
     protected $casts = [
         'base_price' => 'decimal:2',
         'max_occupancy' => 'integer',
-        'floor_number' => 'integer',
         'is_available' => 'boolean',
         'is_active' => 'boolean',
     ];

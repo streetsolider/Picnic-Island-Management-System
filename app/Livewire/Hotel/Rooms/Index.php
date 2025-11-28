@@ -33,7 +33,6 @@ class Index extends Component
     public $view = '';
     public $max_occupancy = 2;
     public $base_price = '';
-    public $floor_number = '';
     public $selectedAmenities = [];
 
     // Room editing properties
@@ -153,7 +152,6 @@ class Index extends Component
         $this->view = '';
         $this->max_occupancy = 2;
         $this->base_price = '';
-        $this->floor_number = '';
         $this->selectedAmenities = [];
         $this->resetValidation();
     }
@@ -168,7 +166,6 @@ class Index extends Component
             'view' => 'nullable|in:' . implode(',', $this->views),
             'max_occupancy' => 'required|integer|min:1|max:10',
             'base_price' => 'required|numeric|min:0',
-            'floor_number' => 'nullable|integer|min:1',
         ];
 
         // For editing, exclude current room from unique validation
@@ -200,7 +197,6 @@ class Index extends Component
             'view' => $this->view ?: null,
             'max_occupancy' => $this->max_occupancy,
             'base_price' => $this->base_price,
-            'floor_number' => $this->floor_number ?: null,
         ]);
 
         // Sync amenities
@@ -227,7 +223,6 @@ class Index extends Component
         $this->view = $this->editingRoom->view ?? '';
         $this->max_occupancy = $this->editingRoom->max_occupancy;
         $this->base_price = $this->editingRoom->base_price;
-        $this->floor_number = $this->editingRoom->floor_number ?? '';
         $this->selectedAmenities = $this->editingRoom->amenities->pluck('id')->toArray();
 
         $this->dispatch('open-modal', 'edit-room');
@@ -244,7 +239,6 @@ class Index extends Component
         $this->view = '';
         $this->max_occupancy = 2;
         $this->base_price = '';
-        $this->floor_number = '';
         $this->selectedAmenities = [];
         $this->resetValidation();
     }
@@ -267,7 +261,6 @@ class Index extends Component
             'view' => $this->view ?: null,
             'max_occupancy' => $this->max_occupancy,
             'base_price' => $this->base_price,
-            'floor_number' => $this->floor_number ?: null,
         ]);
 
         // Sync amenities
