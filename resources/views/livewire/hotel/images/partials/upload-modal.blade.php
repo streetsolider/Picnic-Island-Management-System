@@ -61,8 +61,11 @@
 {{-- Room-Specific Upload Modal --}}
 <x-overlays.modal name="upload-room-specific-images" maxWidth="2xl" focusable>
     <div class="p-6">
+        @php
+            $selectedRoom = $selectedRoomId ? $rooms->firstWhere('id', $selectedRoomId) : null;
+        @endphp
         <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            Upload Images for Room {{ $selectedRoomId ? $rooms->firstWhere('id', $selectedRoomId)->room_number : '' }}
+            Upload Images for Room {{ $selectedRoom?->room_number ?? '' }}
         </h2>
 
         <form wire:submit.prevent="uploadRoomSpecificImages" class="space-y-4">

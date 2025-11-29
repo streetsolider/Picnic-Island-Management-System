@@ -105,6 +105,13 @@ class Manage extends Component
             ->where('room_type', $this->selectedRoomType)
             ->count();
 
+        // Check if there's already a primary image
+        $hasPrimary = RoomTypeImage::where('hotel_id', $this->hotel->id)
+            ->where('room_type', $this->selectedRoomType)
+            ->where('is_primary', true)
+            ->exists();
+
+        $isFirstImage = true;
         foreach ($this->uploadingRoomTypeImages as $image) {
             $path = $image->store(
                 "hotel-{$this->hotel->id}/room-types/{$this->selectedRoomType}",
@@ -115,9 +122,11 @@ class Manage extends Component
                 'hotel_id' => $this->hotel->id,
                 'room_type' => $this->selectedRoomType,
                 'image_path' => $path,
-                'is_primary' => false,
+                'is_primary' => !$hasPrimary && $isFirstImage,
                 'sort_order' => $sortOrder++,
             ]);
+
+            $isFirstImage = false;
         }
 
         $this->uploadingRoomTypeImages = [];
@@ -165,6 +174,12 @@ class Manage extends Component
 
         $sortOrder = RoomImage::where('room_id', $this->selectedRoomId)->count();
 
+        // Check if there's already a primary image
+        $hasPrimary = RoomImage::where('room_id', $this->selectedRoomId)
+            ->where('is_primary', true)
+            ->exists();
+
+        $isFirstImage = true;
         foreach ($this->uploadingRoomSpecificImages as $image) {
             $path = $image->store(
                 "hotel-{$this->hotel->id}/rooms/{$this->selectedRoomId}",
@@ -174,9 +189,11 @@ class Manage extends Component
             RoomImage::create([
                 'room_id' => $this->selectedRoomId,
                 'image_path' => $path,
-                'is_primary' => false,
+                'is_primary' => !$hasPrimary && $isFirstImage,
                 'sort_order' => $sortOrder++,
             ]);
+
+            $isFirstImage = false;
         }
 
         $this->uploadingRoomSpecificImages = [];
