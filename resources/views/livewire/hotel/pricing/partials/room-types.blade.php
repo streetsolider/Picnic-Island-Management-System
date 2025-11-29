@@ -6,11 +6,45 @@
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Room Type Base Pricing</h3>
             <p class="text-sm text-gray-600 dark:text-gray-400">Set base prices for each room type (in MVR)</p>
         </div>
-        <x-admin.button.primary
-            wire:click="openRoomTypePricingForm"
-            :icon="'<svg class=\'w-5 h-5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M12 4v16m8-8H4\'></path></svg>'">
-            Add Room Type Pricing
-        </x-admin.button.primary>
+        <div class="flex items-center gap-3">
+            <x-admin.help-tooltip
+                title="How Room Type Pricing Works"
+                buttonText="Room Type Pricing Explained">
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Purpose</h4>
+                        <p>Set the foundation price for each room category at your hotel.</p>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">How it works</h4>
+                        <ul class="list-disc list-inside space-y-2 ml-2">
+                            <li>Create ONE base price per room type (Standard, Superior, Deluxe, Suite, Family)</li>
+                            <li>This is the starting point before any adjustments</li>
+                            <li>All rooms of the same type start with this price</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Example</h4>
+                        <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+                            <p class="font-mono text-sm">
+                                <strong>Deluxe Room</strong> = MVR 2,500/night
+                            </p>
+                            <p class="mt-2 text-sm">
+                                All Deluxe rooms start at this base price, then view pricing, seasonal rates, and other modifiers are applied on top.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </x-admin.help-tooltip>
+
+            <x-admin.button.primary
+                wire:click="openRoomTypePricingForm"
+                :icon="'<svg class=\'w-5 h-5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M12 4v16m8-8H4\'></path></svg>'">
+                Add Room Type Pricing
+            </x-admin.button.primary>
+        </div>
     </div>
 
     {{-- Room Type Pricing Form Modal --}}

@@ -6,11 +6,52 @@
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Seasonal Pricing</h3>
             <p class="text-sm text-gray-600 dark:text-gray-400">Configure date-range based pricing adjustments</p>
         </div>
-        <x-admin.button.primary
-            wire:click="openSeasonalPricingForm"
-            :icon="'<svg class=\'w-5 h-5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M12 4v16m8-8H4\'></path></svg>'">
-            Add Seasonal Pricing
-        </x-admin.button.primary>
+        <div class="flex items-center gap-3">
+            <x-admin.help-tooltip
+                title="How Seasonal Pricing Works"
+                buttonText="Seasonal Pricing Explained">
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Purpose</h4>
+                        <p>Adjust prices based on peak seasons, holidays, or special events.</p>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">How it works</h4>
+                        <ul class="list-disc list-inside space-y-2 ml-2">
+                            <li>Create date-range based adjustments (e.g., Dec 15 - Jan 10)</li>
+                            <li>Set <strong>Fixed Amount</strong> or <strong>Percentage</strong> modifiers</li>
+                            <li>Applied per night during the specified period</li>
+                            <li>Use Priority to handle overlapping seasons (higher wins)</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Example</h4>
+                        <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+                            <p class="font-semibold mb-2">Peak Season Example:</p>
+                            <p class="font-mono text-sm">
+                                Night on Dec 20 (in Peak Season +30%):<br>
+                                Base with view = MVR 3,000<br>
+                                + Peak Season (+30%)<br>
+                                <strong>= MVR 3,900/night</strong>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Important Notes</h4>
+                        <p>Multiple seasonal rates can stack with day-type pricing for the same night.</p>
+                    </div>
+                </div>
+            </x-admin.help-tooltip>
+
+            <x-admin.button.primary
+                wire:click="openSeasonalPricingForm"
+                :icon="'<svg class=\'w-5 h-5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M12 4v16m8-8H4\'></path></svg>'">
+                Add Seasonal Pricing
+            </x-admin.button.primary>
+        </div>
     </div>
 
     {{-- Seasonal Pricing Form Modal --}}

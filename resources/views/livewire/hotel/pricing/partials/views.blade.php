@@ -6,11 +6,55 @@
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">View Pricing Modifiers</h3>
             <p class="text-sm text-gray-600 dark:text-gray-400">Add price modifiers for different room views</p>
         </div>
-        <x-admin.button.primary
-            wire:click="openViewPricingForm"
-            :icon="'<svg class=\'w-5 h-5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M12 4v16m8-8H4\'></path></svg>'">
-            Add View Pricing
-        </x-admin.button.primary>
+        <div class="flex items-center gap-3">
+            <x-admin.help-tooltip
+                title="How View Pricing Works"
+                buttonText="View Pricing Explained">
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Purpose</h4>
+                        <p>Add premium charges or discounts based on the room's view.</p>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">How it works</h4>
+                        <ul class="list-disc list-inside space-y-2 ml-2">
+                            <li>Set modifiers for each view type (Garden View, Beach View)</li>
+                            <li>Choose <strong>Fixed Amount</strong> (e.g., +MVR 500) or <strong>Percentage</strong> (e.g., +20%)</li>
+                            <li>Applied on top of the base room type price</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Examples</h4>
+
+                        <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-3">
+                            <p class="font-semibold mb-2">Fixed Amount Example:</p>
+                            <p class="font-mono text-sm">
+                                Deluxe Room base = MVR 2,500<br>
+                                + Beach View (+MVR 500)<br>
+                                <strong>= MVR 3,000/night</strong>
+                            </p>
+                        </div>
+
+                        <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+                            <p class="font-semibold mb-2">Percentage Example:</p>
+                            <p class="font-mono text-sm">
+                                Deluxe Room base = MVR 2,500<br>
+                                + Beach View (+20%)<br>
+                                <strong>= MVR 3,000/night</strong>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </x-admin.help-tooltip>
+
+            <x-admin.button.primary
+                wire:click="openViewPricingForm"
+                :icon="'<svg class=\'w-5 h-5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M12 4v16m8-8H4\'></path></svg>'">
+                Add View Pricing
+            </x-admin.button.primary>
+        </div>
     </div>
 
     {{-- View Pricing Form Modal --}}

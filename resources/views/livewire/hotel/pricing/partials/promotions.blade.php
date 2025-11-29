@@ -6,11 +6,64 @@
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Promotional Discounts</h3>
             <p class="text-sm text-gray-600 dark:text-gray-400">Create flexible promotional campaigns with custom conditions</p>
         </div>
-        <x-admin.button.primary
-            wire:click="openPromotionForm"
-            :icon="'<svg class=\'w-5 h-5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M12 4v16m8-8H4\'></path></svg>'">
-            Add Promotion
-        </x-admin.button.primary>
+        <div class="flex items-center gap-3">
+            <x-admin.help-tooltip
+                title="How Promotional Discounts Work"
+                buttonText="Promotional Discounts Explained">
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Purpose</h4>
+                        <p>Create flexible promotional campaigns to attract more bookings.</p>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">How it works</h4>
+                        <ul class="list-disc list-inside space-y-2 ml-2">
+                            <li>Applied to the <strong>TOTAL</strong> after all other pricing (view, seasonal, day-type)</li>
+                            <li>Can be based on multiple conditions combined</li>
+                            <li>Auto-apply or require promo code</li>
+                            <li>Best matching promotion automatically selected</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Condition Examples</h4>
+                        <ul class="list-disc list-inside space-y-1 ml-2">
+                            <li><strong>Multi-room:</strong> "Book 2+ rooms, get 15% off"</li>
+                            <li><strong>Early Bird:</strong> "Book 30 days ahead, save MVR 1,000"</li>
+                            <li><strong>Duration:</strong> "2-3 night stays get MVR 500 off"</li>
+                            <li><strong>Room Type:</strong> "Deluxe & Suite rooms 12% off"</li>
+                            <li><strong>Promo Code:</strong> "LOCAL2025 for 20% resident discount"</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Full Example</h4>
+                        <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+                            <p class="font-semibold mb-2">Family Fun Package:</p>
+                            <p class="font-mono text-sm">
+                                3-night booking, 2 rooms<br>
+                                Subtotal = MVR 13,260<br>
+                                "Family Fun Package" (2+ rooms, -15%)<br>
+                                <strong>Final: MVR 11,271</strong><br>
+                                (Saved MVR 1,989)
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Priority</h4>
+                        <p>If multiple promotions match, the one with highest priority (or biggest discount) wins.</p>
+                    </div>
+                </div>
+            </x-admin.help-tooltip>
+
+            <x-admin.button.primary
+                wire:click="openPromotionForm"
+                :icon="'<svg class=\'w-5 h-5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M12 4v16m8-8H4\'></path></svg>'">
+                Add Promotion
+            </x-admin.button.primary>
+        </div>
     </div>
 
     {{-- Promotion Form Modal --}}

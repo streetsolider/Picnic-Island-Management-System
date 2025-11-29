@@ -50,6 +50,9 @@ Route::middleware(['auth:staff'])->group(function () {
 
         // Pricing Management
         Route::get('/pricing', \App\Livewire\Hotel\Pricing\Manage::class)->name('pricing.manage');
+
+        // Room Images Management
+        Route::get('/images', \App\Livewire\Hotel\Images\Manage::class)->name('images.manage');
     });
 
     // Ferry Operator Dashboard

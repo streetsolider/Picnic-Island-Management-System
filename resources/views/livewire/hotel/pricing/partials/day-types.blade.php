@@ -6,11 +6,52 @@
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Day Type Pricing</h3>
             <p class="text-sm text-gray-600 dark:text-gray-400">Set pricing based on days of the week (weekends, weekdays, etc.)</p>
         </div>
-        <x-admin.button.primary
-            wire:click="openDayTypePricingForm"
-            :icon="'<svg class=\'w-5 h-5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M12 4v16m8-8H4\'></path></svg>'">
-            Add Day Type Pricing
-        </x-admin.button.primary>
+        <div class="flex items-center gap-3">
+            <x-admin.help-tooltip
+                title="How Day Type Pricing Works"
+                buttonText="Day Type Pricing Explained">
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Purpose</h4>
+                        <p>Charge different rates based on the day of the week.</p>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">How it works</h4>
+                        <ul class="list-disc list-inside space-y-2 ml-2">
+                            <li>Create pricing rules for specific days (e.g., Weekend = Fri-Sat)</li>
+                            <li>Select which days apply to each rule</li>
+                            <li>Set <strong>Fixed Amount</strong> or <strong>Percentage</strong> modifiers</li>
+                            <li>Applied per night on matching days</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Example</h4>
+                        <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+                            <p class="font-semibold mb-2">Weekend Rate Example:</p>
+                            <p class="font-mono text-sm">
+                                Friday night (Weekend Rate +20%):<br>
+                                Base after seasonal = MVR 3,900<br>
+                                + Weekend (+20%)<br>
+                                <strong>= MVR 4,680/night</strong>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Important Notes</h4>
+                        <p>Day-type pricing stacks with seasonal pricing for the same night.</p>
+                    </div>
+                </div>
+            </x-admin.help-tooltip>
+
+            <x-admin.button.primary
+                wire:click="openDayTypePricingForm"
+                :icon="'<svg class=\'w-5 h-5\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M12 4v16m8-8H4\'></path></svg>'">
+                Add Day Type Pricing
+            </x-admin.button.primary>
+        </div>
     </div>
 
     {{-- Day Type Pricing Form Modal --}}
