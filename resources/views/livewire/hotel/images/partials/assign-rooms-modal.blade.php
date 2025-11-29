@@ -2,7 +2,7 @@
 <x-admin.modal.form
     name="assign-rooms-modal"
     :show="$showAssignRoomsModal"
-    :title="'Assign Rooms to ' . ($galleries->firstWhere('id', $selectedGalleryId)?->name ?? 'Gallery')"
+    :title="'Assign Rooms to ' . ($this->galleries->firstWhere('id', $selectedGalleryId)?->name ?? 'Gallery')"
     submitText="Assign to Selected Rooms"
     wire:submit="assignRoomsToGallery"
     :loading="'assignRoomsToGallery'"

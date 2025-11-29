@@ -15,7 +15,7 @@
     </div>
 
     {{-- Galleries Grid --}}
-    @if($galleries->isEmpty())
+    @if($this->galleries->isEmpty())
         <x-admin.card.empty-state
             title="No galleries yet"
             description="Create your first gallery to organize room images. You can then assign galleries to multiple rooms."
@@ -27,8 +27,8 @@
             </x-slot:action>
         </x-admin.card.empty-state>
     @else
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            @foreach($galleries as $gallery)
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            @foreach($this->galleries as $gallery)
                 <x-admin.card.base
                     class="cursor-pointer transition-all {{ $selectedGalleryId == $gallery->id ? 'ring-2 ring-indigo-500 border-indigo-500' : 'hover:shadow-lg' }}"
                     wire:click="selectGallery({{ $gallery->id }})">
@@ -45,23 +45,19 @@
                     </div>
 
                     {{-- Stats --}}
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300 dark:ring-1 dark:ring-blue-500/30">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
-                            <span class="text-sm text-gray-600 dark:text-gray-400">
-                                {{ $gallery->images_count }} {{ Str::plural('image', $gallery->images_count) }}
-                            </span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            {{ $gallery->images_count ?? 0 }} {{ Str::plural('image', $gallery->images_count ?? 0) }}
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-300 dark:ring-1 dark:ring-purple-500/30">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
-                            <span class="text-sm text-gray-600 dark:text-gray-400">
-                                {{ $gallery->rooms_count }} {{ Str::plural('room', $gallery->rooms_count) }}
-                            </span>
-                        </div>
+                            {{ $gallery->rooms_count ?? 0 }} {{ Str::plural('room', $gallery->rooms_count ?? 0) }}
+                        </span>
                     </div>
 
                     {{-- Actions --}}
@@ -88,7 +84,7 @@
         {{-- Selected Gallery Images --}}
         @if($selectedGalleryId)
             @php
-                $selectedGallery = $galleries->firstWhere('id', $selectedGalleryId);
+                $selectedGallery = $this->galleries->firstWhere('id', $selectedGalleryId);
             @endphp
 
             <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
@@ -312,7 +308,7 @@
 <x-overlays.modal name="upload-gallery-images" maxWidth="2xl" focusable>
     <div class="p-6">
         @php
-            $selectedGallery = $selectedGalleryId ? $galleries->firstWhere('id', $selectedGalleryId) : null;
+            $selectedGallery = $selectedGalleryId ? $this->galleries->firstWhere('id', $selectedGalleryId) : null;
         @endphp
         <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
             Upload Images to {{ $selectedGallery?->name ?? 'Gallery' }}
@@ -338,10 +334,10 @@
 
             {{-- Live Preview --}}
             @if($uploadingGalleryImages)
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     @foreach($uploadingGalleryImages as $image)
                         <div class="relative">
-                            <img src="{{ $image->temporaryUrl() }}" class="w-full h-32 object-cover rounded-lg">
+                            <img src="{{ $image->temporaryUrl() }}" class="w-full h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700">
                         </div>
                     @endforeach
                 </div>

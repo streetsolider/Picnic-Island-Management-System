@@ -33,7 +33,6 @@ class Manage extends Component
     public $uploadingRoomSpecificImages = [];
 
     // Galleries
-    public $galleries = [];
     public $selectedGalleryId = null;
     public $galleryImages = [];
     public $uploadingGalleryImages = [];
@@ -81,7 +80,6 @@ class Manage extends Component
         $this->loadRoomTypeImages();
         $this->loadAllRoomTypeImages();
         $this->loadRooms();
-        $this->loadGalleries();
     }
 
     public function loadRooms()
@@ -98,8 +96,6 @@ class Manage extends Component
             $this->loadRoomTypeImages();
         } elseif ($tab === 'room_specific' && $this->selectedRoomId) {
             $this->loadRoomSpecificImages();
-        } elseif ($tab === 'galleries') {
-            $this->loadGalleries();
         }
     }
 
@@ -308,7 +304,6 @@ class Manage extends Component
             Storage::disk('public')->delete($image->image_path);
             $image->delete();
             $this->loadGalleryImages();
-            $this->loadGalleries(); // Refresh counts
         } else {
             $image = RoomImage::findOrFail($this->deletingImageId);
             Storage::disk('public')->delete($image->image_path);
@@ -441,9 +436,13 @@ class Manage extends Component
 
     // ==================== GALLERIES ====================
 
-    public function loadGalleries()
+    /**
+     * Computed property for galleries with counts
+     * This ensures counts are always fresh on every render
+     */
+    public function getGalleriesProperty()
     {
-        $this->galleries = Gallery::where('hotel_id', $this->hotel->id)
+        return Gallery::where('hotel_id', $this->hotel->id)
             ->withCount('images')
             ->withCount('rooms')
             ->get();
@@ -501,7 +500,6 @@ class Manage extends Component
             $message = 'Gallery created successfully!';
         }
 
-        $this->loadGalleries();
         $this->resetGalleryForm();
         $this->showGalleryForm = false;
         $this->dispatch('close-modal', 'gallery-form');
@@ -560,7 +558,6 @@ class Manage extends Component
 
         $gallery->delete();
 
-        $this->loadGalleries();
         $this->deletingGalleryId = null;
 
         // Show success toast
@@ -630,7 +627,6 @@ class Manage extends Component
         $this->resetAssignmentForm();
         $this->showAssignRoomsModal = false;
         $this->dispatch('close-modal', 'assign-rooms-modal');
-        $this->loadGalleries(); // Refresh counts
 
         // Show success toast
         $this->showToast = now()->timestamp;
@@ -749,7 +745,6 @@ class Manage extends Component
 
         $this->uploadingGalleryImages = [];
         $this->loadGalleryImages();
-        $this->loadGalleries(); // Refresh gallery image counts
         $this->dispatch('close-modal', 'upload-gallery-images');
 
         // Show success toast
