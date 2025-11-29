@@ -168,4 +168,12 @@ class Hotel extends Model
     {
         return $this->hasMany(RoomTypePolicyOverride::class);
     }
+
+    /**
+     * Get the galleries for this hotel
+     */
+    public function galleries(): HasMany
+    {
+        return $this->hasMany(Gallery::class);
+    }
 }

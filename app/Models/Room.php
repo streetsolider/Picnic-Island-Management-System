@@ -21,6 +21,7 @@ class Room extends Model
         'max_occupancy',
         'is_available',
         'is_active',
+        'gallery_id',
     ];
 
     protected $casts = [
@@ -36,6 +37,14 @@ class Room extends Model
     public function hotel(): BelongsTo
     {
         return $this->belongsTo(Hotel::class);
+    }
+
+    /**
+     * Get the gallery assigned to this room
+     */
+    public function gallery(): BelongsTo
+    {
+        return $this->belongsTo(Gallery::class);
     }
 
 
