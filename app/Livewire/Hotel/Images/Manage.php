@@ -22,6 +22,7 @@ class Manage extends Component
     // Room Type Images
     public $selectedRoomType = 'Standard';
     public $roomTypeImages = [];
+    public $allRoomTypeImages = []; // Grouped by room type
     public $uploadingRoomTypeImages = [];
 
     // Room-Specific Images
@@ -53,6 +54,7 @@ class Manage extends Component
         }
 
         $this->loadRoomTypeImages();
+        $this->loadAllRoomTypeImages();
         $this->loadRooms();
     }
 
@@ -81,6 +83,17 @@ class Manage extends Component
             ->where('room_type', $this->selectedRoomType)
             ->orderBy('sort_order')
             ->get();
+    }
+
+    public function loadAllRoomTypeImages()
+    {
+        $images = RoomTypeImage::where('hotel_id', $this->hotel->id)
+            ->orderBy('room_type')
+            ->orderBy('sort_order')
+            ->get();
+
+        // Group by room type and convert to array for Livewire
+        $this->allRoomTypeImages = $images->groupBy('room_type')->all();
     }
 
     public function changeRoomType($type)
@@ -131,6 +144,7 @@ class Manage extends Component
 
         $this->uploadingRoomTypeImages = [];
         $this->loadRoomTypeImages();
+        $this->loadAllRoomTypeImages();
         $this->dispatch('close-modal', 'upload-room-type-images');
 
         // Show success toast
@@ -221,6 +235,7 @@ class Manage extends Component
             // Set selected as primary
             RoomTypeImage::find($imageId)->update(['is_primary' => true]);
             $this->loadRoomTypeImages();
+            $this->loadAllRoomTypeImages();
         } else {
             // Reset all to non-primary for this room
             RoomImage::where('room_id', $this->selectedRoomId)
@@ -259,6 +274,7 @@ class Manage extends Component
             Storage::disk('public')->delete($image->image_path);
             $image->delete();
             $this->loadRoomTypeImages();
+            $this->loadAllRoomTypeImages();
         } else {
             $image = RoomImage::findOrFail($this->deletingImageId);
             Storage::disk('public')->delete($image->image_path);
@@ -322,6 +338,7 @@ class Manage extends Component
             }
 
             $this->loadRoomTypeImages();
+            $this->loadAllRoomTypeImages();
         } else {
             $image = RoomImage::find($imageId);
             $prevImage = RoomImage::where('room_id', $this->selectedRoomId)
@@ -363,6 +380,7 @@ class Manage extends Component
             }
 
             $this->loadRoomTypeImages();
+            $this->loadAllRoomTypeImages();
         } else {
             $image = RoomImage::find($imageId);
             $nextImage = RoomImage::where('room_id', $this->selectedRoomId)
