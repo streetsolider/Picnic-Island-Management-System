@@ -22,7 +22,7 @@ class HotelSeeder extends Seeder
 
         $hotels = [
             [
-                'name' => 'Paradise Bay Resort',
+                'name' => 'Paradise Bay Hotel',
                 'location' => [
                     'latitude' => 6.5244,
                     'longitude' => 3.3792,

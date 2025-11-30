@@ -121,7 +121,7 @@
                             <x-admin.table.header>Type</x-admin.table.header>
                             <x-admin.table.header>Bed Config</x-admin.table.header>
                             <x-admin.table.header>View</x-admin.table.header>
-                            <x-admin.table.header>Price</x-admin.table.header>
+                            <x-admin.table.header>Base Price</x-admin.table.header>
                             <x-admin.table.header>Status</x-admin.table.header>
                             <x-admin.table.header>Actions</x-admin.table.header>
                         </tr>
@@ -144,7 +144,11 @@
                                     {{ $room->view ? $room->view . ' View' : 'N/A' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    MVR {{ number_format($room->base_price, 2) }}
+                                    @if(isset($basePrices[$room->room_type]))
+                                        <span class="font-semibold text-gray-900 dark:text-gray-100">MVR {{ number_format($basePrices[$room->room_type], 2) }}</span>
+                                    @else
+                                        <span class="text-gray-400 dark:text-gray-500">Not set</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <x-admin.badge.status
@@ -176,7 +180,7 @@
 
                 {{-- Pagination --}}
                 <div class="mt-4">
-                    {{ $rooms->links() }}
+                    <x-admin.pagination :paginator="$rooms" />
                 </div>
             @else
                 <x-admin.card.empty-state

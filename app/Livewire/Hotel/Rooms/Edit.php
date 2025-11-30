@@ -19,9 +19,7 @@ class Edit extends Component
     public $bed_size = 'Queen';
     public $bed_count = 'Single';
     public $view = '';
-    public $base_price = '';
     public $max_occupancy = 2;
-    public $floor_number = '';
 
     // Amenities
     public $selectedAmenities = [];
@@ -50,9 +48,7 @@ class Edit extends Component
         $this->bed_size = $this->room->bed_size;
         $this->bed_count = $this->room->bed_count;
         $this->view = $this->room->view ?? '';
-        $this->base_price = $this->room->base_price;
         $this->max_occupancy = $this->room->max_occupancy;
-        $this->floor_number = $this->room->floor_number ?? '';
 
         // Load existing amenities
         $this->selectedAmenities = $this->room->amenities->pluck('id')->toArray();
@@ -66,9 +62,7 @@ class Edit extends Component
             'bed_size' => 'required|in:' . implode(',', $this->bedSizes),
             'bed_count' => 'required|in:' . implode(',', $this->bedCounts),
             'view' => 'nullable|in:' . implode(',', $this->views),
-            'base_price' => 'required|numeric|min:0',
             'max_occupancy' => 'required|integer|min:1|max:10',
-            'floor_number' => 'nullable|integer|min:1',
         ];
     }
 
@@ -118,9 +112,7 @@ class Edit extends Component
             'bed_size' => $this->bed_size,
             'bed_count' => $this->bed_count,
             'view' => $this->view ?: null,
-            'base_price' => $this->base_price,
             'max_occupancy' => $this->max_occupancy,
-            'floor_number' => $this->floor_number ?: null,
         ]);
 
         // Sync amenities to the room

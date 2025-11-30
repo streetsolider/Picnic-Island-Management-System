@@ -7,16 +7,31 @@ use Livewire\Volt\Volt;
 // Public home page
 Route::get('/', Home::class)->name('home');
 
-// Guest (Customer) Routes - Temporarily disabled
-// Route::middleware(['auth:web', 'verified'])->group(function () {
-//     // Guest Dashboard
-//     Route::get('/dashboard', function () {
-//         return view('dashboard');
-//     })->name('dashboard');
-//
-//     // Profile
-//     Route::view('profile', 'profile')->name('profile');
-// });
+// Public booking search (no auth required)
+Route::get('/booking/search', \App\Livewire\Visitor\Booking\Search::class)->name('booking.search');
+
+// Public room details (no auth required)
+Route::get('/booking/room/{room}', \App\Livewire\Visitor\Booking\RoomDetails::class)->name('booking.room.details');
+
+// Guest (Customer) Routes
+Route::middleware(['auth:web', 'verified'])->group(function () {
+    // Guest Dashboard
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    // Profile
+    Route::view('profile', 'profile')->name('profile');
+
+    // Hotel Booking Routes (Auth Required)
+    Route::prefix('booking')->name('booking.')->group(function () {
+        Route::get('/create/{room}', \App\Livewire\Visitor\Booking\Create::class)->name('create');
+        Route::get('/confirmation/{booking}', \App\Livewire\Visitor\Booking\Confirmation::class)->name('confirmation');
+    });
+
+    // My Bookings
+    Route::get('/my-bookings', \App\Livewire\Visitor\Booking\MyBookings::class)->name('my-bookings');
+});
 
 // Staff Routes (using staff guard)
 Route::middleware(['auth:staff'])->group(function () {
@@ -53,6 +68,18 @@ Route::middleware(['auth:staff'])->group(function () {
 
         // Room Images Management
         Route::get('/images', \App\Livewire\Hotel\Images\Manage::class)->name('images.manage');
+
+        // Booking Management (Coming Soon)
+        // Route::get('/bookings', \App\Livewire\Hotel\Bookings\Index::class)->name('bookings.index');
+        // Route::get('/bookings/{booking}', \App\Livewire\Hotel\Bookings\Show::class)->name('bookings.show');
+
+        // Room Availability Management (Coming Soon)
+        // Route::get('/availability', \App\Livewire\Hotel\Availability\Manage::class)->name('availability.manage');
+
+        // Reports (Coming Soon)
+        // Route::get('/reports/occupancy', \App\Livewire\Hotel\Reports\Occupancy::class)->name('reports.occupancy');
+        // Route::get('/reports/revenue', \App\Livewire\Hotel\Reports\Revenue::class)->name('reports.revenue');
+        // Route::get('/reports/bookings', \App\Livewire\Hotel\Reports\BookingHistory::class)->name('reports.bookings');
     });
 
     // Ferry Operator Dashboard

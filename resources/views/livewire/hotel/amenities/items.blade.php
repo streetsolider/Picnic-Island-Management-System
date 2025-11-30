@@ -210,7 +210,7 @@
 
         {{-- Pagination --}}
         <div class="mt-4">
-            {{ $amenities->links() }}
+            <x-admin.pagination :paginator="$amenities" />
         </div>
     @endif
 </div>

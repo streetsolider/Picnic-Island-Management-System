@@ -23,10 +23,10 @@
                         class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">Activities</a>
                     <a href="#about"
                         class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">About</a>
-                    <button
+                    <a href="{{ route('booking.search') }}" wire:navigate
                         class="bg-brand-secondary hover:bg-brand-secondary/90 text-white px-6 py-2.5 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg shadow-brand-secondary/30">
                         Book Now
-                    </button>
+                    </a>
                 </div>
 
                 {{-- Mobile menu button --}}
@@ -93,14 +93,14 @@
                         x-show="show" x-transition:enter="transition ease-out duration-700 delay-600"
                         x-transition:enter-start="opacity-0 translate-y-8"
                         x-transition:enter-end="opacity-100 translate-y-0">
-                        <button
+                        <a href="{{ route('booking.search') }}" wire:navigate
                             class="w-full sm:w-auto bg-brand-primary hover:bg-brand-primary/90 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all transform hover:scale-105 shadow-xl shadow-brand-primary/30 flex items-center justify-center gap-2">
                             Start Your Journey
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                             </svg>
-                        </button>
+                        </a>
                         <button
                             class="w-full sm:w-auto bg-white hover:bg-gray-50 text-brand-dark border border-gray-200 px-8 py-4 rounded-full font-semibold text-lg transition-all hover:shadow-lg flex items-center justify-center gap-2">
                             <svg class="w-5 h-5 text-brand-secondary" fill="none" stroke="currentColor"

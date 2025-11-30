@@ -14,11 +14,11 @@ class HotelPolicySeeder extends Seeder
      */
     public function run(): void
     {
-        // Find Paradise Bay Resort Hotel
-        $hotel = Hotel::where('name', 'Paradise Bay Resort')->first();
+        // Find Paradise Bay Hotel
+        $hotel = Hotel::where('name', 'Paradise Bay Hotel')->first();
 
         if (!$hotel) {
-            $this->command->error('Paradise Bay hotel not found!');
+            $this->command->error('Paradise Bay Hotel not found!');
             return;
         }
 

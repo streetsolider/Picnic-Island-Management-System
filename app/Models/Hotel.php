@@ -176,4 +176,20 @@ class Hotel extends Model
     {
         return $this->hasMany(Gallery::class);
     }
+
+    /**
+     * Get the bookings for this hotel
+     */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(HotelBooking::class);
+    }
+
+    /**
+     * Get the promotional discounts for this hotel
+     */
+    public function promotionalDiscounts(): HasMany
+    {
+        return $this->hasMany(PromotionalDiscount::class);
+    }
 }

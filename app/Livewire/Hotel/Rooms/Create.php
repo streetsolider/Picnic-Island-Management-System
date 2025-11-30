@@ -20,9 +20,7 @@ class Create extends Component
     public $bed_size = 'Queen';
     public $bed_count = 'Single';
     public $view = '';
-    public $base_price = '';
     public $max_occupancy = 2;
-    public $floor_number = '';
 
     // Amenities
     public $selectedAmenities = [];
@@ -55,9 +53,7 @@ class Create extends Component
             'bed_size' => 'required|in:' . implode(',', $this->bedSizes),
             'bed_count' => 'required|in:' . implode(',', $this->bedCounts),
             'view' => 'nullable|in:' . implode(',', $this->views),
-            'base_price' => 'required|numeric|min:0',
             'max_occupancy' => 'required|integer|min:1|max:10',
-            'floor_number' => 'nullable|integer|min:1',
         ];
     }
 
@@ -115,9 +111,7 @@ class Create extends Component
             'bed_size' => $this->bed_size,
             'bed_count' => $this->bed_count,
             'view' => $this->view ?: null,
-            'base_price' => $this->base_price,
             'max_occupancy' => $this->max_occupancy,
-            'floor_number' => $this->floor_number ?: null,
         ]);
 
         // Sync amenities to the room

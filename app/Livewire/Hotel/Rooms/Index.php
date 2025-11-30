@@ -32,7 +32,6 @@ class Index extends Component
     public $bed_count = 'Single';
     public $view = '';
     public $max_occupancy = 2;
-    public $base_price = '';
     public $selectedAmenities = [];
 
     // Room editing properties
@@ -151,7 +150,6 @@ class Index extends Component
         $this->bed_count = 'Single';
         $this->view = '';
         $this->max_occupancy = 2;
-        $this->base_price = '';
         $this->selectedAmenities = [];
         $this->resetValidation();
     }
@@ -165,7 +163,6 @@ class Index extends Component
             'bed_count' => 'required|in:' . implode(',', $this->bedCounts),
             'view' => 'nullable|in:' . implode(',', $this->views),
             'max_occupancy' => 'required|integer|min:1|max:10',
-            'base_price' => 'required|numeric|min:0',
         ];
 
         // For editing, exclude current room from unique validation
@@ -196,7 +193,6 @@ class Index extends Component
             'bed_count' => $this->bed_count,
             'view' => $this->view ?: null,
             'max_occupancy' => $this->max_occupancy,
-            'base_price' => $this->base_price,
         ]);
 
         // Sync amenities
@@ -222,7 +218,6 @@ class Index extends Component
         $this->bed_count = $this->editingRoom->bed_count;
         $this->view = $this->editingRoom->view ?? '';
         $this->max_occupancy = $this->editingRoom->max_occupancy;
-        $this->base_price = $this->editingRoom->base_price;
         $this->selectedAmenities = $this->editingRoom->amenities->pluck('id')->toArray();
 
         $this->dispatch('open-modal', 'edit-room');
@@ -238,7 +233,6 @@ class Index extends Component
         $this->bed_count = 'Single';
         $this->view = '';
         $this->max_occupancy = 2;
-        $this->base_price = '';
         $this->selectedAmenities = [];
         $this->resetValidation();
     }
@@ -260,7 +254,6 @@ class Index extends Component
             'bed_count' => $this->bed_count,
             'view' => $this->view ?: null,
             'max_occupancy' => $this->max_occupancy,
-            'base_price' => $this->base_price,
         ]);
 
         // Sync amenities
@@ -299,11 +292,17 @@ class Index extends Component
             ->orderBy('sort_order')
             ->get();
 
+        // Get base prices for each room type
+        $basePrices = \App\Models\RoomTypePricing::where('hotel_id', $this->hotel->id)
+            ->pluck('base_price', 'room_type')
+            ->toArray();
+
         return view('livewire.hotel.rooms.index', [
             'rooms' => $rooms,
             'roomTypes' => ['Standard', 'Superior', 'Deluxe', 'Suite', 'Family'],
             'bedSizes' => ['King', 'Queen', 'Twin'],
             'amenityCategories' => $amenityCategories,
+            'basePrices' => $basePrices,
         ]);
     }
 }
