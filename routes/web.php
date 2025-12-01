@@ -10,6 +10,9 @@ Route::get('/', Home::class)->name('home');
 // Public booking search (no auth required)
 Route::get('/booking/search', \App\Livewire\Visitor\Booking\Search::class)->name('booking.search');
 
+// Public hotel rooms page (no auth required)
+Route::get('/booking/hotel/{hotel}/rooms', \App\Livewire\Visitor\Booking\HotelRooms::class)->name('booking.hotel.rooms');
+
 // Public room details (no auth required)
 Route::get('/booking/room/{room}', \App\Livewire\Visitor\Booking\RoomDetails::class)->name('booking.room.details');
 
@@ -69,9 +72,9 @@ Route::middleware(['auth:staff'])->group(function () {
         // Room Images Management
         Route::get('/images', \App\Livewire\Hotel\Images\Manage::class)->name('images.manage');
 
-        // Booking Management (Coming Soon)
-        // Route::get('/bookings', \App\Livewire\Hotel\Bookings\Index::class)->name('bookings.index');
-        // Route::get('/bookings/{booking}', \App\Livewire\Hotel\Bookings\Show::class)->name('bookings.show');
+        // Booking Management
+        Route::get('/bookings', \App\Livewire\Hotel\Bookings\Index::class)->name('bookings.index');
+        Route::get('/bookings/{booking}', \App\Livewire\Hotel\Bookings\Show::class)->name('bookings.show');
 
         // Room Availability Management (Coming Soon)
         // Route::get('/availability', \App\Livewire\Hotel\Availability\Manage::class)->name('availability.manage');

@@ -78,53 +78,36 @@ class Room extends Model
     }
 
     /**
-     * Get the images specific to this room (overrides)
-     */
-    public function images(): HasMany
-    {
-        return $this->hasMany(RoomImage::class)->orderBy('sort_order');
-    }
-
-    /**
-     * Get all images for this room.
-     * Returns room-specific images if they exist, otherwise falls back to room type default images.
+     * Get all images for this room from the gallery.
      */
     public function getAllImages(): Collection
     {
-        // First, check if this room has specific images
-        $roomImages = $this->images;
-
-        if ($roomImages->isNotEmpty()) {
-            return $roomImages;
+        if ($this->gallery_id && $this->gallery) {
+            return $this->gallery->images;
         }
 
-        // Fall back to room type default images
-        return RoomTypeImage::forType($this->hotel_id, $this->room_type)->get();
+        return collect();
     }
 
     /**
      * Get the primary image for this room.
-     * Returns room-specific primary image if it exists, otherwise falls back to room type primary image.
      */
     public function getPrimaryImage(): ?object
     {
-        // First, check if this room has a specific primary image
-        $roomPrimaryImage = $this->images()->primary()->first();
-
-        if ($roomPrimaryImage) {
-            return $roomPrimaryImage;
+        if ($this->gallery_id && $this->gallery) {
+            return $this->gallery->images()->where('is_primary', true)->first()
+                   ?? $this->gallery->images()->first();
         }
 
-        // Fall back to room type primary image
-        return RoomTypeImage::forType($this->hotel_id, $this->room_type)->primary()->first();
+        return null;
     }
 
     /**
-     * Check if this room has specific images (overrides)
+     * Check if this room has images
      */
-    public function hasSpecificImages(): bool
+    public function hasImages(): bool
     {
-        return $this->images()->exists();
+        return $this->gallery_id && $this->gallery && $this->gallery->images()->exists();
     }
 
     /**

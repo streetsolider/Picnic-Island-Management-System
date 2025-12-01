@@ -13,7 +13,7 @@ class Create extends Component
     public Room $room;
     public $checkIn;
     public $checkOut;
-    public $guests;
+    public $guests = 2; // Default value
     public $specialRequests = '';
     public $pricing = null;
     public $errors = [];
@@ -33,12 +33,22 @@ class Create extends Component
 
         $this->room = $room->load(['hotel']);
 
+        // Validate guest count against room capacity
+        if ($this->guests > $this->room->max_occupancy) {
+            session()->flash('error', "This room can accommodate a maximum of {$this->room->max_occupancy} guests. Please search for rooms that can accommodate {$this->guests} guests.");
+            return redirect()->route('booking.search', [
+                'checkIn' => $this->checkIn,
+                'checkOut' => $this->checkOut,
+                'guests' => $this->guests,
+            ]);
+        }
+
         // Calculate pricing
         $pricingCalculator = app(PricingCalculator::class);
         $this->pricing = $pricingCalculator->calculateRoomPrice(
             $this->room,
-            $this->checkIn,
-            $this->checkOut
+            \Carbon\Carbon::parse($this->checkIn),
+            \Carbon\Carbon::parse($this->checkOut)
         );
     }
 

@@ -34,12 +34,24 @@ class RoomDetails extends Component
             $this->checkOut = Carbon::today()->addDays(2)->format('Y-m-d');
         }
 
+        // Validate guest count against room capacity
+        if ($this->guests > $this->room->max_occupancy) {
+            // Adjust guests to room capacity
+            $this->guests = $this->room->max_occupancy;
+        }
+
         $this->calculatePricing();
     }
 
     public function updated($property)
     {
         if (in_array($property, ['checkIn', 'checkOut', 'guests'])) {
+            // Validate guest count
+            if ($property === 'guests' && $this->guests > $this->room->max_occupancy) {
+                $this->guests = $this->room->max_occupancy;
+                session()->flash('warning', "This room can accommodate a maximum of {$this->room->max_occupancy} guests.");
+            }
+
             $this->calculatePricing();
         }
     }
@@ -58,8 +70,8 @@ class RoomDetails extends Component
         $pricingCalculator = app(PricingCalculator::class);
         $this->pricing = $pricingCalculator->calculateRoomPrice(
             $this->room,
-            $this->checkIn,
-            $this->checkOut
+            Carbon::parse($this->checkIn),
+            Carbon::parse($this->checkOut)
         );
     }
 
@@ -67,15 +79,17 @@ class RoomDetails extends Component
     {
         // Check if user is logged in
         if (!auth()->check()) {
-            // Redirect to login with return URL
-            return redirect()->route('login', [
-                'redirect' => route('booking.create', [
-                    'room' => $this->room->id,
-                    'checkIn' => $this->checkIn,
-                    'checkOut' => $this->checkOut,
-                    'guests' => $this->guests,
-                ])
+            // Store intended URL and redirect to login
+            $intendedUrl = route('booking.create', [
+                'room' => $this->room->id,
+                'checkIn' => $this->checkIn,
+                'checkOut' => $this->checkOut,
+                'guests' => $this->guests,
             ]);
+
+            session()->put('url.intended', $intendedUrl);
+
+            return redirect()->route('login');
         }
 
         // Redirect to booking form

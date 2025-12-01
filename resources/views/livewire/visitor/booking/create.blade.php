@@ -111,7 +111,7 @@
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-600">Nights</span>
-                            <span class="font-semibold text-brand-dark">{{ $pricing['nights'] }} {{ Str::plural('Night', $pricing['nights']) }}</span>
+                            <span class="font-semibold text-brand-dark">{{ $pricing['number_of_nights'] }} {{ Str::plural('Night', $pricing['number_of_nights']) }}</span>
                         </div>
                     </div>
 
@@ -119,7 +119,7 @@
                     <div class="border-t border-gray-100 pt-4 mb-6 space-y-2 text-sm">
                         <div class="flex justify-between text-gray-600">
                             <span>Room rate</span>
-                            <span>MVR {{ number_format($pricing['base_total'], 2) }}</span>
+                            <span>MVR {{ number_format($pricing['subtotal_before_discount'], 2) }}</span>
                         </div>
                         @if (isset($pricing['view_adjustment']) && $pricing['view_adjustment'] != 0)
                             <div class="flex justify-between text-gray-600">
@@ -127,15 +127,15 @@
                                 <span>+ MVR {{ number_format($pricing['view_adjustment'], 2) }}</span>
                             </div>
                         @endif
-                        @if (isset($pricing['discount']) && $pricing['discount'] > 0)
+                        @if (isset($pricing['discount_amount']) && $pricing['discount_amount'] > 0)
                             <div class="flex justify-between text-green-600">
                                 <span>Discount</span>
-                                <span>- MVR {{ number_format($pricing['discount'], 2) }}</span>
+                                <span>- MVR {{ number_format($pricing['discount_amount'], 2) }}</span>
                             </div>
                         @endif
                         <div class="flex justify-between font-bold text-brand-dark text-lg pt-2 border-t border-gray-100">
                             <span>Total</span>
-                            <span class="text-brand-primary">MVR {{ number_format($pricing['total'], 2) }}</span>
+                            <span class="text-brand-primary">MVR {{ number_format($pricing['total_price'], 2) }}</span>
                         </div>
                     </div>
 

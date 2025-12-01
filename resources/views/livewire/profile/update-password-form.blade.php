@@ -71,7 +71,7 @@ new class extends Component {
         </div>
 
         <div class="flex items-center gap-4">
-            <x-buttons.primary-button>{{ __('Save') }}</x-buttons.primary-button>
+            <x-admin.button.primary>{{ __('Save') }}</x-admin.button.primary>
 
             <x-common.action-message class="me-3" on="password-updated">
                 {{ __('Saved.') }}

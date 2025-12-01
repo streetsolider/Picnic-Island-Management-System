@@ -2,15 +2,55 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {{-- Back Button --}}
         <div class="mb-6">
-            <a href="{{ route('booking.search', ['checkIn' => $checkIn, 'checkOut' => $checkOut, 'guests' => $guests]) }}"
+            <a href="{{ route('booking.hotel.rooms', ['hotel' => $room->hotel_id, 'checkIn' => $checkIn, 'checkOut' => $checkOut, 'guests' => $guests]) }}"
                 wire:navigate
                 class="inline-flex items-center gap-2 text-brand-primary hover:text-brand-primary/80 font-semibold transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
-                Back to Search
+                Back to Room Selection
             </a>
         </div>
+
+        {{-- Capacity Warning --}}
+        @if (request()->has('guests') && request('guests') > $room->max_occupancy)
+            <div class="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-yellow-700">
+                            <strong>Notice:</strong> You searched for {{ request('guests') }} guests, but this room can accommodate a maximum of {{ $room->max_occupancy }} guests.
+                            The guest count has been adjusted automatically.
+                            <a href="{{ route('booking.search', ['checkIn' => $checkIn, 'checkOut' => $checkOut, 'guests' => request('guests')]) }}"
+                               wire:navigate
+                               class="font-semibold underline hover:text-yellow-800">
+                                Search for rooms that can accommodate {{ request('guests') }} guests
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        {{-- Flash Messages --}}
+        @if (session()->has('warning'))
+            <div class="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-yellow-700">{{ session('warning') }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
 
         <div class="grid lg:grid-cols-3 gap-8">
             {{-- Left Column: Room Details --}}
@@ -175,10 +215,10 @@
                     <div class="mb-6">
                         @if ($pricing)
                             <div class="mb-2">
-                                <span class="text-3xl font-bold text-brand-primary">MVR {{ number_format($pricing['total'], 2) }}</span>
+                                <span class="text-3xl font-bold text-brand-primary">MVR {{ number_format($pricing['total_price'], 2) }}</span>
                                 <span class="text-gray-500 text-sm">total</span>
                             </div>
-                            <p class="text-sm text-gray-600">MVR {{ number_format($pricing['total'] / $pricing['nights'], 2) }} per night × {{ $pricing['nights'] }} {{ Str::plural('night', $pricing['nights']) }}</p>
+                            <p class="text-sm text-gray-600">MVR {{ number_format($pricing['average_price_per_night'], 2) }} per night × {{ $pricing['number_of_nights'] }} {{ Str::plural('night', $pricing['number_of_nights']) }}</p>
                         @elseif (!$isAvailable)
                             <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
                                 <p class="text-red-600 font-semibold">Room Not Available</p>
@@ -216,8 +256,8 @@
                     @if ($pricing && $isAvailable)
                         <div class="border-t border-gray-100 pt-4 mb-6 space-y-2 text-sm">
                             <div class="flex justify-between text-gray-600">
-                                <span>Base price ({{ $pricing['nights'] }} {{ Str::plural('night', $pricing['nights']) }})</span>
-                                <span>MVR {{ number_format($pricing['base_total'], 2) }}</span>
+                                <span>Base price ({{ $pricing['number_of_nights'] }} {{ Str::plural('night', $pricing['number_of_nights']) }})</span>
+                                <span>MVR {{ number_format($pricing['subtotal_before_discount'], 2) }}</span>
                             </div>
                             @if (isset($pricing['view_adjustment']) && $pricing['view_adjustment'] != 0)
                                 <div class="flex justify-between text-gray-600">
@@ -225,15 +265,15 @@
                                     <span>+ MVR {{ number_format($pricing['view_adjustment'], 2) }}</span>
                                 </div>
                             @endif
-                            @if (isset($pricing['discount']) && $pricing['discount'] > 0)
+                            @if (isset($pricing['discount_amount']) && $pricing['discount_amount'] > 0)
                                 <div class="flex justify-between text-green-600">
                                     <span>Discount</span>
-                                    <span>- MVR {{ number_format($pricing['discount'], 2) }}</span>
+                                    <span>- MVR {{ number_format($pricing['discount_amount'], 2) }}</span>
                                 </div>
                             @endif
                             <div class="flex justify-between font-semibold text-brand-dark pt-2 border-t border-gray-100">
                                 <span>Total</span>
-                                <span>MVR {{ number_format($pricing['total'], 2) }}</span>
+                                <span>MVR {{ number_format($pricing['total_price'], 2) }}</span>
                             </div>
                         </div>
                     @endif

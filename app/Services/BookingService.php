@@ -25,19 +25,30 @@ class BookingService
      * @param Hotel $hotel
      * @param string $checkIn
      * @param string $checkOut
+     * @param int $guests Number of guests
      * @param string|null $roomType
      * @param string|null $view
+     * @param string|null $bedSize
+     * @param string|null $bedCount
+     * @param float|null $minPrice
+     * @param float|null $maxPrice
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getAvailableRooms(
         Hotel $hotel,
         string $checkIn,
         string $checkOut,
+        int $guests = 1,
         ?string $roomType = null,
-        ?string $view = null
+        ?string $view = null,
+        ?string $bedSize = null,
+        ?string $bedCount = null,
+        ?float $minPrice = null,
+        ?float $maxPrice = null
     ) {
         $query = $hotel->rooms()
-            ->availableForDates($checkIn, $checkOut);
+            ->availableForDates($checkIn, $checkOut)
+            ->where('max_occupancy', '>=', $guests); // Filter by guest capacity
 
         if ($roomType) {
             $query->where('room_type', $roomType);
@@ -47,7 +58,43 @@ class BookingService
             $query->where('view', $view);
         }
 
-        return $query->get();
+        if ($bedSize) {
+            $query->where('bed_size', $bedSize);
+        }
+
+        if ($bedCount) {
+            $query->where('bed_count', $bedCount);
+        }
+
+        $rooms = $query->get();
+
+        // Apply price filtering if specified
+        if ($minPrice !== null || $maxPrice !== null) {
+            $checkInCarbon = Carbon::parse($checkIn);
+            $checkOutCarbon = Carbon::parse($checkOut);
+
+            $rooms = $rooms->filter(function ($room) use ($checkInCarbon, $checkOutCarbon, $minPrice, $maxPrice) {
+                $pricing = $this->pricingCalculator->calculateRoomPrice(
+                    $room,
+                    $checkInCarbon,
+                    $checkOutCarbon
+                );
+
+                $totalPrice = $pricing['total_price'];
+
+                if ($minPrice !== null && $totalPrice < $minPrice) {
+                    return false;
+                }
+
+                if ($maxPrice !== null && $totalPrice > $maxPrice) {
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        return $rooms;
     }
 
     /**
@@ -116,8 +163,8 @@ class BookingService
         // Calculate price
         $pricing = $this->pricingCalculator->calculateRoomPrice(
             $room,
-            $data['check_in_date'],
-            $data['check_out_date'],
+            Carbon::parse($data['check_in_date']),
+            Carbon::parse($data['check_out_date']),
             $data['number_of_rooms'] ?? 1,
             $data['promo_code'] ?? null,
             $this->calculateAdvanceDays($data['check_in_date'])
@@ -133,7 +180,7 @@ class BookingService
                 'check_out_date' => $data['check_out_date'],
                 'number_of_guests' => $data['number_of_guests'],
                 'number_of_rooms' => $data['number_of_rooms'] ?? 1,
-                'total_price' => $pricing['total'],
+                'total_price' => $pricing['total_price'],
                 'payment_status' => $data['payment_status'] ?? 'pending',
                 'payment_method' => $data['payment_method'] ?? null,
                 'promo_code' => $data['promo_code'] ?? null,
@@ -178,14 +225,14 @@ class BookingService
             // Recalculate price if dates changed
             $pricing = $this->pricingCalculator->calculateRoomPrice(
                 $room,
-                $checkIn,
-                $checkOut,
+                Carbon::parse($checkIn),
+                Carbon::parse($checkOut),
                 $data['number_of_rooms'] ?? $booking->number_of_rooms,
                 $data['promo_code'] ?? $booking->promo_code,
                 $this->calculateAdvanceDays($checkIn)
             );
 
-            $data['total_price'] = $pricing['total'];
+            $data['total_price'] = $pricing['total_price'];
         }
 
         $booking->update($data);

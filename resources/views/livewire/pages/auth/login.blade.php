@@ -19,7 +19,7 @@ new #[Layout('layouts.guest')] class extends Component {
 
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        $this->redirectIntended(default: route('booking.search', absolute: false), navigate: true);
     }
 }; ?>
 
@@ -64,9 +64,9 @@ new #[Layout('layouts.guest')] class extends Component {
                 </a>
             @endif
 
-            <x-buttons.primary-button class="ms-3">
+            <x-admin.button.primary type="submit" class="ms-3">
                 {{ __('Log in') }}
-            </x-buttons.primary-button>
+            </x-admin.button.primary>
         </div>
     </form>
 </div>

@@ -79,9 +79,9 @@ new #[Layout('layouts.guest')] class extends Component {
                 {{ __('Already registered?') }}
             </a>
 
-            <x-buttons.primary-button class="ms-4">
+            <x-admin.button.primary type="submit" class="ms-4">
                 {{ __('Register') }}
-            </x-buttons.primary-button>
+            </x-admin.button.primary>
         </div>
     </form>
 </div>
