@@ -72,6 +72,9 @@ Route::middleware(['auth:staff'])->group(function () {
         // Room Images Management
         Route::get('/images', \App\Livewire\Hotel\Images\Manage::class)->name('images.manage');
 
+        // Daily Operations
+        Route::get('/operations', \App\Livewire\Hotel\Operations\Dashboard::class)->name('operations.dashboard');
+
         // Booking Management
         Route::get('/bookings', \App\Livewire\Hotel\Bookings\Index::class)->name('bookings.index');
         Route::get('/bookings/{booking}', \App\Livewire\Hotel\Bookings\Show::class)->name('bookings.show');
