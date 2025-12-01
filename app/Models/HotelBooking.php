@@ -47,7 +47,7 @@ class HotelBooking extends Model
 
     public function guest(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'guest_id');
+        return $this->belongsTo(Guest::class, 'guest_id');
     }
 
     // Accessor for number of nights
