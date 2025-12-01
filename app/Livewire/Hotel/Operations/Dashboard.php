@@ -10,8 +10,6 @@ use Livewire\Component;
 class Dashboard extends Component
 {
     public $hotel;
-    public $showCheckInModal = false;
-    public $showCheckOutModal = false;
     public $selectedBooking = null;
 
     // Check-in form
@@ -93,7 +91,7 @@ class Dashboard extends Component
     {
         $this->selectedBooking = HotelBooking::with(['guest', 'room'])->findOrFail($bookingId);
         $this->checkInNotes = '';
-        $this->showCheckInModal = true;
+        $this->dispatch('open-modal', 'check-in');
     }
 
     public function confirmCheckIn()
@@ -108,7 +106,7 @@ class Dashboard extends Component
         );
 
         session()->flash('success', 'Guest checked in successfully!');
-        $this->showCheckInModal = false;
+        $this->dispatch('close-modal', 'check-in');
         $this->selectedBooking = null;
         $this->checkInNotes = '';
     }
@@ -118,7 +116,7 @@ class Dashboard extends Component
     {
         $this->selectedBooking = HotelBooking::with(['guest', 'room'])->findOrFail($bookingId);
         $this->checkOutNotes = '';
-        $this->showCheckOutModal = true;
+        $this->dispatch('open-modal', 'check-out');
     }
 
     public function confirmCheckOut()
@@ -133,7 +131,7 @@ class Dashboard extends Component
         );
 
         session()->flash('success', 'Guest checked out successfully!');
-        $this->showCheckOutModal = false;
+        $this->dispatch('close-modal', 'check-out');
         $this->selectedBooking = null;
         $this->checkOutNotes = '';
     }

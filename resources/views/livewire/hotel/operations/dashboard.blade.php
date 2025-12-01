@@ -285,14 +285,13 @@
     </x-admin.card.base>
 
     {{-- Check-In Modal --}}
-    <x-admin.modal.form
-        name="check-in"
-        :show="$showCheckInModal"
-        title="Check In Guest"
-        submitText="Confirm Check-In"
-        wire:submit="confirmCheckIn"
-        :loading="'confirmCheckIn'"
-    >
+    <x-overlays.modal name="check-in" maxWidth="2xl" focusable>
+        <form wire:submit="confirmCheckIn">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Check In Guest</h3>
+            </div>
+
+            <div class="px-6 py-4">
         @if($selectedBooking)
             <div class="space-y-4">
                 {{-- Guest Information --}}
@@ -336,18 +335,27 @@
                 </div>
             </div>
         @endif
-    </x-admin.modal.form>
+            </div>
+
+            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 flex justify-end gap-3">
+                <x-admin.button.secondary type="button" x-on:click="$dispatch('close-modal', 'check-in')">
+                    Cancel
+                </x-admin.button.secondary>
+                <x-admin.button.primary type="submit" wire:loading.attr="disabled" wire:target="confirmCheckIn">
+                    Confirm Check-In
+                </x-admin.button.primary>
+            </div>
+        </form>
+    </x-overlays.modal>
 
     {{-- Check-Out Modal --}}
-    <x-admin.modal.form
-        name="check-out"
-        :show="$showCheckOutModal"
-        title="Check Out Guest"
-        submitText="Confirm Check-Out"
-        submitColor="warning"
-        wire:submit="confirmCheckOut"
-        :loading="'confirmCheckOut'"
-    >
+    <x-overlays.modal name="check-out" maxWidth="2xl" focusable>
+        <form wire:submit="confirmCheckOut">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Check Out Guest</h3>
+            </div>
+
+            <div class="px-6 py-4">
         @if($selectedBooking)
             <div class="space-y-4">
                 {{-- Guest Information --}}
@@ -368,7 +376,7 @@
                         </div>
                         <div>
                             <span class="text-gray-500 dark:text-gray-400">Checked In:</span>
-                            <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedBooking->checked_in_at->format('M d, H:i') }}</span>
+                            <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedBooking->checked_in_at ? $selectedBooking->checked_in_at->format('M d, H:i') : 'N/A' }}</span>
                         </div>
                     </div>
                 </div>
@@ -391,5 +399,16 @@
                 </div>
             </div>
         @endif
-    </x-admin.modal.form>
+            </div>
+
+            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 flex justify-end gap-3">
+                <x-admin.button.secondary type="button" x-on:click="$dispatch('close-modal', 'check-out')">
+                    Cancel
+                </x-admin.button.secondary>
+                <x-admin.button.warning type="submit" wire:loading.attr="disabled" wire:target="confirmCheckOut">
+                    Confirm Check-Out
+                </x-admin.button.warning>
+            </div>
+        </form>
+    </x-overlays.modal>
 </div>
