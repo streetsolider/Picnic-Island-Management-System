@@ -99,12 +99,12 @@ class FerryTicketService
         } elseif ($hotelBooking->status !== 'confirmed') {
             $errors[] = 'Hotel booking must be confirmed.';
         } else {
-            // CRITICAL: Validate travel date matches check-in or check-out date
+            // Validate travel date is within hotel booking date range
             $checkInDate = $hotelBooking->check_in_date->format('Y-m-d');
             $checkOutDate = $hotelBooking->check_out_date->format('Y-m-d');
 
-            if ($data['travel_date'] !== $checkInDate && $data['travel_date'] !== $checkOutDate) {
-                $errors[] = "Ferry ticket must be for your hotel check-in date ({$checkInDate}) or check-out date ({$checkOutDate}).";
+            if ($data['travel_date'] < $checkInDate || $data['travel_date'] > $checkOutDate) {
+                $errors[] = "Ferry ticket must be for a date within your hotel stay ({$checkInDate} to {$checkOutDate}).";
             }
         }
 
@@ -130,11 +130,45 @@ class FerryTicketService
             }
         }
 
-        // Validate passengers count against room max occupancy
-        if ($hotelBooking) {
-            $maxOccupancy = $hotelBooking->room->max_occupancy;
-            if ($data['number_of_passengers'] > $maxOccupancy) {
-                $errors[] = "Number of passengers ({$data['number_of_passengers']}) cannot exceed your room's maximum occupancy ({$maxOccupancy} persons).";
+        // Determine direction from route
+        $direction = null;
+        if ($schedule && $schedule->route) {
+            $direction = $schedule->route->destination === 'Picnic Island' ? 'to_island' : 'from_island';
+        }
+
+        // Validate direction and booking flow
+        if ($hotelBooking && $direction) {
+            $hasArrival = $hotelBooking->hasArrivalFerry();
+
+            // Rule: Must book arrival (to_island) before departure (from_island)
+            if ($direction === 'from_island' && !$hasArrival) {
+                $errors[] = 'You must book your arrival ferry to the island first before booking a departure ferry.';
+            }
+
+            // Rule: Cannot book multiple arrival tickets (everyone arrives together)
+            if ($direction === 'to_island' && $hasArrival) {
+                $errors[] = 'You have already booked an arrival ferry for this hotel stay. All passengers must arrive together on the same ferry.';
+            }
+
+            // Rule: Total departure passengers (across all departure tickets) cannot exceed arrival passengers
+            if ($direction === 'from_island' && $hasArrival) {
+                $arrivalTicket = $hotelBooking->arrivalFerryTicket;
+                if ($arrivalTicket) {
+                    $totalDeparturePassengers = $hotelBooking->getTotalDeparturePassengers();
+                    $remainingPassengers = $arrivalTicket->number_of_passengers - $totalDeparturePassengers;
+
+                    if ($data['number_of_passengers'] > $remainingPassengers) {
+                        $errors[] = "Cannot book {$data['number_of_passengers']} passengers. Only {$remainingPassengers} passenger(s) remaining from your arrival of {$arrivalTicket->number_of_passengers}. (Already departed: {$totalDeparturePassengers})";
+                    }
+                }
+            }
+
+            // Rule: Arrival passengers cannot exceed room max occupancy
+            if ($direction === 'to_island') {
+                $maxOccupancy = $hotelBooking->room->max_occupancy;
+                if ($data['number_of_passengers'] > $maxOccupancy) {
+                    $errors[] = "Number of passengers ({$data['number_of_passengers']}) cannot exceed your room's maximum occupancy ({$maxOccupancy} persons).";
+                }
             }
         }
 
@@ -161,18 +195,22 @@ class FerryTicketService
 
         $schedule = FerrySchedule::with(['route', 'vessel'])->findOrFail($data['ferry_schedule_id']);
 
+        // Determine direction from route
+        $direction = $schedule->route->destination === 'Picnic Island' ? 'to_island' : 'from_island';
+
         // Ferry service is FREE - no pricing
         $pricePerPassenger = 0;
         $totalPrice = 0;
 
         // Create ticket in a transaction
-        return DB::transaction(function () use ($data, $schedule, $pricePerPassenger, $totalPrice) {
+        return DB::transaction(function () use ($data, $schedule, $direction, $pricePerPassenger, $totalPrice) {
             $ticket = FerryTicket::create([
                 'guest_id' => $data['guest_id'],
                 'hotel_booking_id' => $data['hotel_booking_id'],
                 'ferry_schedule_id' => $schedule->id,
                 'ferry_route_id' => $schedule->ferry_route_id,
                 'ferry_vessel_id' => $schedule->ferry_vessel_id,
+                'direction' => $direction,
                 'travel_date' => $data['travel_date'],
                 'number_of_passengers' => $data['number_of_passengers'],
                 'price_per_passenger' => $pricePerPassenger,

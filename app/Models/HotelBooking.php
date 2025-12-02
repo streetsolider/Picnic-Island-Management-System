@@ -76,6 +76,20 @@ class HotelBooking extends Model
         return $this->hasMany(\App\Models\Ferry\FerryTicket::class);
     }
 
+    public function arrivalFerryTicket()
+    {
+        return $this->hasOne(\App\Models\Ferry\FerryTicket::class)
+            ->where('direction', 'to_island')
+            ->whereIn('status', ['confirmed', 'used']);
+    }
+
+    public function departureFerryTicket()
+    {
+        return $this->hasOne(\App\Models\Ferry\FerryTicket::class)
+            ->where('direction', 'from_island')
+            ->whereIn('status', ['confirmed', 'used']);
+    }
+
     // Accessor for number of nights
     public function getNumberOfNightsAttribute(): int
     {
@@ -170,6 +184,71 @@ class HotelBooking extends Model
     {
         return $this->status === 'confirmed' &&
                $this->check_in_date >= now()->toDateString();
+    }
+
+    // Ferry ticket helper methods
+    public function getTotalFerryPassengers(): int
+    {
+        return $this->ferryTickets()
+            ->whereIn('status', ['confirmed', 'used'])
+            ->sum('number_of_passengers');
+    }
+
+    public function canBookMoreFerryTickets(): bool
+    {
+        $totalBooked = $this->getTotalFerryPassengers();
+        return $totalBooked < $this->room->max_occupancy;
+    }
+
+    public function hasArrivalFerry(): bool
+    {
+        return $this->ferryTickets()
+            ->where('direction', 'to_island')
+            ->whereIn('status', ['confirmed', 'used'])
+            ->exists();
+    }
+
+    public function hasDepartureFerry(): bool
+    {
+        return $this->ferryTickets()
+            ->where('direction', 'from_island')
+            ->whereIn('status', ['confirmed', 'used'])
+            ->exists();
+    }
+
+    public function getTotalDeparturePassengers(): int
+    {
+        return $this->ferryTickets()
+            ->where('direction', 'from_island')
+            ->whereIn('status', ['confirmed', 'used'])
+            ->sum('number_of_passengers');
+    }
+
+    public function getRemainingDeparturePassengers(): int
+    {
+        $arrivalTicket = $this->arrivalFerryTicket;
+        if (!$arrivalTicket) {
+            return 0;
+        }
+
+        $totalDeparted = $this->getTotalDeparturePassengers();
+        return max(0, $arrivalTicket->number_of_passengers - $totalDeparted);
+    }
+
+    public function hasAllPassengersDeparted(): bool
+    {
+        $arrivalTicket = $this->arrivalFerryTicket;
+        if (!$arrivalTicket) {
+            return false;
+        }
+
+        return $this->getTotalDeparturePassengers() >= $arrivalTicket->number_of_passengers;
+    }
+
+    public function getAvailablePassengerSlots(): int
+    {
+        $totalBooked = $this->getTotalFerryPassengers();
+        return max(0, $this->room->max_occupancy - $totalBooked);
     }
 
     // Operations methods

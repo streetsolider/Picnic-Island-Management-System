@@ -17,6 +17,7 @@ class FerryTicket extends Model
         'ferry_schedule_id',
         'ferry_route_id',
         'ferry_vessel_id',
+        'direction',
         'ticket_reference',
         'travel_date',
         'number_of_passengers',
@@ -100,7 +101,33 @@ class FerryTicket extends Model
         return $query->where('status', 'cancelled');
     }
 
+    public function scopeToIsland($query)
+    {
+        return $query->where('direction', 'to_island');
+    }
+
+    public function scopeFromIsland($query)
+    {
+        return $query->where('direction', 'from_island');
+    }
+
+    public function scopeForHotelBooking($query, $bookingId)
+    {
+        return $query->where('hotel_booking_id', $bookingId);
+    }
+
     // Helper methods
+    public function isArrival(): bool
+    {
+        return $this->direction === 'to_island';
+    }
+
+    public function isDeparture(): bool
+    {
+        return $this->direction === 'from_island';
+    }
+
+    // Existing helper methods
     public function cancel(string $reason = null): bool
     {
         $this->status = 'cancelled';

@@ -14,6 +14,20 @@
                 <p class="text-xl text-brand-dark/70">Travel to Kabohera Fun Island in style</p>
             </div>
 
+            {{-- Info Flash Message --}}
+            @if (session('info'))
+                <div class="bg-blue-50 border border-blue-200 text-blue-800 px-6 py-4 rounded-2xl mb-6 max-w-3xl mx-auto">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-6 h-6 text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div>
+                            <p class="font-semibold">{{ session('info') }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             {{-- Hotel Booking Alert --}}
             @if(!auth()->check())
                 <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 mb-8 max-w-3xl mx-auto">
@@ -53,13 +67,44 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                        <div>
+                        <div class="flex-1">
                             <h3 class="text-lg font-semibold text-green-900 mb-2">Hotel Booking Found</h3>
                             <p class="text-green-800">Your hotel stay: {{ $hotelBooking->check_in_date->format('M d, Y') }} - {{ $hotelBooking->check_out_date->format('M d, Y') }}</p>
                             <p class="text-sm text-green-700 mt-1">Room: {{ $hotelBooking->room->full_description }}</p>
                             <p class="text-sm text-green-700 mt-1">
                                 <strong>Maximum {{ $maxPassengers }} {{ $maxPassengers == 1 ? 'passenger' : 'passengers' }}</strong> (based on room occupancy)
                             </p>
+
+                            {{-- Ferry Booking Status --}}
+                            @php
+                                $hasArrival = $hotelBooking->hasArrivalFerry();
+                                $arrivalTicket = $hotelBooking->arrivalFerryTicket;
+                                $totalDeparted = $hotelBooking->getTotalDeparturePassengers();
+                                $remainingPassengers = $hotelBooking->getRemainingDeparturePassengers();
+                                $allDeparted = $hotelBooking->hasAllPassengersDeparted();
+                            @endphp
+
+                            @if($hasArrival && $allDeparted)
+                                <div class="mt-3 p-3 bg-blue-100 border border-blue-200 rounded-xl">
+                                    <p class="text-sm text-blue-900 font-semibold">✓ All ferry bookings complete</p>
+                                    <p class="text-xs text-blue-800 mt-1">All {{ $arrivalTicket->number_of_passengers }} passenger(s) have booked their departure ferries.</p>
+                                </div>
+                            @elseif($hasArrival)
+                                <div class="mt-3 p-3 bg-yellow-100 border border-yellow-200 rounded-xl">
+                                    <p class="text-sm text-yellow-900 font-semibold">🛬 Arrival booked - Book departure(s)</p>
+                                    <p class="text-xs text-yellow-800 mt-1">
+                                        Arrived: {{ $arrivalTicket->number_of_passengers }} passenger(s) |
+                                        Departed: {{ $totalDeparted }} |
+                                        <strong>Remaining: {{ $remainingPassengers }}</strong>
+                                    </p>
+                                    <p class="text-xs text-yellow-700 mt-1">You can book multiple departure ferries for different dates.</p>
+                                </div>
+                            @else
+                                <div class="mt-3 p-3 bg-indigo-100 border border-indigo-200 rounded-xl">
+                                    <p class="text-sm text-indigo-900 font-semibold">🛫 Book your arrival ferry first</p>
+                                    <p class="text-xs text-indigo-800 mt-1">Start by booking your ferry TO Picnic Island. All passengers must arrive together.</p>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

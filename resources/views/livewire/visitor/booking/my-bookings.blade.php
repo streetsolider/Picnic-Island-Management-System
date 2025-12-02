@@ -275,6 +275,25 @@
                             <div class="md:col-span-2">
                                 <div class="flex items-start justify-between mb-4">
                                     <div>
+                                        {{-- Direction Indicator --}}
+                                        <div class="mb-2">
+                                            @if($ticket->isArrival())
+                                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                                                    </svg>
+                                                    Arrival to Island
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                                                    </svg>
+                                                    Departure from Island
+                                                </span>
+                                            @endif
+                                        </div>
+
                                         <h3 class="text-xl font-display font-bold text-brand-dark mb-1">
                                             {{ $ticket->schedule->route->origin }} → {{ $ticket->schedule->route->destination }}
                                         </h3>
