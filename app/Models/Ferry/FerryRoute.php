@@ -10,18 +10,44 @@ class FerryRoute extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
         'origin',
         'destination',
-        'duration_minutes',
-        'base_price',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'base_price' => 'decimal:2',
     ];
+
+    protected $appends = ['name'];
+
+    /**
+     * Auto-generate route name based on origin and destination
+     */
+    public function getNameAttribute(): string
+    {
+        return "{$this->origin} → {$this->destination}";
+    }
+
+    /**
+     * Validate that either origin or destination must be "Picnic Island"
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($route) {
+            $picnicIsland = 'Picnic Island';
+
+            if ($route->origin !== $picnicIsland && $route->destination !== $picnicIsland) {
+                throw new \Exception('Either origin or destination must be "Picnic Island".');
+            }
+
+            if ($route->origin === $picnicIsland && $route->destination === $picnicIsland) {
+                throw new \Exception('Origin and destination cannot both be "Picnic Island".');
+            }
+        });
+    }
 
     public function schedules()
     {

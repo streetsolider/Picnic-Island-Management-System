@@ -48,12 +48,9 @@
                             class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium"
                             wire:navigate>Home</a>
                         @auth
-                            {{-- <a href="{{ route('my-bookings') }}"
+                            <a href="{{ route('my-bookings') }}"
                                 class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium"
-                                wire:navigate>My Bookings</a> --}}
-                            {{-- <a href="{{ route('profile') }}"
-                                class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium"
-                                wire:navigate>Profile</a> --}}
+                                wire:navigate>My Bookings</a>
                             <form method="POST" action="{{ route('logout') }}" class="inline">
                                 @csrf
                                 <button type="submit"

@@ -16,6 +16,9 @@ Route::get('/booking/hotel/{hotel}/rooms', \App\Livewire\Visitor\Booking\HotelRo
 // Public room details (no auth required)
 Route::get('/booking/room/{room}', \App\Livewire\Visitor\Booking\RoomDetails::class)->name('booking.room.details');
 
+// Public Ferry Tickets Browse (no auth required)
+Route::get('/ferry-tickets/browse', \App\Livewire\Visitor\FerryTickets\Browse::class)->name('ferry-tickets.browse');
+
 // Guest (Customer) Routes
 Route::middleware(['auth:web', 'verified'])->group(function () {
     // Guest Dashboard
@@ -34,6 +37,14 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
 
     // My Bookings
     Route::get('/my-bookings', \App\Livewire\Visitor\Booking\MyBookings::class)->name('my-bookings');
+
+    // Ferry Ticket Routes (Auth Required)
+    Route::prefix('ferry-tickets')->name('ferry-tickets.')->group(function () {
+        Route::get('/create/{schedule}', \App\Livewire\Visitor\FerryTickets\Create::class)->name('create');
+        Route::get('/confirmation/{ticket}', \App\Livewire\Visitor\FerryTickets\Confirmation::class)->name('confirmation');
+        Route::get('/my-tickets', \App\Livewire\Visitor\FerryTickets\MyTickets::class)->name('my-tickets');
+        Route::get('/tickets/{ticket}', \App\Livewire\Visitor\FerryTickets\Show::class)->name('show');
+    });
 });
 
 // Staff Routes (using staff guard)
@@ -88,10 +99,14 @@ Route::middleware(['auth:staff'])->group(function () {
         // Route::get('/reports/bookings', \App\Livewire\Hotel\Reports\BookingHistory::class)->name('reports.bookings');
     });
 
-    // Ferry Operator Dashboard
-    Route::get('/ferry/dashboard', function () {
-        return view('dashboard');
-    })->middleware('role:ferry_operator')->name('ferry.dashboard');
+    // Ferry Operator Routes
+    Route::middleware('role:ferry_operator')->prefix('ferry')->name('ferry.')->group(function () {
+        Route::get('/dashboard', \App\Livewire\Ferry\Dashboard::class)->name('dashboard');
+        Route::get('/routes', \App\Livewire\Ferry\Routes\Index::class)->name('routes.index');
+        Route::get('/schedules', \App\Livewire\Ferry\Schedules\Index::class)->name('schedules.index');
+        Route::get('/tickets/validate', \App\Livewire\Ferry\Tickets\Validate::class)->name('tickets.validate');
+        Route::get('/tickets/passengers', \App\Livewire\Ferry\Tickets\PassengerList::class)->name('tickets.passengers');
+    });
 
     // Theme Park Staff Dashboard
     Route::get('/theme-park/dashboard', function () {

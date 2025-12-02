@@ -71,6 +71,11 @@ class HotelBooking extends Model
         return $this->belongsTo(Staff::class, 'checked_out_by');
     }
 
+    public function ferryTickets()
+    {
+        return $this->hasMany(\App\Models\Ferry\FerryTicket::class);
+    }
+
     // Accessor for number of nights
     public function getNumberOfNightsAttribute(): int
     {
@@ -159,6 +164,12 @@ class HotelBooking extends Model
     public function canCheckOut(): bool
     {
         return $this->status === 'checked_in';
+    }
+
+    public function hasValidFerryTicketEligibility(): bool
+    {
+        return $this->status === 'confirmed' &&
+               $this->check_in_date >= now()->toDateString();
     }
 
     // Operations methods

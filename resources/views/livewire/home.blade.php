@@ -23,10 +23,30 @@
                         class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">Activities</a>
                     <a href="#about"
                         class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">About</a>
-                    <a href="{{ route('booking.search') }}" wire:navigate
-                        class="bg-brand-secondary hover:bg-brand-secondary/90 text-white px-6 py-2.5 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg shadow-brand-secondary/30">
-                        Book Now
-                    </a>
+                    @auth
+                        <a href="{{ route('my-bookings') }}" wire:navigate
+                            class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">My Bookings</a>
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                            @csrf
+                            <button type="submit"
+                                class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">
+                                Logout
+                            </button>
+                        </form>
+                        <a href="{{ route('booking.search') }}" wire:navigate
+                            class="bg-brand-secondary hover:bg-brand-secondary/90 text-white px-6 py-2.5 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg shadow-brand-secondary/30">
+                            Book More
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" wire:navigate
+                            class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">Login</a>
+                        <a href="{{ route('register') }}" wire:navigate
+                            class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">Register</a>
+                        <a href="{{ route('booking.search') }}" wire:navigate
+                            class="bg-brand-secondary hover:bg-brand-secondary/90 text-white px-6 py-2.5 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg shadow-brand-secondary/30">
+                            Book Now
+                        </a>
+                    @endauth
                 </div>
 
                 {{-- Mobile menu button --}}
@@ -208,13 +228,31 @@
                         </div>
                         <h4 class="text-2xl font-display font-bold text-brand-dark mb-4">{{ $service['title'] }}</h4>
                         <p class="text-gray-600 mb-6 leading-relaxed">{{ $service['desc'] }}</p>
-                        <a href="#"
-                            class="inline-flex items-center text-brand-primary font-semibold group-hover:translate-x-2 transition-transform">
-                            Learn More <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                            </svg>
-                        </a>
+                        @if($service['title'] === 'Ferry Services')
+                            <a href="{{ route('ferry-tickets.browse') }}" wire:navigate
+                                class="inline-flex items-center text-brand-primary font-semibold group-hover:translate-x-2 transition-transform">
+                                Book Ferry Tickets <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                </svg>
+                            </a>
+                        @elseif($service['title'] === 'Luxury Hotels')
+                            <a href="{{ route('booking.search') }}" wire:navigate
+                                class="inline-flex items-center text-brand-primary font-semibold group-hover:translate-x-2 transition-transform">
+                                Book Now <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                </svg>
+                            </a>
+                        @else
+                            <a href="#"
+                                class="inline-flex items-center text-brand-primary font-semibold group-hover:translate-x-2 transition-transform">
+                                Learn More <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                </svg>
+                            </a>
+                        @endif
                     </div>
                 @endforeach
             </div>

@@ -3,11 +3,14 @@
 namespace App\Livewire\Visitor\Booking;
 
 use App\Models\HotelBooking;
+use App\Models\Ferry\FerryTicket;
 use App\Services\BookingService;
+use App\Services\FerryTicketService;
 use Livewire\Component;
 
 class MyBookings extends Component
 {
+    public $bookingType = 'hotel'; // hotel, ferry
     public $activeTab = 'upcoming'; // upcoming, past, cancelled
 
     public function cancelBooking($bookingId)
@@ -46,18 +49,57 @@ class MyBookings extends Component
         }
     }
 
+    public function cancelFerryTicket($ticketId)
+    {
+        try {
+            $ticket = FerryTicket::findOrFail($ticketId);
+
+            // Ensure user owns this ticket
+            if ($ticket->guest_id !== auth()->id()) {
+                session()->flash('error', 'Unauthorized action.');
+                return;
+            }
+
+            // Cancel the ticket
+            $ferryService = app(FerryTicketService::class);
+            $ferryService->cancelTicket($ticket, 'Cancelled by guest');
+
+            session()->flash('success', 'Ferry ticket cancelled successfully.');
+
+            // Switch to cancelled tab
+            $this->activeTab = 'cancelled';
+
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to cancel ticket: ' . $e->getMessage());
+        }
+    }
+
     public function render()
     {
-        $query = HotelBooking::where('guest_id', auth()->id())
-            ->with(['hotel', 'room'])
-            ->orderBy('check_in_date', 'desc');
+        if ($this->bookingType === 'hotel') {
+            $query = HotelBooking::where('guest_id', auth()->id())
+                ->with(['hotel', 'room'])
+                ->orderBy('check_in_date', 'desc');
 
-        $bookings = match($this->activeTab) {
-            'upcoming' => (clone $query)->upcoming()->get(),
-            'past' => (clone $query)->past()->get(),
-            'cancelled' => (clone $query)->where('status', 'cancelled')->get(),
-            default => $query->get(),
-        };
+            $bookings = match($this->activeTab) {
+                'upcoming' => (clone $query)->upcoming()->get(),
+                'past' => (clone $query)->past()->get(),
+                'cancelled' => (clone $query)->where('status', 'cancelled')->get(),
+                default => $query->get(),
+            };
+        } else {
+            // Ferry tickets
+            $query = FerryTicket::where('guest_id', auth()->id())
+                ->with(['schedule.route', 'schedule.vessel', 'hotelBooking'])
+                ->orderBy('travel_date', 'desc');
+
+            $bookings = match($this->activeTab) {
+                'upcoming' => (clone $query)->where('travel_date', '>=', now()->toDateString())->whereIn('status', ['confirmed', 'pending'])->get(),
+                'past' => (clone $query)->where('travel_date', '<', now()->toDateString())->whereIn('status', ['confirmed', 'used'])->get(),
+                'cancelled' => (clone $query)->where('status', 'cancelled')->get(),
+                default => $query->get(),
+            };
+        }
 
         return view('livewire.visitor.booking.my-bookings', [
             'bookings' => $bookings

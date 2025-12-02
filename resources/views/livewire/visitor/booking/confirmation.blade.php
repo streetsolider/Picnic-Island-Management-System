@@ -123,6 +123,20 @@
             </ul>
         </div>
 
+        {{-- Ferry Booking CTA --}}
+        <div class="bg-gradient-to-r from-brand-secondary to-brand-primary rounded-2xl p-6 mb-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xl font-bold mb-2">Need Ferry Tickets?</h3>
+                    <p class="text-white/90">Book your ferry ride to the island now with your confirmed hotel reservation!</p>
+                </div>
+                <a href="{{ route('ferry-tickets.browse') }}" wire:navigate
+                    class="bg-white text-brand-primary hover:bg-gray-50 px-6 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg whitespace-nowrap">
+                    Book Ferry →
+                </a>
+            </div>
+        </div>
+
         {{-- Action Buttons --}}
         <div class="flex flex-col sm:flex-row gap-4">
             <a href="{{ route('my-bookings') }}" wire:navigate

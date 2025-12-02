@@ -71,6 +71,14 @@ class Guest extends Authenticatable
     }
 
     /**
+     * Get the ferry tickets for the guest
+     */
+    public function ferryTickets()
+    {
+        return $this->hasMany(\App\Models\Ferry\FerryTicket::class, 'guest_id');
+    }
+
+    /**
      * Boot method to auto-generate guest ID
      */
     protected static function boot()
