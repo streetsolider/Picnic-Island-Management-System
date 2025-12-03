@@ -95,7 +95,10 @@ class MyBookings extends Component
 
             $bookings = match($this->activeTab) {
                 'upcoming' => (clone $query)->where('travel_date', '>=', now()->toDateString())->whereIn('status', ['confirmed', 'pending'])->get(),
-                'past' => (clone $query)->where('travel_date', '<', now()->toDateString())->whereIn('status', ['confirmed', 'used'])->get(),
+                'past' => (clone $query)->where('status', '!=', 'cancelled')->where(function($q) {
+                    $q->where('travel_date', '<', now()->toDateString())
+                      ->orWhere('status', 'used');
+                })->get(),
                 'cancelled' => (clone $query)->where('status', 'cancelled')->get(),
                 default => $query->get(),
             };

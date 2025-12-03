@@ -3,8 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\ThemeParkZone;
-use App\Models\Staff;
-use App\Enums\StaffRole;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,14 +10,10 @@ class ThemeParkZoneSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     * Note: Zones are managed by Theme Park Manager, not assigned to individual staff
      */
     public function run(): void
     {
-        // Get theme park staff if available
-        $themeParkStaff = Staff::where('role', StaffRole::THEME_PARK_STAFF)
-            ->where('is_active', true)
-            ->get();
-
         $zones = [
             [
                 'name' => 'Adventure Zone 1',
@@ -71,12 +65,7 @@ class ThemeParkZoneSeeder extends Seeder
             ],
         ];
 
-        foreach ($zones as $index => $zoneData) {
-            // Assign staff if available
-            if ($themeParkStaff->isNotEmpty()) {
-                $zoneData['assigned_staff_id'] = $themeParkStaff[$index % $themeParkStaff->count()]->id;
-            }
-
+        foreach ($zones as $zoneData) {
             ThemeParkZone::create($zoneData);
         }
     }

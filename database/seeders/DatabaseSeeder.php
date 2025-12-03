@@ -39,8 +39,14 @@ class DatabaseSeeder extends Seeder
                 'role' => StaffRole::FERRY_OPERATOR,
             ],
             [
+                'name' => 'Theme Park Manager',
+                'email' => 'themepark-manager@picnicisland.com',
+                'password' => Hash::make('password'),
+                'role' => StaffRole::THEME_PARK_MANAGER,
+            ],
+            [
                 'name' => 'Theme Park Staff',
-                'email' => 'themepark@picnicisland.com',
+                'email' => 'themepark-staff@picnicisland.com',
                 'password' => Hash::make('password'),
                 'role' => StaffRole::THEME_PARK_STAFF,
             ],
@@ -92,7 +98,8 @@ class DatabaseSeeder extends Seeder
         $this->command->info('Email: admin@picnicisland.com | Password: password | Role: Administrator');
         $this->command->info('Email: hotel@picnicisland.com | Password: password | Role: Hotel Manager');
         $this->command->info('Email: ferry@picnicisland.com | Password: password | Role: Ferry Operator');
-        $this->command->info('Email: themepark@picnicisland.com | Password: password | Role: Theme Park Staff');
+        $this->command->info('Email: themepark-manager@picnicisland.com | Password: password | Role: Theme Park Manager');
+        $this->command->info('Email: themepark-staff@picnicisland.com | Password: password | Role: Theme Park Staff');
         $this->command->info('');
         $this->command->info('GUEST ACCOUNTS:');
         $this->command->info('Email: guest@example.com | Password: password');

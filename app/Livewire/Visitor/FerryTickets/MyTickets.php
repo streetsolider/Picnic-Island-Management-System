@@ -27,10 +27,11 @@ class MyTickets extends Component
             $query->where('travel_date', '>=', now()->toDateString())
                   ->where('status', 'confirmed');
         } elseif ($this->filter === 'past') {
-            $query->where(function($q) {
-                $q->where('travel_date', '<', now()->toDateString())
-                  ->orWhere('status', 'used');
-            });
+            $query->where('status', '!=', 'cancelled')
+                  ->where(function($q) {
+                      $q->where('travel_date', '<', now()->toDateString())
+                        ->orWhere('status', 'used');
+                  });
         } elseif ($this->filter === 'cancelled') {
             $query->where('status', 'cancelled');
         }

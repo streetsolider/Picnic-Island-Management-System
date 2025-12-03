@@ -117,9 +117,10 @@ class HotelBooking extends Model
 
     public function scopePast($query)
     {
-        return $query->whereIn('status', ['completed', 'no-show'])
-            ->orWhere(function ($q) {
-                $q->where('check_out_date', '<', now()->toDateString());
+        return $query->where('status', '!=', 'cancelled')
+            ->where(function ($q) {
+                $q->whereIn('status', ['completed', 'no-show'])
+                  ->orWhere('check_out_date', '<', now()->toDateString());
             });
     }
 

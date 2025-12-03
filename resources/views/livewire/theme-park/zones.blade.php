@@ -33,17 +33,6 @@
                         @error('description') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assign Theme Park Staff (Optional)</label>
-                        <select wire:model="assigned_staff_id" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                            <option value="">None - Assign later</option>
-                            @foreach($themeParkStaff as $staff)
-                                <option value="{{ $staff->id }}">{{ $staff->name }} ({{ $staff->email }})</option>
-                            @endforeach
-                        </select>
-                        @error('assigned_staff_id') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Capacity and operating hours will be managed by the assigned staff member</p>
-                    </div>
-                    <div class="mb-4">
                         <label class="flex items-center">
                             <input wire:model="is_active" type="checkbox" class="rounded border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500">
                             <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Active</span>
@@ -82,17 +71,6 @@
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
                         <textarea wire:model="description" rows="3" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm" placeholder="Optional description for this zone..."></textarea>
                         @error('description') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assign Theme Park Staff (Optional)</label>
-                        <select wire:model="assigned_staff_id" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                            <option value="">None - Assign later</option>
-                            @foreach($themeParkStaff as $staff)
-                                <option value="{{ $staff->id }}">{{ $staff->name }} ({{ $staff->email }})</option>
-                            @endforeach
-                        </select>
-                        @error('assigned_staff_id') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Capacity and operating hours will be managed by the assigned staff member</p>
                     </div>
                     <div class="mb-4">
                         <label class="flex items-center">
@@ -162,7 +140,6 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Zone Name</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Assigned Staff</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                         </tr>
@@ -180,14 +157,6 @@
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">{{ $zone->zone_type }}</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    @if($zone->assignedStaff)
-                                        <div class="text-sm text-gray-900 dark:text-gray-100">{{ $zone->assignedStaff->name }}</div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $zone->assignedStaff->email }}</div>
-                                    @else
-                                        <span class="text-sm text-gray-400 dark:text-gray-500 italic">Not assigned</span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
                                     <button wire:click="toggleStatus({{ $zone->id }})" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $zone->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                         {{ $zone->is_active ? 'Active' : 'Inactive' }}
                                     </button>
@@ -198,7 +167,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No theme park zones found.</td>
+                                <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No theme park zones found.</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Livewire\Admin\ThemePark;
+namespace App\Livewire\ThemePark;
 
-use App\Enums\StaffRole;
 use App\Models\ThemeParkZone;
-use App\Models\Staff;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -25,7 +23,6 @@ class Zones extends Component
     public $name;
     public $zone_type;
     public $description;
-    public $assigned_staff_id;
     public $is_active = true;
 
     // Zone types (the type itself is the name)
@@ -47,7 +44,6 @@ class Zones extends Component
             'name' => 'required|string|max:255',
             'zone_type' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'assigned_staff_id' => 'nullable|exists:staff,id',
             'is_active' => 'boolean',
         ];
     }
@@ -77,7 +73,6 @@ class Zones extends Component
         $this->name = $zone->name;
         $this->zone_type = $zone->zone_type;
         $this->description = $zone->description;
-        $this->assigned_staff_id = $zone->assigned_staff_id;
         $this->is_active = $zone->is_active;
 
         $this->showEditModal = true;
@@ -103,7 +98,6 @@ class Zones extends Component
         $this->name = '';
         $this->zone_type = '';
         $this->description = '';
-        $this->assigned_staff_id = null;
         $this->is_active = true;
         $this->resetValidation();
     }
@@ -116,7 +110,6 @@ class Zones extends Component
             'name' => $this->name,
             'zone_type' => $this->zone_type,
             'description' => $this->description,
-            'assigned_staff_id' => $this->assigned_staff_id,
             'is_active' => $this->is_active,
         ]);
 
@@ -135,7 +128,6 @@ class Zones extends Component
             'name' => $this->name,
             'zone_type' => $this->zone_type,
             'description' => $this->description,
-            'assigned_staff_id' => $this->assigned_staff_id,
             'is_active' => $this->is_active,
         ]);
 
@@ -165,7 +157,6 @@ class Zones extends Component
     public function render()
     {
         $zones = ThemeParkZone::query()
-            ->with('assignedStaff')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
@@ -178,14 +169,8 @@ class Zones extends Component
             ->latest()
             ->paginate(10);
 
-        // Get all theme park staff for the dropdown
-        $themeParkStaff = Staff::where('role', StaffRole::THEME_PARK_STAFF)
-            ->where('is_active', true)
-            ->get();
-
-        return view('livewire.admin.theme-park.zones', [
+        return view('livewire.theme-park.zones', [
             'zones' => $zones,
-            'themeParkStaff' => $themeParkStaff,
-        ])->layout('layouts.admin');
+        ])->layout('layouts.staff');
     }
 }

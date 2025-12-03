@@ -7,6 +7,7 @@ enum StaffRole: string
     case ADMINISTRATOR = 'administrator';
     case HOTEL_MANAGER = 'hotel_manager';
     case FERRY_OPERATOR = 'ferry_operator';
+    case THEME_PARK_MANAGER = 'theme_park_manager';
     case THEME_PARK_STAFF = 'theme_park_staff';
     case BEACH_STAFF = 'beach_staff';
 
@@ -19,6 +20,7 @@ enum StaffRole: string
             self::ADMINISTRATOR => 'Administrator',
             self::HOTEL_MANAGER => 'Hotel Manager',
             self::FERRY_OPERATOR => 'Ferry Operator',
+            self::THEME_PARK_MANAGER => 'Theme Park Manager',
             self::THEME_PARK_STAFF => 'Theme Park Staff',
             self::BEACH_STAFF => 'Beach Staff',
         };
@@ -59,6 +61,7 @@ enum StaffRole: string
             self::ADMINISTRATOR => 'admin.dashboard',
             self::HOTEL_MANAGER => 'hotel.dashboard',
             self::FERRY_OPERATOR => 'ferry.dashboard',
+            self::THEME_PARK_MANAGER => 'theme-park.dashboard',
             self::THEME_PARK_STAFF => 'theme-park.dashboard',
             self::BEACH_STAFF => 'beach.dashboard',
         };

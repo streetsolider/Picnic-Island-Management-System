@@ -72,35 +72,38 @@
                     @error('ticketPrice')
                         <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        Valid range: MVR 5.00 - MVR 1,000.00
-                    </p>
                 </div>
             </div>
 
             {{-- Info Box --}}
             <x-admin.alert.info class="mt-6">
-                <div class="flex">
-                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                    </svg>
-                    <div class="text-sm">
-                        <p class="font-medium">Important Information</p>
-                        <p class="mt-1">
-                            This setting controls the global price for theme park tickets. Visitors will exchange MVR for tickets at this rate, then redeem tickets to participate in activities.
-                        </p>
-                    </div>
+                <div class="text-sm">
+                    <p class="font-medium">How Theme Park Tickets Work</p>
+                    <p class="mt-1">
+                        <strong>1 Ticket = {{ number_format($ticketPrice, 2) }} MVR</strong>
+                    </p>
+                    <p class="mt-2">
+                        Visitors purchase tickets at this rate. Each activity requires a specific number of tickets to participate. For example, if an activity costs 5 tickets and the ticket price is MVR 10, visitors pay MVR 50 for that activity.
+                    </p>
                 </div>
             </x-admin.alert.info>
 
             {{-- Action Buttons --}}
-            <div class="mt-6 flex justify-end space-x-3">
-                <x-admin.button.secondary type="button" wire:click="mount">
-                    Reset
-                </x-admin.button.secondary>
-                <x-admin.button.primary type="submit" :loading="'save'">
-                    Save Changes
-                </x-admin.button.primary>
+            <div class="mt-6 flex justify-end">
+                <button
+                    type="submit"
+                    wire:loading.attr="disabled"
+                    wire:target="save"
+                    class="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-md bg-indigo-600 dark:bg-indigo-500 text-white hover:bg-indigo-700 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150 ease-in-out">
+                    <span wire:loading.remove wire:target="save">Save Changes</span>
+                    <span wire:loading wire:target="save" class="flex items-center">
+                        <svg class="w-5 h-5 animate-spin mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Saving...
+                    </span>
+                </button>
             </div>
         </form>
     </x-admin.card.base>

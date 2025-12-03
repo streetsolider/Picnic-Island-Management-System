@@ -13,6 +13,7 @@ class ThemeParkActivity extends Model
 
     protected $fillable = [
         'theme_park_zone_id',
+        'assigned_staff_id',
         'name',
         'description',
         'ticket_cost',
@@ -40,6 +41,14 @@ class ThemeParkActivity extends Model
     public function zone(): BelongsTo
     {
         return $this->belongsTo(ThemeParkZone::class, 'theme_park_zone_id');
+    }
+
+    /**
+     * Get the staff member assigned to this activity.
+     */
+    public function assignedStaff(): BelongsTo
+    {
+        return $this->belongsTo(Staff::class, 'assigned_staff_id');
     }
 
     /**

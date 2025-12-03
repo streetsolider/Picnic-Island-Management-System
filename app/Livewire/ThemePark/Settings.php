@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Admin\ThemePark;
+namespace App\Livewire\ThemePark;
 
 use App\Models\ThemeParkSetting;
 use Livewire\Component;
@@ -8,7 +8,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 
-#[Layout('layouts.admin')]
+#[Layout('layouts.staff')]
 #[Title('Theme Park Settings')]
 class Settings extends Component
 {
@@ -27,7 +27,7 @@ class Settings extends Component
     {
         $this->validate();
 
-        ThemeParkSetting::setTicketPrice($this->ticketPrice, auth()->id());
+        ThemeParkSetting::setTicketPrice($this->ticketPrice, auth('staff')->id());
 
         $this->currentPrice = $this->ticketPrice;
 
@@ -38,6 +38,6 @@ class Settings extends Component
 
     public function render()
     {
-        return view('livewire.admin.theme-park.settings');
+        return view('livewire.theme-park.settings');
     }
 }

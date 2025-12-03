@@ -115,10 +115,25 @@ Route::middleware(['auth:staff'])->group(function () {
         Route::get('/tickets/passengers', \App\Livewire\Ferry\Tickets\PassengerList::class)->name('tickets.passengers');
     });
 
-    // Theme Park Staff Routes
-    Route::middleware('role:theme_park_staff')->prefix('theme-park')->name('theme-park.')->group(function () {
+    // Theme Park Management (Manager & Staff)
+    Route::middleware('role:theme_park_manager,theme_park_staff')->prefix('theme-park')->name('theme-park.')->group(function () {
         Route::get('/dashboard', \App\Livewire\ThemePark\Dashboard::class)->name('dashboard');
+
+        // Manager and Staff can manage activities (but with different permissions)
         Route::get('/activities', \App\Livewire\ThemePark\Activities\Index::class)->name('activities.index');
+
+        // Staff-only routes
+        Route::middleware('role:theme_park_staff')->group(function () {
+            Route::get('/schedules', \App\Livewire\ThemePark\Schedules::class)->name('schedules');
+        });
+
+        // Manager-only routes
+        Route::middleware('role:theme_park_manager')->group(function () {
+            Route::get('/zones', \App\Livewire\ThemePark\Zones::class)->name('zones');
+            Route::get('/settings', \App\Livewire\ThemePark\Settings::class)->name('settings');
+        });
+
+        // Staff can validate tickets
         Route::get('/validate', \App\Livewire\ThemePark\Validate::class)->name('validate');
     });
 
@@ -132,10 +147,6 @@ Route::middleware(['auth:staff'])->group(function () {
         Route::get('/dashboard', \App\Livewire\Admin\Dashboard::class)->name('dashboard');
         Route::get('/staff', \App\Livewire\Admin\Staff\Index::class)->name('staff.index');
         Route::get('/hotels', \App\Livewire\Admin\Hotels\Index::class)->name('hotels.index');
-
-        // Theme Park Management
-        Route::get('/theme-park/zones', \App\Livewire\Admin\ThemePark\Zones::class)->name('theme-park.zones');
-        Route::get('/theme-park/settings', \App\Livewire\Admin\ThemePark\Settings::class)->name('theme-park.settings');
 
         Route::get('/beach/services', \App\Livewire\Admin\Beach\Services::class)->name('beach.services');
 

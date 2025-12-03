@@ -48,11 +48,6 @@
             {{ __('Manage Hotels') }}
         </x-admin.navigation.nav-link>
 
-        <x-admin.navigation.nav-link :href="route('admin.theme-park')" :active="request()->routeIs('admin.theme-park')"
-            icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'>
-            {{ __('Theme Park Zones') }}
-        </x-admin.navigation.nav-link>
-
         <x-admin.navigation.nav-link :href="route('admin.beach.services')"
             :active="request()->routeIs('admin.beach.services')"
             icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>'>

@@ -2,8 +2,10 @@
 
 namespace App\Livewire\ThemePark;
 
+use App\Models\ThemeParkActivity;
+use App\Models\ThemeParkActivitySchedule;
 use App\Models\ThemeParkZone;
-use App\Services\ThemeParkTicketService;
+use App\Models\ThemeParkSetting;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -12,48 +14,69 @@ use Livewire\Attributes\Title;
 #[Title('Theme Park Dashboard')]
 class Dashboard extends Component
 {
-    public $zone;
-    public $stats = [];
-    public $recentRedemptions = [];
+    public $isManager = false;
 
     public function mount()
     {
-        // Get the zone assigned to this staff member
-        $this->zone = ThemeParkZone::where('assigned_staff_id', auth()->id())
-            ->with(['activities'])
-            ->first();
-
-        if (!$this->zone) {
-            session()->flash('error', 'No zone assigned to you.');
-            return;
-        }
-
-        $this->loadStats();
-        $this->loadRecentRedemptions();
-    }
-
-    public function loadStats()
-    {
-        if (!$this->zone) {
-            return;
-        }
-
-        $service = app(ThemeParkTicketService::class);
-        $this->stats = $service->getStaffStats($this->zone->id);
-    }
-
-    public function loadRecentRedemptions()
-    {
-        if (!$this->zone) {
-            return;
-        }
-
-        $service = app(ThemeParkTicketService::class);
-        $this->recentRedemptions = $service->getRecentRedemptions($this->zone->id, 5);
+        $this->isManager = auth('staff')->user()->role->value === 'theme_park_manager';
     }
 
     public function render()
     {
-        return view('livewire.theme-park.dashboard');
+        $data = [];
+
+        if ($this->isManager) {
+            // Manager Dashboard: Overview of all zones and activities
+            $data['totalZones'] = ThemeParkZone::count();
+            $data['activeZones'] = ThemeParkZone::where('is_active', true)->count();
+            $data['totalActivities'] = ThemeParkActivity::count();
+            $data['activeActivities'] = ThemeParkActivity::where('is_active', true)->count();
+            $data['unassignedActivities'] = ThemeParkActivity::whereNull('assigned_staff_id')->count();
+            $data['ticketPrice'] = ThemeParkSetting::getTicketPrice();
+
+            // Recent activities
+            $data['recentActivities'] = ThemeParkActivity::with(['zone', 'assignedStaff'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+
+            // Zones list
+            $data['zones'] = ThemeParkZone::withCount('activities')
+                ->orderBy('name')
+                ->get();
+        } else {
+            // Staff Dashboard: Their assigned activities and schedules
+            $data['myActivities'] = ThemeParkActivity::where('assigned_staff_id', auth('staff')->id())
+                ->with(['zone'])
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get();
+
+            $data['totalActivities'] = $data['myActivities']->count();
+
+            // Today's schedules
+            $data['todaySchedules'] = ThemeParkActivitySchedule::with(['activity.zone'])
+                ->whereHas('activity', function ($q) {
+                    $q->where('assigned_staff_id', auth('staff')->id());
+                })
+                ->whereDate('schedule_date', today())
+                ->orderBy('start_time')
+                ->get();
+
+            // Upcoming schedules (next 7 days)
+            $data['upcomingSchedules'] = ThemeParkActivitySchedule::with(['activity.zone'])
+                ->whereHas('activity', function ($q) {
+                    $q->where('assigned_staff_id', auth('staff')->id());
+                })
+                ->whereBetween('schedule_date', [today()->addDay(), today()->addDays(7)])
+                ->orderBy('schedule_date')
+                ->orderBy('start_time')
+                ->limit(10)
+                ->get();
+
+            $data['ticketPrice'] = ThemeParkSetting::getTicketPrice();
+        }
+
+        return view('livewire.theme-park.dashboard', $data);
     }
 }
