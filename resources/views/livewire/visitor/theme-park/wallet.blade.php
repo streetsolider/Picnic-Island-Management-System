@@ -1,259 +1,285 @@
-<div>
-    {{-- Header --}}
-    <div class="mb-8">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Theme Park Wallet</h2>
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Manage your wallet balance and purchase tickets
-        </p>
-    </div>
+<div class="min-h-screen bg-gradient-to-br from-brand-light via-purple-50 to-brand-secondary/10">
+    <section class="relative py-12 overflow-hidden">
+        {{-- Decorative Blobs --}}
+        <div class="absolute top-0 left-10 w-72 h-72 bg-purple-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+        <div class="absolute top-20 right-10 w-72 h-72 bg-brand-secondary/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
 
-    {{-- Success/Error Messages --}}
-    @if (session('success'))
-        <x-admin.alert.success class="mb-4" dismissible>
-            {{ session('success') }}
-        </x-admin.alert.success>
-    @endif
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            {{-- Header --}}
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-display font-bold text-brand-dark mb-4">
+                    Theme Park <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-brand-secondary">Wallet</span>
+                </h1>
+                <p class="text-xl text-brand-dark/70">Manage your balance and purchase tickets for exciting activities</p>
+            </div>
 
-    @if (session('error'))
-        <x-admin.alert.danger class="mb-4" dismissible>
-            {{ session('error') }}
-        </x-admin.alert.danger>
-    @endif
-
-    {{-- Balance Cards --}}
-    <div class="grid gap-6 mb-8 md:grid-cols-2">
-        {{-- MVR Balance Card --}}
-        <x-admin.card.base>
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">MVR Balance</p>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-                        {{ number_format($stats['current_balance_mvr'], 2) }}
-                    </p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Maldivian Rufiyaa</p>
-                </div>
-                <div class="p-3 bg-green-100 dark:bg-green-900 rounded-full">
-                    <svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            {{-- Success/Error Messages --}}
+            @if (session('success'))
+                <div class="max-w-4xl mx-auto mb-6 bg-green-50 border border-green-200 text-green-800 px-6 py-4 rounded-2xl shadow-lg flex items-center">
+                    <svg class="w-6 h-6 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                </div>
-            </div>
-            <div class="mt-4">
-                <x-admin.button.success wire:click="openTopUpForm" class="w-full">
-                    Top Up Wallet
-                </x-admin.button.success>
-            </div>
-        </x-admin.card.base>
-
-        {{-- Ticket Balance Card --}}
-        <x-admin.card.base>
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Ticket Balance</p>
-                    <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">
-                        {{ number_format($stats['current_ticket_balance']) }}
-                    </p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Available Tickets</p>
-                </div>
-                <div class="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-full">
-                    <svg class="w-8 h-8 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
-                    </svg>
-                </div>
-            </div>
-            <div class="mt-4">
-                <x-admin.button.primary wire:click="openPurchaseForm" class="w-full">
-                    Purchase Tickets
-                </x-admin.button.primary>
-            </div>
-        </x-admin.card.base>
-    </div>
-
-    {{-- Pricing Info --}}
-    <x-admin.alert.info class="mb-8">
-        <div class="flex items-center">
-            <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-            </svg>
-            <span>Current ticket price: <strong>MVR {{ number_format($ticketPrice, 2) }}</strong> per ticket</span>
-        </div>
-    </x-admin.alert.info>
-
-    {{-- Statistics --}}
-    <div class="grid gap-6 mb-8 md:grid-cols-3">
-        <x-admin.card.stat
-            title="Total Topped Up"
-            value="MVR {{ number_format($stats['total_topped_up_mvr'], 2) }}"
-            color="green" />
-        <x-admin.card.stat
-            title="Total Tickets Purchased"
-            :value="number_format($stats['total_tickets_purchased'])"
-            color="indigo" />
-        <x-admin.card.stat
-            title="Total Tickets Redeemed"
-            :value="number_format($stats['total_tickets_redeemed'])"
-            color="purple" />
-    </div>
-
-    {{-- Transaction History --}}
-    <x-admin.card.base>
-        <x-slot name="title">
-            <div class="flex items-center justify-between">
-                <span>Transaction History</span>
-                <div class="flex space-x-2">
-                    <button
-                        wire:click="$set('filter', 'all')"
-                        class="px-3 py-1 text-sm rounded-lg {{ $filter === 'all' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' }}">
-                        All
-                    </button>
-                    <button
-                        wire:click="$set('filter', 'top_up')"
-                        class="px-3 py-1 text-sm rounded-lg {{ $filter === 'top_up' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' }}">
-                        Top-ups
-                    </button>
-                    <button
-                        wire:click="$set('filter', 'ticket_purchase')"
-                        class="px-3 py-1 text-sm rounded-lg {{ $filter === 'ticket_purchase' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' }}">
-                        Purchases
-                    </button>
-                </div>
-            </div>
-        </x-slot>
-
-        @if($transactions->isEmpty())
-            <x-admin.card.empty-state
-                icon="📋"
-                title="No Transactions Yet"
-                description="Your transaction history will appear here once you top up or purchase tickets.">
-            </x-admin.card.empty-state>
-        @else
-            <x-admin.table.wrapper hoverable>
-                <thead>
-                    <tr>
-                        <x-admin.table.header>Reference</x-admin.table.header>
-                        <x-admin.table.header>Type</x-admin.table.header>
-                        <x-admin.table.header>Amount</x-admin.table.header>
-                        <x-admin.table.header>Balance After</x-admin.table.header>
-                        <x-admin.table.header>Date</x-admin.table.header>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($transactions as $transaction)
-                        <x-admin.table.row>
-                            <td class="px-6 py-4 font-mono text-sm">{{ $transaction->transaction_reference }}</td>
-                            <td class="px-6 py-4">
-                                @if($transaction->transaction_type === 'top_up')
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                        Top Up
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
-                                        Ticket Purchase
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4">
-                                @if($transaction->transaction_type === 'top_up')
-                                    <span class="text-green-600 dark:text-green-400">+MVR {{ number_format($transaction->amount_mvr, 2) }}</span>
-                                @else
-                                    <span class="text-indigo-600 dark:text-indigo-400">{{ $transaction->tickets_amount }} tickets</span>
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">(MVR {{ number_format($transaction->amount_mvr, 2) }})</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4">
-                                <div>MVR {{ number_format($transaction->balance_after_mvr, 2) }}</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $transaction->balance_after_tickets }} tickets</div>
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
-                                {{ $transaction->created_at->format('M d, Y h:i A') }}
-                            </td>
-                        </x-admin.table.row>
-                    @endforeach
-                </tbody>
-            </x-admin.table.wrapper>
-
-            {{-- Pagination --}}
-            @if($transactions->hasPages())
-                <div class="mt-4">
-                    {{ $transactions->links() }}
+                    <span class="font-medium">{{ session('success') }}</span>
                 </div>
             @endif
-        @endif
-    </x-admin.card.base>
+
+            @if (session('error'))
+                <div class="max-w-4xl mx-auto mb-6 bg-red-50 border border-red-200 text-red-800 px-6 py-4 rounded-2xl shadow-lg flex items-center">
+                    <svg class="w-6 h-6 mr-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="font-medium">{{ session('error') }}</span>
+                </div>
+            @endif
+
+            {{-- Balance Cards --}}
+            <div class="max-w-4xl mx-auto grid gap-6 mb-8 md:grid-cols-2">
+                {{-- MVR Balance Card --}}
+                <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl shadow-2xl overflow-hidden transform hover:scale-105 transition-all duration-300">
+                    <div class="p-8 text-white">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <p class="text-green-100 text-sm font-medium mb-2">MVR Balance</p>
+                                <p class="text-5xl font-bold">{{ number_format($stats['current_balance_mvr'], 2) }}</p>
+                                <p class="text-green-100 text-xs mt-2">Maldivian Rufiyaa</p>
+                            </div>
+                            <div class="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
+                                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <button wire:click="openTopUpForm" class="w-full bg-white text-green-600 px-6 py-3 rounded-xl font-bold hover:bg-green-50 transition-all transform hover:scale-105 shadow-lg">
+                            💰 Top Up Wallet
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Ticket Balance Card --}}
+                <div class="bg-gradient-to-br from-purple-600 to-brand-secondary rounded-3xl shadow-2xl overflow-hidden transform hover:scale-105 transition-all duration-300">
+                    <div class="p-8 text-white">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <p class="text-purple-100 text-sm font-medium mb-2">Ticket Balance</p>
+                                <p class="text-5xl font-bold">{{ number_format($stats['current_ticket_balance']) }}</p>
+                                <p class="text-purple-100 text-xs mt-2">Available Tickets</p>
+                            </div>
+                            <div class="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
+                                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <button wire:click="openPurchaseForm" class="w-full bg-white text-purple-600 px-6 py-3 rounded-xl font-bold hover:bg-purple-50 transition-all transform hover:scale-105 shadow-lg">
+                            🎟️ Purchase Tickets
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Pricing Info --}}
+            <div class="max-w-4xl mx-auto mb-8">
+                <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl px-6 py-4 flex items-center shadow-lg">
+                    <svg class="w-6 h-6 text-blue-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="text-blue-800 font-medium">Current ticket price: <strong class="text-2xl">MVR {{ number_format($ticketPrice, 2) }}</strong> per ticket</span>
+                </div>
+            </div>
+
+            {{-- Statistics --}}
+            <div class="max-w-4xl mx-auto grid gap-6 mb-8 md:grid-cols-3">
+                <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500 transform hover:scale-105 transition-all">
+                    <p class="text-gray-600 text-sm mb-1">Total Topped Up</p>
+                    <p class="text-3xl font-bold text-green-600">MVR {{ number_format($stats['total_topped_up_mvr'], 2) }}</p>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-purple-500 transform hover:scale-105 transition-all">
+                    <p class="text-gray-600 text-sm mb-1">Tickets Purchased</p>
+                    <p class="text-3xl font-bold text-purple-600">{{ number_format($stats['total_tickets_purchased']) }}</p>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-brand-secondary transform hover:scale-105 transition-all">
+                    <p class="text-gray-600 text-sm mb-1">Tickets Redeemed</p>
+                    <p class="text-3xl font-bold text-brand-secondary">{{ number_format($stats['total_tickets_redeemed']) }}</p>
+                </div>
+            </div>
+
+            {{-- Transaction History --}}
+            <div class="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden">
+                <div class="bg-gradient-to-r from-brand-primary to-brand-secondary p-6 text-white">
+                    <div class="flex items-center justify-between flex-wrap gap-4">
+                        <h2 class="text-2xl font-display font-bold">Transaction History</h2>
+                        <div class="flex space-x-2">
+                            <button wire:click="$set('filter', 'all')" class="px-4 py-2 text-sm font-medium rounded-lg {{ $filter === 'all' ? 'bg-white text-brand-primary' : 'bg-white/20 text-white hover:bg-white/30' }} transition-all">
+                                All
+                            </button>
+                            <button wire:click="$set('filter', 'top_up')" class="px-4 py-2 text-sm font-medium rounded-lg {{ $filter === 'top_up' ? 'bg-white text-brand-primary' : 'bg-white/20 text-white hover:bg-white/30' }} transition-all">
+                                Top-ups
+                            </button>
+                            <button wire:click="$set('filter', 'ticket_purchase')" class="px-4 py-2 text-sm font-medium rounded-lg {{ $filter === 'ticket_purchase' ? 'bg-white text-brand-primary' : 'bg-white/20 text-white hover:bg-white/30' }} transition-all">
+                                Purchases
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    @if($transactions->isEmpty())
+                        <div class="text-center py-16">
+                            <div class="text-6xl mb-4">📋</div>
+                            <h3 class="text-2xl font-display font-bold text-brand-dark mb-2">No Transactions Yet</h3>
+                            <p class="text-gray-600">Your transaction history will appear here once you top up or purchase tickets.</p>
+                        </div>
+                    @else
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b-2 border-gray-200">
+                                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Reference</th>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Type</th>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Amount</th>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Balance After</th>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($transactions as $transaction)
+                                        <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                            <td class="px-4 py-4 font-mono text-sm">{{ $transaction->transaction_reference }}</td>
+                                            <td class="px-4 py-4">
+                                                @if($transaction->transaction_type === 'top_up')
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                                                        💰 Top Up
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
+                                                        🎟️ Purchase
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td class="px-4 py-4">
+                                                @if($transaction->transaction_type === 'top_up')
+                                                    <span class="text-green-600 font-bold">+MVR {{ number_format($transaction->amount_mvr, 2) }}</span>
+                                                @else
+                                                    <span class="text-purple-600 font-bold">{{ $transaction->tickets_amount }} tickets</span>
+                                                    <span class="text-sm text-gray-500">(MVR {{ number_format($transaction->amount_mvr, 2) }})</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-4 py-4">
+                                                <div class="font-semibold text-gray-900">MVR {{ number_format($transaction->balance_after_mvr, 2) }}</div>
+                                                <div class="text-sm text-gray-500">{{ $transaction->balance_after_tickets }} tickets</div>
+                                            </td>
+                                            <td class="px-4 py-4 text-sm text-gray-600">
+                                                {{ $transaction->created_at->format('M d, Y h:i A') }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {{-- Pagination --}}
+                        @if($transactions->hasPages())
+                            <div class="mt-6">
+                                {{ $transactions->links() }}
+                            </div>
+                        @endif
+                    @endif
+                </div>
+            </div>
+        </div>
+    </section>
 
     {{-- Top Up Modal --}}
-    <x-admin.modal.form
-        name="top-up-form"
-        :show="$showTopUpForm"
-        title="Top Up Wallet"
-        submitText="Top Up"
-        wire:submit="topUp"
-        :loading="'topUp'">
+    @if($showTopUpForm)
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" wire:click.self="$set('showTopUpForm', false)">
+            <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
+                <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-6 text-white">
+                    <h3 class="text-2xl font-display font-bold">💰 Top Up Wallet</h3>
+                    <p class="text-green-100 text-sm mt-1">Add funds to your wallet balance</p>
+                </div>
 
-        <div>
-            <label for="topUpAmount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Amount (MVR) <span class="text-red-500">*</span>
-            </label>
-            <input
-                type="number"
-                id="topUpAmount"
-                wire:model="topUpAmount"
-                step="0.01"
-                min="10"
-                max="10000"
-                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                placeholder="Enter amount"
-            />
-            @error('topUpAmount') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
-            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Min: MVR 10.00 | Max: MVR 10,000.00
-            </p>
+                <form wire:submit.prevent="topUp" class="p-6">
+                    <div class="mb-6">
+                        <label for="topUpAmount" class="block text-sm font-bold text-gray-700 mb-2">
+                            Amount (MVR) <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" id="topUpAmount" wire:model="topUpAmount" step="0.01" min="10" max="10000"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg font-semibold"
+                            placeholder="Enter amount" />
+                        @error('topUpAmount') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
+                        <p class="mt-2 text-xs text-gray-500">
+                            Min: MVR 10.00 | Max: MVR 10,000.00
+                        </p>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button type="submit" wire:loading.attr="disabled" wire:target="topUp"
+                            class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:from-green-600 hover:to-emerald-700 transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span wire:loading.remove wire:target="topUp">Top Up</span>
+                            <span wire:loading wire:target="topUp">Processing...</span>
+                        </button>
+                        <button type="button" wire:click="$set('showTopUpForm', false)"
+                            class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-all">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </x-admin.modal.form>
+    @endif
 
     {{-- Purchase Tickets Modal --}}
-    <x-admin.modal.form
-        name="purchase-form"
-        :show="$showPurchaseForm"
-        title="Purchase Tickets"
-        submitText="Purchase"
-        wire:submit="purchaseTickets"
-        :loading="'purchaseTickets'">
-
-        <div class="space-y-4">
-            <div>
-                <label for="ticketCount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Number of Tickets <span class="text-red-500">*</span>
-                </label>
-                <input
-                    type="number"
-                    id="ticketCount"
-                    wire:model.live="ticketCount"
-                    min="1"
-                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                />
-                @error('ticketCount') <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p> @enderror
-            </div>
-
-            <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm text-gray-600 dark:text-gray-400">Price per ticket:</span>
-                    <span class="font-medium text-gray-900 dark:text-white">MVR {{ number_format($ticketPrice, 2) }}</span>
+    @if($showPurchaseForm)
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" wire:click.self="$set('showPurchaseForm', false)">
+            <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
+                <div class="bg-gradient-to-r from-purple-600 to-brand-secondary p-6 text-white">
+                    <h3 class="text-2xl font-display font-bold">🎟️ Purchase Tickets</h3>
+                    <p class="text-purple-100 text-sm mt-1">Buy tickets for theme park activities</p>
                 </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Cost:</span>
-                    <span class="text-lg font-bold text-gray-900 dark:text-white">MVR {{ number_format($ticketPrice * ($ticketCount ?: 1), 2) }}</span>
-                </div>
-            </div>
 
-            <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                    Current MVR Balance: <strong class="text-gray-900 dark:text-white">MVR {{ number_format($stats['current_balance_mvr'], 2) }}</strong>
-                </p>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Balance After Purchase: <strong class="text-gray-900 dark:text-white">MVR {{ number_format(max(0, $stats['current_balance_mvr'] - ($ticketPrice * ($ticketCount ?: 1))), 2) }}</strong>
-                </p>
+                <form wire:submit.prevent="purchaseTickets" class="p-6 space-y-6">
+                    <div>
+                        <label for="ticketCount" class="block text-sm font-bold text-gray-700 mb-2">
+                            Number of Tickets <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" id="ticketCount" wire:model.live="ticketCount" min="1"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg font-semibold" />
+                        @error('ticketCount') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 border-2 border-purple-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">Price per ticket:</span>
+                            <span class="font-bold text-gray-900">MVR {{ number_format($ticketPrice, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-2 border-t-2 border-purple-200">
+                            <span class="text-sm font-bold text-gray-700">Total Cost:</span>
+                            <span class="text-2xl font-bold text-purple-600">MVR {{ number_format($ticketPrice * ($ticketCount ?: 1), 2) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 rounded-2xl p-4 border-2 border-blue-200">
+                        <p class="text-sm text-gray-700 mb-1">
+                            Current MVR Balance: <strong class="text-gray-900">MVR {{ number_format($stats['current_balance_mvr'], 2) }}</strong>
+                        </p>
+                        <p class="text-sm text-gray-700">
+                            Balance After Purchase: <strong class="text-gray-900">MVR {{ number_format(max(0, $stats['current_balance_mvr'] - ($ticketPrice * ($ticketCount ?: 1))), 2) }}</strong>
+                        </p>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button type="submit" wire:loading.attr="disabled" wire:target="purchaseTickets"
+                            class="flex-1 bg-gradient-to-r from-purple-600 to-brand-secondary text-white px-6 py-3 rounded-xl font-bold hover:from-purple-700 hover:to-pink-600 transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span wire:loading.remove wire:target="purchaseTickets">Purchase</span>
+                            <span wire:loading wire:target="purchaseTickets">Processing...</span>
+                        </button>
+                        <button type="button" wire:click="$set('showPurchaseForm', false)"
+                            class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-all">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
-    </x-admin.modal.form>
+    @endif
 </div>

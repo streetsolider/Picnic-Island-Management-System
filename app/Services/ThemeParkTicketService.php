@@ -14,10 +14,18 @@ class ThemeParkTicketService
     /**
      * Redeem tickets for an activity.
      */
-    public function redeemTickets(int $userId, int $activityId): array
+    public function redeemTickets(int $userId, int $activityId, int $numberOfPersons = 1): array
     {
         try {
             DB::beginTransaction();
+
+            // Validate number of persons
+            if ($numberOfPersons < 1) {
+                return [
+                    'success' => false,
+                    'message' => 'Number of persons must be at least 1.',
+                ];
+            }
 
             // Get activity with zone
             $activity = ThemeParkActivity::with('zone')->find($activityId);
@@ -46,27 +54,31 @@ class ThemeParkTicketService
                 ];
             }
 
+            // Calculate total tickets needed (ticket cost per person × number of persons)
+            $totalTicketsNeeded = $activity->ticket_cost * $numberOfPersons;
+
             // Get wallet
             $wallet = ThemeParkWallet::getOrCreateForUser($userId);
 
             // Check if user has sufficient tickets
-            if (!$wallet->hasSufficientTickets($activity->ticket_cost)) {
+            if (!$wallet->hasSufficientTickets($totalTicketsNeeded)) {
                 return [
                     'success' => false,
-                    'message' => "Insufficient tickets. You need {$activity->ticket_cost} ticket(s) but have {$wallet->ticket_balance}.",
+                    'message' => "Insufficient tickets. You need {$totalTicketsNeeded} ticket(s) ({$activity->ticket_cost} per person × {$numberOfPersons} persons) but have {$wallet->ticket_balance}.",
                 ];
             }
 
             // Deduct tickets from wallet
-            $wallet->ticket_balance -= $activity->ticket_cost;
-            $wallet->total_tickets_redeemed += $activity->ticket_cost;
+            $wallet->ticket_balance -= $totalTicketsNeeded;
+            $wallet->total_tickets_redeemed += $totalTicketsNeeded;
             $wallet->save();
 
             // Create redemption record
             $redemption = ThemeParkTicketRedemption::create([
                 'user_id' => $userId,
                 'activity_id' => $activityId,
-                'tickets_redeemed' => $activity->ticket_cost,
+                'tickets_redeemed' => $totalTicketsNeeded,
+                'number_of_persons' => $numberOfPersons,
                 'status' => 'pending',
             ]);
 
@@ -74,7 +86,7 @@ class ThemeParkTicketService
 
             return [
                 'success' => true,
-                'message' => "Successfully redeemed {$activity->ticket_cost} ticket(s) for {$activity->name}.",
+                'message' => "Successfully redeemed {$totalTicketsNeeded} ticket(s) for {$numberOfPersons} " . str_plural('person', $numberOfPersons) . " ({$activity->name}).",
                 'redemption' => $redemption->load('activity'),
                 'wallet' => $wallet->fresh(),
             ];

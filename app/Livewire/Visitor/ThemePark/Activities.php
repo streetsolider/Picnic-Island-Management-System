@@ -16,6 +16,7 @@ class Activities extends Component
     public $selectedZone = null;
     public $wallet;
     public $selectedActivity = null;
+    public $numberOfPersons = 1;
 
     public function mount()
     {
@@ -34,6 +35,13 @@ class Activities extends Component
     public function selectActivity($activityId)
     {
         $this->selectedActivity = ThemeParkActivity::with('zone')->find($activityId);
+        $this->numberOfPersons = 1; // Reset to 1 when selecting new activity
+    }
+
+    public function cancelRedemption()
+    {
+        $this->selectedActivity = null;
+        $this->numberOfPersons = 1; // Reset when canceling
     }
 
     public function redeemTickets()
@@ -43,13 +51,19 @@ class Activities extends Component
             return;
         }
 
+        // Validate number of persons
+        $this->validate([
+            'numberOfPersons' => 'required|integer|min:1|max:50',
+        ]);
+
         $service = app(ThemeParkTicketService::class);
-        $result = $service->redeemTickets(auth()->id(), $this->selectedActivity->id);
+        $result = $service->redeemTickets(auth()->id(), $this->selectedActivity->id, $this->numberOfPersons);
 
         if ($result['success']) {
-            session()->flash('success', $result['message'] . ' Your redemption code is: ' . $result['redemption']->redemption_reference);
+            session()->flash('success', $result['message'] . ' Your redemption code is: <strong>' . $result['redemption']->redemption_reference . '</strong>');
             $this->loadWallet();
             $this->selectedActivity = null;
+            $this->numberOfPersons = 1;
         } else {
             session()->flash('error', $result['message']);
         }
