@@ -31,11 +31,11 @@ class ParadiseBayRoomSeeder extends Seeder
         // Clear existing rooms and pricing for this hotel
         $hotel->rooms()->delete();
 
-        // Use DB facade to ensure deletion works
-        \DB::table('room_type_pricing')->where('hotel_id', $hotel->id)->delete();
-        \DB::table('view_pricing')->where('hotel_id', $hotel->id)->delete();
-        \DB::table('seasonal_pricing')->where('hotel_id', $hotel->id)->delete();
-        \DB::table('day_type_pricing')->where('hotel_id', $hotel->id)->delete();
+        // Use eloquent to delete related pricing
+        RoomTypePricing::where('hotel_id', $hotel->id)->delete();
+        ViewPricing::where('hotel_id', $hotel->id)->delete();
+        SeasonalPricing::where('hotel_id', $hotel->id)->delete();
+        DayTypePricing::where('hotel_id', $hotel->id)->delete();
 
         $this->command->info('Creating room type base pricing...');
         $this->createRoomTypePricing($hotel->id);
@@ -69,13 +69,17 @@ class ParadiseBayRoomSeeder extends Seeder
         ];
 
         foreach ($pricing as $price) {
-            RoomTypePricing::create([
-                'hotel_id' => $hotelId,
-                'room_type' => $price['room_type'],
-                'base_price' => $price['base_price'],
-                'currency' => 'MVR',
-                'is_active' => true,
-            ]);
+            RoomTypePricing::updateOrCreate(
+                [
+                    'hotel_id' => $hotelId,
+                    'room_type' => $price['room_type'],
+                ],
+                [
+                    'base_price' => $price['base_price'],
+                    'currency' => 'MVR',
+                    'is_active' => true,
+                ]
+            );
         }
     }
 
@@ -84,23 +88,32 @@ class ParadiseBayRoomSeeder extends Seeder
      */
     private function createViewPricing(int $hotelId): void
     {
-        // Garden view - no extra charge (baseline)
-        ViewPricing::create([
-            'hotel_id' => $hotelId,
-            'view' => 'garden',
-            'modifier_type' => 'fixed',
-            'modifier_value' => 0,
-            'is_active' => true,
-        ]);
+        $views = [
+            ['view' => 'garden', 'modifier_type' => 'fixed', 'modifier_value' => 0],
+            ['view' => 'beach', 'modifier_type' => 'percentage', 'modifier_value' => 25],
+        ];
 
-        // Beach view - 25% premium
-        ViewPricing::create([
-            'hotel_id' => $hotelId,
-            'view' => 'beach',
-            'modifier_type' => 'percentage',
-            'modifier_value' => 25,
-            'is_active' => true,
-        ]);
+        foreach ($views as $viewData) {
+            try {
+                ViewPricing::updateOrCreate(
+                    ['hotel_id' => $hotelId, 'view' => $viewData['view']],
+                    [
+                        'modifier_type' => $viewData['modifier_type'],
+                        'modifier_value' => $viewData['modifier_value'],
+                        'is_active' => true,
+                    ]
+                );
+            } catch (\Illuminate\Database\QueryException $e) {
+                // If duplicate entry, just update it
+                ViewPricing::where('hotel_id', $hotelId)
+                    ->where('view', $viewData['view'])
+                    ->update([
+                        'modifier_type' => $viewData['modifier_type'],
+                        'modifier_value' => $viewData['modifier_value'],
+                        'is_active' => true,
+                    ]);
+            }
+        }
     }
 
     /**

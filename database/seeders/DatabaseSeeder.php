@@ -83,6 +83,18 @@ class DatabaseSeeder extends Seeder
         // Seed hotels
         $this->call(HotelSeeder::class);
 
+        // Seed hotel policies
+        $this->call(HotelPolicySeeder::class);
+
+        // Seed hotel amenities
+        $this->call(AmenitySeeder::class);
+
+        // Seed rooms for Paradise Bay Hotel
+        $this->call(ParadiseBayRoomSeeder::class);
+
+        // Seed promotional discounts
+        $this->call(PromotionalDiscountSeeder::class);
+
         // Seed ferry vessels
         $this->call(FerryVesselSeeder::class);
 
@@ -91,6 +103,9 @@ class DatabaseSeeder extends Seeder
 
         // Seed beach services
         $this->call(BeachServiceSeeder::class);
+
+        // Seed test data (bookings, activities, schedules)
+        $this->call(TestDataSeeder::class);
 
         $this->command->info('Sample data created successfully!');
         $this->command->info('');

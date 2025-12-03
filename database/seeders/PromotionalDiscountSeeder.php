@@ -14,6 +14,9 @@ class PromotionalDiscountSeeder extends Seeder
      */
     public function run(): void
     {
+        // Clear existing promotional discounts
+        PromotionalDiscount::truncate();
+
         // Get all hotels
         $hotels = Hotel::all();
 
@@ -73,7 +76,7 @@ class PromotionalDiscountSeeder extends Seeder
                 'maximum_nights' => null,
                 'booking_advance_days' => null,
                 'applicable_room_types' => null,
-                'promo_code' => 'LOCAL2025',
+                'promo_code' => 'LOCAL2025-H' . $hotel->id,
                 'is_active' => true,
                 'priority' => 20, // High priority
             ]);
@@ -173,7 +176,7 @@ class PromotionalDiscountSeeder extends Seeder
                 'maximum_nights' => null,
                 'booking_advance_days' => null,
                 'applicable_room_types' => null,
-                'promo_code' => 'LASTMINUTE',
+                'promo_code' => 'LASTMINUTE-H' . $hotel->id,
                 'is_active' => true,
                 'priority' => 12,
             ]);
