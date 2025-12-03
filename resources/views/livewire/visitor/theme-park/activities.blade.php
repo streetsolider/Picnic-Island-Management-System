@@ -206,7 +206,7 @@
                     <p class="text-white/90 text-sm mt-1">You're about to redeem tickets for this activity</p>
                 </div>
 
-                <form wire:submit="redeemTickets" class="p-6 space-y-4">
+                <form wire:submit.prevent="redeemTickets" class="p-6 space-y-4">
                     <div>
                         <p class="text-sm text-gray-600">Activity</p>
                         <p class="text-xl font-bold text-brand-dark">{{ $selectedActivity->name }}</p>
@@ -218,18 +218,44 @@
                     </div>
 
                     <div>
-                        <p class="text-sm text-gray-600">Ticket Cost</p>
+                        <p class="text-sm text-gray-600">Cost per Person</p>
                         <p class="text-lg font-semibold text-gray-900">{{ $selectedActivity->ticket_cost }} ticket(s)</p>
                     </div>
 
+                    <div>
+                        <label for="numberOfPersons" class="block text-sm font-bold text-gray-700 mb-2">
+                            Number of Persons <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" id="numberOfPersons" wire:model.live="numberOfPersons" min="1" max="50"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg font-semibold"
+                            placeholder="Enter number of persons" />
+                        @error('numberOfPersons')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 border-2 border-purple-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">Cost per person:</span>
+                            <span class="font-bold text-gray-900">{{ $selectedActivity->ticket_cost }} tickets</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-600">Number of persons:</span>
+                            <span class="font-bold text-gray-900">{{ $numberOfPersons }}</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-2 pt-2 border-t-2 border-purple-200">
+                            <span class="text-sm font-bold text-gray-700">Total Tickets Needed:</span>
+                            <span class="text-xl font-bold text-purple-600">{{ $selectedActivity->ticket_cost * $numberOfPersons }} tickets</span>
+                        </div>
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-sm text-gray-600">Current Balance:</span>
                             <span class="font-bold text-gray-900">{{ $wallet->ticket_balance }} tickets</span>
                         </div>
                         <div class="flex justify-between items-center pt-2 border-t-2 border-purple-200">
                             <span class="text-sm font-bold text-gray-700">Balance After:</span>
-                            <span class="text-2xl font-bold text-purple-600">{{ $wallet->ticket_balance - $selectedActivity->ticket_cost }} tickets</span>
+                            <span class="text-2xl font-bold {{ ($wallet->ticket_balance - ($selectedActivity->ticket_cost * $numberOfPersons)) >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                                {{ $wallet->ticket_balance - ($selectedActivity->ticket_cost * $numberOfPersons) }} tickets
+                            </span>
                         </div>
                     </div>
 

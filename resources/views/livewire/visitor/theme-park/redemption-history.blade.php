@@ -99,6 +99,10 @@
                                         <p class="font-mono text-lg font-bold text-brand-primary">{{ $redemption->redemption_reference }}</p>
                                     </div>
                                     <div class="bg-gray-50 rounded-xl p-4">
+                                        <p class="text-sm text-gray-600 mb-1">Number of Persons</p>
+                                        <p class="text-lg font-bold text-gray-900">{{ $redemption->number_of_persons }} 👥</p>
+                                    </div>
+                                    <div class="bg-gray-50 rounded-xl p-4">
                                         <p class="text-sm text-gray-600 mb-1">Tickets Used</p>
                                         <p class="text-lg font-bold text-gray-900">{{ $redemption->tickets_redeemed }} 🎟️</p>
                                     </div>

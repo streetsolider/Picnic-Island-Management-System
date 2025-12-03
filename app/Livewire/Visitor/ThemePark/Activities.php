@@ -61,11 +61,14 @@ class Activities extends Component
 
         if ($result['success']) {
             session()->flash('success', $result['message'] . ' Your redemption code is: <strong>' . $result['redemption']->redemption_reference . '</strong>');
-            $this->loadWallet();
             $this->selectedActivity = null;
             $this->numberOfPersons = 1;
+
+            // Redirect to refresh the page and show flash message
+            return $this->redirect(route('visitor.theme-park.activities'), navigate: true);
         } else {
             session()->flash('error', $result['message']);
+            $this->selectedActivity = null;
         }
     }
 
