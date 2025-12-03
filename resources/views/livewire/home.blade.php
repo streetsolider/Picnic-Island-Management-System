@@ -245,13 +245,23 @@
                                 </svg>
                             </a>
                         @else
-                            <a href="#"
-                                class="inline-flex items-center text-brand-primary font-semibold group-hover:translate-x-2 transition-transform">
-                                Learn More <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                                </svg>
-                            </a>
+                            @auth
+                                <a href="{{ route('visitor.theme-park.activities') }}" wire:navigate
+                                    class="inline-flex items-center text-brand-primary font-semibold group-hover:translate-x-2 transition-transform">
+                                    Browse Activities <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                    </svg>
+                                </a>
+                            @else
+                                <a href="{{ route('login') }}" wire:navigate
+                                    class="inline-flex items-center text-brand-primary font-semibold group-hover:translate-x-2 transition-transform">
+                                    Login to Explore <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                                    </svg>
+                                </a>
+                            @endauth
                         @endif
                     </div>
                 @endforeach

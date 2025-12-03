@@ -46,11 +46,11 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
         Route::get('/tickets/{ticket}', \App\Livewire\Visitor\FerryTickets\Show::class)->name('show');
     });
 
-    // Theme Park Visitor Routes (Auth Required)
-    Route::prefix('theme-park')->name('visitor.theme-park.')->group(function () {
-        Route::get('/wallet', \App\Livewire\Visitor\ThemePark\Wallet::class)->name('wallet');
-        Route::get('/activities', \App\Livewire\Visitor\ThemePark\Activities::class)->name('activities');
-        Route::get('/redemptions', \App\Livewire\Visitor\ThemePark\RedemptionHistory::class)->name('redemptions');
+    // Theme Park Visitor Routes (Auth Required + Must be Checked In)
+    Route::prefix('my-theme-park')->name('visitor.theme-park.')->group(function () {
+        Route::get('/wallet', \App\Livewire\Visitor\ThemePark\Wallet::class)->middleware('checked_in')->name('wallet');
+        Route::get('/activities', \App\Livewire\Visitor\ThemePark\Activities::class)->middleware('checked_in')->name('activities');
+        Route::get('/redemptions', \App\Livewire\Visitor\ThemePark\RedemptionHistory::class)->middleware('checked_in')->name('redemptions');
     });
 });
 

@@ -109,6 +109,35 @@
                                     </div>
                                 @endif
                             </div>
+
+                            {{-- Available Schedules --}}
+                            @if($activity->schedules->isNotEmpty())
+                                <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                    <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Available Schedules:</p>
+                                    <div class="space-y-1.5 max-h-24 overflow-y-auto">
+                                        @foreach($activity->schedules->take(3) as $schedule)
+                                            <div class="text-xs bg-gray-50 dark:bg-gray-700/50 rounded px-2 py-1.5">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="font-medium text-gray-900 dark:text-white">
+                                                        {{ $schedule->schedule_date->format('M d, Y') }}
+                                                    </span>
+                                                    <span class="text-gray-600 dark:text-gray-400">
+                                                        {{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }}
+                                                    </span>
+                                                </div>
+                                                <div class="text-gray-500 dark:text-gray-400 mt-0.5">
+                                                    {{ $schedule->getRemainingSlots() }} slots available
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                        @if($activity->schedules->count() > 3)
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 text-center pt-1">
+                                                +{{ $activity->schedules->count() - 3 }} more schedule(s)
+                                            </p>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
