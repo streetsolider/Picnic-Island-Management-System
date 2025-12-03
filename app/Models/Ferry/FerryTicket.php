@@ -172,8 +172,9 @@ class FerryTicket extends Model
 
     public function canBeCancelled(): bool
     {
+        // Can cancel if confirmed AND (future date OR today but not yet validated)
         return $this->status === 'confirmed' &&
-               $this->travel_date->isFuture();
+               ($this->travel_date->isFuture() || $this->travel_date->isToday());
     }
 
     // Generate unique ticket reference

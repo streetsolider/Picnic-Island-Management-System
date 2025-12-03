@@ -30,10 +30,12 @@ class ParadiseBayRoomSeeder extends Seeder
 
         // Clear existing rooms and pricing for this hotel
         $hotel->rooms()->delete();
-        RoomTypePricing::where('hotel_id', $hotel->id)->delete();
-        ViewPricing::where('hotel_id', $hotel->id)->delete();
-        SeasonalPricing::where('hotel_id', $hotel->id)->delete();
-        DayTypePricing::where('hotel_id', $hotel->id)->delete();
+
+        // Use DB facade to ensure deletion works
+        \DB::table('room_type_pricing')->where('hotel_id', $hotel->id)->delete();
+        \DB::table('view_pricing')->where('hotel_id', $hotel->id)->delete();
+        \DB::table('seasonal_pricing')->where('hotel_id', $hotel->id)->delete();
+        \DB::table('day_type_pricing')->where('hotel_id', $hotel->id)->delete();
 
         $this->command->info('Creating room type base pricing...');
         $this->createRoomTypePricing($hotel->id);

@@ -37,7 +37,7 @@ class MyBookings extends Component
 
             // Cancel the booking
             $bookingService = app(BookingService::class);
-            $bookingService->cancelBooking($booking->id, 'Cancelled by guest');
+            $bookingService->cancelBooking($booking, 'Cancelled by guest');
 
             session()->flash('success', 'Booking cancelled successfully. Your refund will be processed within 5-7 business days.');
 

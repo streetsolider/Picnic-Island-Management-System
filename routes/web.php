@@ -45,6 +45,13 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
         Route::get('/my-tickets', \App\Livewire\Visitor\FerryTickets\MyTickets::class)->name('my-tickets');
         Route::get('/tickets/{ticket}', \App\Livewire\Visitor\FerryTickets\Show::class)->name('show');
     });
+
+    // Theme Park Visitor Routes (Auth Required)
+    Route::prefix('theme-park')->name('visitor.theme-park.')->group(function () {
+        Route::get('/wallet', \App\Livewire\Visitor\ThemePark\Wallet::class)->name('wallet');
+        Route::get('/activities', \App\Livewire\Visitor\ThemePark\Activities::class)->name('activities');
+        Route::get('/redemptions', \App\Livewire\Visitor\ThemePark\RedemptionHistory::class)->name('redemptions');
+    });
 });
 
 // Staff Routes (using staff guard)
@@ -108,10 +115,12 @@ Route::middleware(['auth:staff'])->group(function () {
         Route::get('/tickets/passengers', \App\Livewire\Ferry\Tickets\PassengerList::class)->name('tickets.passengers');
     });
 
-    // Theme Park Staff Dashboard
-    Route::get('/theme-park/dashboard', function () {
-        return view('dashboard');
-    })->middleware('role:theme_park_staff')->name('theme-park.dashboard');
+    // Theme Park Staff Routes
+    Route::middleware('role:theme_park_staff')->prefix('theme-park')->name('theme-park.')->group(function () {
+        Route::get('/dashboard', \App\Livewire\ThemePark\Dashboard::class)->name('dashboard');
+        Route::get('/activities', \App\Livewire\ThemePark\Activities\Index::class)->name('activities.index');
+        Route::get('/validate', \App\Livewire\ThemePark\Validate::class)->name('validate');
+    });
 
     // Beach Staff Dashboard
     Route::get('/beach/dashboard', function () {
@@ -123,7 +132,11 @@ Route::middleware(['auth:staff'])->group(function () {
         Route::get('/dashboard', \App\Livewire\Admin\Dashboard::class)->name('dashboard');
         Route::get('/staff', \App\Livewire\Admin\Staff\Index::class)->name('staff.index');
         Route::get('/hotels', \App\Livewire\Admin\Hotels\Index::class)->name('hotels.index');
-        Route::get('/theme-park', \App\Livewire\Admin\ThemePark\Zones::class)->name('theme-park');
+
+        // Theme Park Management
+        Route::get('/theme-park/zones', \App\Livewire\Admin\ThemePark\Zones::class)->name('theme-park.zones');
+        Route::get('/theme-park/settings', \App\Livewire\Admin\ThemePark\Settings::class)->name('theme-park.settings');
+
         Route::get('/beach/services', \App\Livewire\Admin\Beach\Services::class)->name('beach.services');
 
         // Ferry Management

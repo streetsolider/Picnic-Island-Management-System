@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -147,6 +148,14 @@ class User extends Authenticatable
             UserRole::BEACH_STAFF => 'beach.dashboard',
             UserRole::ADMINISTRATOR => 'admin.dashboard',
         };
+    }
+
+    /**
+     * Get the theme park wallet for this user.
+     */
+    public function themeParkWallet(): HasOne
+    {
+        return $this->hasOne(ThemeParkWallet::class);
     }
 
     /**

@@ -129,7 +129,21 @@ class HotelBooking extends Model
         $this->status = 'cancelled';
         $this->cancelled_at = now();
         $this->cancellation_reason = $reason;
-        return $this->save();
+
+        $saved = $this->save();
+
+        // Cancel all associated ferry tickets
+        if ($saved) {
+            $this->ferryTickets()
+                ->whereIn('status', ['confirmed', 'pending'])
+                ->update([
+                    'status' => 'cancelled',
+                    'cancelled_at' => now(),
+                    'cancellation_reason' => 'Hotel booking cancelled: ' . ($reason ?? 'No reason provided'),
+                ]);
+        }
+
+        return $saved;
     }
 
     public function complete(): bool
