@@ -73,7 +73,7 @@
                                     class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
                                     <a href="{{ route('visitor.theme-park.wallet') }}" wire:navigate
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        Wallet & Tickets
+                                        Wallet & Credits
                                     </a>
                                     <a href="{{ route('visitor.theme-park.activities') }}" wire:navigate
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -141,7 +141,7 @@
                                 <div class="px-4 py-2 text-sm font-semibold text-gray-500">Theme Park</div>
                                 <a href="{{ route('visitor.theme-park.wallet') }}" wire:navigate
                                     class="block px-4 py-2 pl-8 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg transition-colors">
-                                    Wallet & Tickets
+                                    Wallet & Credits
                                 </a>
                                 <a href="{{ route('visitor.theme-park.activities') }}" wire:navigate
                                     class="block px-4 py-2 pl-8 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg transition-colors">

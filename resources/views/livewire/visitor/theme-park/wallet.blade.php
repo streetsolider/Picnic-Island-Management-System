@@ -258,20 +258,51 @@
                         </div>
                     </div>
 
-                    <div class="bg-blue-50 rounded-2xl p-4 border-2 border-blue-200">
+                    <div class="rounded-2xl p-4 border-2 {{ $this->hasInsufficientBalance() ? 'bg-red-50 border-red-300' : 'bg-blue-50 border-blue-200' }}">
                         <p class="text-sm text-gray-700 mb-1">
                             Current MVR Balance: <strong class="text-gray-900">MVR {{ number_format($stats['current_balance_mvr'], 2) }}</strong>
                         </p>
-                        <p class="text-sm text-gray-700">
-                            Balance After Purchase: <strong class="text-gray-900">MVR {{ number_format(max(0, $stats['current_balance_mvr'] - ($creditPrice * ($creditCount ?: 1))), 2) }}</strong>
+                        <p class="text-sm text-gray-700 flex items-center gap-2">
+                            <span>Balance After Purchase:</span>
+                            <strong class="{{ $this->hasInsufficientBalance() ? 'text-red-600' : 'text-gray-900' }}">
+                                MVR {{ number_format($this->getBalanceAfterPurchase(), 2) }}
+                            </strong>
+                            @if($this->hasInsufficientBalance())
+                                <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                </svg>
+                            @endif
                         </p>
                     </div>
 
+                    @if($this->hasInsufficientBalance())
+                        <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-4">
+                            <div class="flex items-start gap-3">
+                                <svg class="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-sm font-bold text-red-800">Insufficient Wallet Balance</p>
+                                    <p class="text-sm text-red-700 mt-1">
+                                        You need <strong>MVR {{ number_format(abs($this->getBalanceAfterPurchase()), 2) }}</strong> more to complete this purchase. Please top up your wallet first.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="flex gap-3">
-                        <button type="submit" wire:loading.attr="disabled" wire:target="purchaseCredits"
-                            class="flex-1 bg-gradient-to-r from-purple-600 to-brand-secondary text-white px-6 py-3 rounded-xl font-bold hover:from-purple-700 hover:to-pink-600 transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                            <span wire:loading.remove wire:target="purchaseCredits">Purchase</span>
-                            <span wire:loading wire:target="purchaseCredits">Processing...</span>
+                        <button type="submit"
+                            wire:loading.attr="disabled"
+                            wire:target="purchaseCredits"
+                            @if($this->hasInsufficientBalance()) disabled @endif
+                            class="flex-1 bg-gradient-to-r from-purple-600 to-brand-secondary text-white px-6 py-3 rounded-xl font-bold hover:from-purple-700 hover:to-pink-600 transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                            @if($this->hasInsufficientBalance())
+                                <span>Insufficient Balance</span>
+                            @else
+                                <span wire:loading.remove wire:target="purchaseCredits">Purchase</span>
+                                <span wire:loading wire:target="purchaseCredits">Processing...</span>
+                            @endif
                         </button>
                         <button type="button" wire:click="$set('showPurchaseForm', false)"
                             class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-all">

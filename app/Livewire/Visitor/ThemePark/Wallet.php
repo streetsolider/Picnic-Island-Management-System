@@ -103,6 +103,16 @@ class Wallet extends Component
         $this->dispatch('credit-count-updated');
     }
 
+    public function getBalanceAfterPurchase()
+    {
+        return $this->stats['current_balance_mvr'] - ($this->creditPrice * ($this->creditCount ?: 1));
+    }
+
+    public function hasInsufficientBalance()
+    {
+        return $this->getBalanceAfterPurchase() < 0;
+    }
+
     public function render()
     {
         $service = app(ThemeParkWalletService::class);
