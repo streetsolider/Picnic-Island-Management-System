@@ -52,7 +52,8 @@ class GoogleAuthController extends Controller
             // Log the guest in
             Auth::login($guest);
 
-            return redirect()->intended(route('home'));
+            // Always redirect guests to home page (never to staff routes)
+            return redirect()->route('home');
 
         } catch (\Exception $e) {
             return redirect()->route('login')

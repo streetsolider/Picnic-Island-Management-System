@@ -10,7 +10,7 @@
                     <span class="text-2xl font-display font-bold text-brand-dark hidden sm:inline">Kabohera Fun Island</span>
                 </div>
 
-                <div class="hidden md:flex items-center space-x-8">
+                <div class="hidden lg:flex items-center space-x-6">
                     <a href="#home"
                         class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">Home</a>
                     <a href="#services"
@@ -45,8 +45,8 @@
                     @endauth
                 </div>
 
-                {{-- Mobile menu button --}}
-                <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 text-brand-dark relative z-50">
+                {{-- Mobile/Tablet menu button --}}
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="lg:hidden p-2 text-brand-dark relative z-50">
                     <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 6h16M4 12h16M4 18h16"></path>
@@ -57,7 +57,7 @@
                 </button>
             </div>
 
-            {{-- Mobile Menu --}}
+            {{-- Mobile/Tablet Menu --}}
             <div x-show="mobileMenuOpen"
                  x-transition:enter="transition ease-out duration-200"
                  x-transition:enter-start="opacity-0 -translate-y-2"
@@ -66,7 +66,7 @@
                  x-transition:leave-start="opacity-100 translate-y-0"
                  x-transition:leave-end="opacity-0 -translate-y-2"
                  @click.away="mobileMenuOpen = false"
-                 class="md:hidden border-t border-gray-100 bg-white">
+                 class="lg:hidden border-t border-gray-100 bg-white">
                 <div class="px-4 py-4 space-y-3">
                     <a href="#home" @click="mobileMenuOpen = false"
                         class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
@@ -150,7 +150,7 @@
                         x-transition:enter-start="opacity-0 translate-y-4"
                         x-transition:enter-end="opacity-100 translate-y-0">
                         <span class="w-2 h-2 rounded-full bg-brand-secondary animate-pulse"></span>
-                        <span class="text-sm font-medium text-brand-dark/70">No. 1 Island Destination</span>
+                        <span class="text-sm font-medium text-brand-dark/70">No. 1 Picnic Island Destination</span>
                     </div>
 
                     <h1 class="text-5xl md:text-7xl font-display font-bold leading-tight text-brand-dark" x-show="show"
