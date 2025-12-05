@@ -42,23 +42,27 @@
                         class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $filter === 'all' ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
                         All
                     </button>
-                    <button wire:click="$set('filter', 'pending')"
-                        class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $filter === 'pending' ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
-                        ⏳ Pending
+                    <button wire:click="$set('filter', 'valid')"
+                        class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $filter === 'valid' ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
+                        ⏳ Valid
                     </button>
-                    <button wire:click="$set('filter', 'validated')"
-                        class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $filter === 'validated' ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
-                        ✅ Validated
+                    <button wire:click="$set('filter', 'redeemed')"
+                        class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $filter === 'redeemed' ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
+                        ✅ Redeemed
                     </button>
                     <button wire:click="$set('filter', 'cancelled')"
                         class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $filter === 'cancelled' ? 'bg-gradient-to-r from-red-500 to-pink-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
                         ❌ Cancelled
                     </button>
+                    <button wire:click="$set('filter', 'expired')"
+                        class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $filter === 'expired' ? 'bg-gradient-to-r from-gray-500 to-gray-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
+                        ⏰ Expired
+                    </button>
                 </div>
             </div>
 
-            {{-- Redemptions List --}}
-            @if($redemptions->isEmpty())
+            {{-- Tickets List --}}
+            @if($tickets->isEmpty())
                 <div class="bg-white rounded-3xl shadow-2xl p-16 text-center">
                     <div class="text-6xl mb-6">📋</div>
                     <h3 class="text-3xl font-display font-bold text-brand-dark mb-4">No Activity Tickets Yet</h3>
@@ -70,22 +74,29 @@
                 </div>
             @else
                 <div class="space-y-6">
-                    @foreach($redemptions as $redemption)
+                    @foreach($tickets as $ticket)
                         <div class="bg-white rounded-3xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-all duration-300">
                             {{-- Card Header --}}
                             <div class="bg-gradient-to-r {{
-                                $redemption->status === 'validated' ? 'from-green-500 to-emerald-600' :
-                                ($redemption->status === 'cancelled' ? 'from-red-500 to-pink-600' : 'from-yellow-500 to-orange-500')
+                                $ticket->status === 'redeemed' ? 'from-green-500 to-emerald-600' :
+                                ($ticket->status === 'cancelled' ? 'from-red-500 to-pink-600' :
+                                ($ticket->status === 'expired' ? 'from-gray-500 to-gray-600' : 'from-blue-500 to-purple-500'))
                             }} p-6 text-white">
                                 <div class="flex items-start justify-between">
                                     <div>
-                                        <h3 class="text-2xl font-bold mb-2">{{ $redemption->activity->name }}</h3>
-                                        <p class="text-sm text-white/90 font-medium">📍 {{ $redemption->activity->zone->name }} Zone</p>
+                                        <h3 class="text-2xl font-bold mb-2">{{ $ticket->activity->name }}</h3>
+                                        <p class="text-sm text-white/90 font-medium">📍 {{ $ticket->activity->zone->name }} Zone</p>
+                                        @if($ticket->showSchedule)
+                                            <p class="text-sm text-white/90 font-medium mt-1">
+                                                📅 {{ $ticket->showSchedule->show_date->format('M d, Y') }} at {{ \Carbon\Carbon::parse($ticket->showSchedule->show_time)->format('g:i A') }}
+                                            </p>
+                                        @endif
                                     </div>
                                     <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-white/20 backdrop-blur-sm">
                                         {{
-                                            $redemption->status === 'validated' ? '✅ Validated' :
-                                            ($redemption->status === 'cancelled' ? '❌ Cancelled' : '⏳ Pending')
+                                            $ticket->status === 'redeemed' ? '✅ Redeemed' :
+                                            ($ticket->status === 'cancelled' ? '❌ Cancelled' :
+                                            ($ticket->status === 'expired' ? '⏰ Expired' : '⏳ Valid'))
                                         }}
                                     </span>
                                 </div>
@@ -95,60 +106,65 @@
                             <div class="p-6">
                                 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-4">
                                     <div class="bg-gray-50 rounded-xl p-4">
-                                        <p class="text-sm text-gray-600 mb-1">Redemption Code</p>
-                                        <p class="font-mono text-lg font-bold text-brand-primary">{{ $redemption->redemption_reference }}</p>
+                                        <p class="text-sm text-gray-600 mb-1">Ticket Reference</p>
+                                        <p class="font-mono text-lg font-bold text-brand-primary">{{ $ticket->ticket_reference }}</p>
                                     </div>
                                     <div class="bg-gray-50 rounded-xl p-4">
                                         <p class="text-sm text-gray-600 mb-1">Number of Persons</p>
-                                        <p class="text-lg font-bold text-gray-900">{{ $redemption->number_of_persons }} 👥</p>
+                                        <p class="text-lg font-bold text-gray-900">{{ $ticket->quantity }} 👥</p>
                                     </div>
                                     <div class="bg-gray-50 rounded-xl p-4">
                                         <p class="text-sm text-gray-600 mb-1">Credits Spent</p>
-                                        <p class="text-lg font-bold text-gray-900">{{ $redemption->tickets_redeemed }} 💳</p>
+                                        <p class="text-lg font-bold text-gray-900">{{ $ticket->credits_spent }} 💳</p>
                                     </div>
                                     <div class="bg-gray-50 rounded-xl p-4">
                                         <p class="text-sm text-gray-600 mb-1">Purchased At</p>
-                                        <p class="text-lg font-bold text-gray-900">{{ $redemption->created_at->format('M d, Y h:i A') }}</p>
+                                        <p class="text-lg font-bold text-gray-900">{{ $ticket->purchase_datetime->format('M d, Y h:i A') }}</p>
                                     </div>
-                                    @if($redemption->status === 'validated')
+                                    @if($ticket->status === 'redeemed')
                                         <div class="bg-green-50 rounded-xl p-4">
-                                            <p class="text-sm text-green-700 mb-1">Validated At</p>
-                                            <p class="text-lg font-bold text-green-900">{{ $redemption->validated_at?->format('M d, Y h:i A') }}</p>
+                                            <p class="text-sm text-green-700 mb-1">Redeemed At</p>
+                                            <p class="text-lg font-bold text-green-900">{{ $ticket->redeemed_at?->format('M d, Y h:i A') ?? 'N/A' }}</p>
+                                        </div>
+                                    @endif
+                                    @if($ticket->valid_until)
+                                        <div class="bg-blue-50 rounded-xl p-4">
+                                            <p class="text-sm text-blue-700 mb-1">Valid Until</p>
+                                            <p class="text-lg font-bold text-blue-900">{{ $ticket->valid_until->format('M d, Y h:i A') }}</p>
                                         </div>
                                     @endif
                                 </div>
 
-                                @if($redemption->status === 'validated')
+                                @if($ticket->status === 'redeemed')
                                     <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl px-6 py-4">
                                         <div class="flex items-center text-green-800">
                                             <svg class="w-6 h-6 mr-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                                             </svg>
-                                            <span class="font-bold">✅ Validated by {{ $redemption->validatedBy->name ?? 'Staff' }}</span>
+                                            <span class="font-bold">✅ Redeemed by staff member</span>
                                         </div>
                                     </div>
-                                @elseif($redemption->status === 'cancelled')
+                                @elseif($ticket->status === 'cancelled')
                                     <div class="bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-2xl px-6 py-4">
                                         <div class="text-red-800">
                                             <p class="font-bold mb-1">❌ Cancelled</p>
-                                            <p class="text-sm">{{ $redemption->cancellation_reason ?? 'No reason provided' }}</p>
+                                            <p class="text-sm">{{ $ticket->cancellation_reason ?? 'No reason provided' }}</p>
                                         </div>
                                     </div>
-                                @elseif($redemption->status === 'pending')
+                                @elseif($ticket->status === 'expired')
+                                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-2 border-gray-200 rounded-2xl px-6 py-4">
+                                        <div class="text-gray-800">
+                                            <p class="font-bold mb-1">⏰ Expired</p>
+                                            <p class="text-sm">This ticket has expired and can no longer be used.</p>
+                                        </div>
+                                    </div>
+                                @elseif($ticket->status === 'valid')
                                     <div class="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-2xl px-6 py-4">
-                                        <div class="flex items-center justify-between flex-wrap gap-4">
-                                            <div class="flex items-center text-blue-900">
-                                                <svg class="w-6 h-6 mr-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                                                </svg>
-                                                <span class="font-bold">Show code <span class="font-mono text-lg text-brand-primary">{{ $redemption->redemption_reference }}</span> to staff</span>
-                                            </div>
-                                            <button
-                                                wire:click="cancelRedemption({{ $redemption->id }})"
-                                                wire:confirm="Are you sure you want to cancel this purchase? Your credits will be returned."
-                                                class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg">
-                                                ❌ Cancel Purchase
-                                            </button>
+                                        <div class="flex items-center text-blue-900">
+                                            <svg class="w-6 h-6 mr-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            <span class="font-bold">Show code <span class="font-mono text-lg text-brand-primary">{{ $ticket->ticket_reference }}</span> to staff at the activity entrance</span>
                                         </div>
                                     </div>
                                 @endif
@@ -158,9 +174,9 @@
                 </div>
 
                 {{-- Pagination --}}
-                @if($redemptions->hasPages())
+                @if($tickets->hasPages())
                     <div class="mt-8">
-                        {{ $redemptions->links() }}
+                        {{ $tickets->links() }}
                     </div>
                 @endif
             @endif
@@ -172,27 +188,34 @@
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                     </svg>
                     <div>
-                        <p class="font-bold text-brand-dark mb-3">📚 Redemption Status Guide:</p>
+                        <p class="font-bold text-brand-dark mb-3">📚 Ticket Status Guide:</p>
                         <ul class="space-y-2">
                             <li class="flex items-start">
                                 <span class="mr-2">⏳</span>
                                 <div>
-                                    <strong class="text-gray-900">Pending:</strong>
-                                    <span class="text-gray-700">Waiting for staff validation at the activity entrance</span>
+                                    <strong class="text-gray-900">Valid:</strong>
+                                    <span class="text-gray-700">Ready to use - show your ticket reference to staff at the activity entrance</span>
                                 </div>
                             </li>
                             <li class="flex items-start">
                                 <span class="mr-2">✅</span>
                                 <div>
-                                    <strong class="text-gray-900">Validated:</strong>
-                                    <span class="text-gray-700">Approved by staff - you can participate in the activity</span>
+                                    <strong class="text-gray-900">Redeemed:</strong>
+                                    <span class="text-gray-700">Validated by staff - you've participated in the activity</span>
                                 </div>
                             </li>
                             <li class="flex items-start">
                                 <span class="mr-2">❌</span>
                                 <div>
                                     <strong class="text-gray-900">Cancelled:</strong>
-                                    <span class="text-gray-700">Purchase cancelled - credits returned to your wallet</span>
+                                    <span class="text-gray-700">Ticket cancelled - credits returned to your wallet</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="mr-2">⏰</span>
+                                <div>
+                                    <strong class="text-gray-900">Expired:</strong>
+                                    <span class="text-gray-700">Ticket validity period has passed - can no longer be used</span>
                                 </div>
                             </li>
                         </ul>

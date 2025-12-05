@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\ThemeParkActivityTicket;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ThemeParkValidationService
 {
@@ -145,7 +146,7 @@ class ThemeParkValidationService
 
             return [
                 'success' => true,
-                'message' => "Ticket validated successfully! Access granted for {$ticket->quantity} " . str_plural('person', $ticket->quantity) . ".",
+                'message' => "Ticket validated successfully! Access granted for {$ticket->quantity} " . Str::plural('person', $ticket->quantity) . ".",
                 'ticket' => $ticket->fresh(['activity', 'showSchedule']),
                 'activity' => [
                     'name' => $ticket->activity->name,
@@ -173,7 +174,7 @@ class ThemeParkValidationService
     public function checkTicketStatus(string $ticketReference): array
     {
         $ticket = ThemeParkActivityTicket::where('ticket_reference', $ticketReference)
-            ->with(['activity.zone', 'showSchedule', 'user'])
+            ->with(['activity.zone', 'showSchedule', 'guest'])
             ->first();
 
         if (!$ticket) {
@@ -216,7 +217,7 @@ class ThemeParkValidationService
                 'status' => $ticket->showSchedule->status,
             ] : null,
             'customer' => [
-                'name' => $ticket->user->name ?? 'Unknown',
+                'name' => $ticket->guest->name ?? 'Unknown',
             ],
             'purchase_info' => [
                 'purchased_at' => $ticket->purchase_datetime->format('M j, Y \a\t g:i A'),
@@ -269,7 +270,7 @@ class ThemeParkValidationService
     public function getRecentValidations(int $staffId, int $limit = 20)
     {
         return ThemeParkActivityTicket::where('redeemed_by_staff_id', $staffId)
-            ->with(['activity', 'showSchedule', 'user'])
+            ->with(['activity', 'showSchedule', 'guest'])
             ->orderBy('redeemed_at', 'desc')
             ->limit($limit)
             ->get();

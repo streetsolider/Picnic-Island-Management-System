@@ -273,7 +273,7 @@
                     </div>
                 </x-admin.card.base>
 
-                {{-- Validate Tickets --}}
+                {{-- Validate Redemptions --}}
                 <x-admin.card.base>
                     <div class="text-center">
                         <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-md bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 mb-4">
@@ -281,10 +281,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Validate Tickets</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Check visitor tickets</p>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Validate Redemptions</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Check visitor redemptions</p>
                         <x-admin.button.primary wire:navigate href="{{ route('theme-park.validate') }}">
-                            Validate Tickets
+                            Validate Redemptions
                         </x-admin.button.primary>
                     </div>
                 </x-admin.card.base>
@@ -302,7 +302,7 @@
                                 <x-admin.table.header>Zone</x-admin.table.header>
                                 <x-admin.table.header>Time</x-admin.table.header>
                                 <x-admin.table.header>Capacity</x-admin.table.header>
-                                <x-admin.table.header>Booked</x-admin.table.header>
+                                <x-admin.table.header>Attendees</x-admin.table.header>
                                 <x-admin.table.header>Remaining</x-admin.table.header>
                             </tr>
                         </thead>
@@ -316,23 +316,22 @@
                                         {{ $schedule->activity->zone->name }}
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                                        {{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} -
-                                        {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}
+                                        {{ \Carbon\Carbon::parse($schedule->show_time)->format('g:i A') }}
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                                        {{ $schedule->available_slots }}
+                                        {{ $schedule->venue_capacity }}
                                     </td>
                                     <td class="px-6 py-4 text-sm">
-                                        @if($schedule->booked_slots > 0)
-                                            <span class="text-indigo-600 dark:text-indigo-400 font-medium">{{ $schedule->booked_slots }}</span>
+                                        @if($schedule->tickets_sold > 0)
+                                            <span class="text-indigo-600 dark:text-indigo-400 font-medium">{{ $schedule->tickets_sold }}</span>
                                         @else
                                             <span class="text-gray-400">0</span>
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 text-sm">
                                         @php
-                                            $remaining = $schedule->getRemainingSlots();
-                                            $percentage = ($remaining / $schedule->available_slots) * 100;
+                                            $remaining = $schedule->venue_capacity - $schedule->tickets_sold;
+                                            $percentage = ($remaining / $schedule->venue_capacity) * 100;
                                         @endphp
                                         <span class="font-medium {{ $percentage > 50 ? 'text-green-600 dark:text-green-400' : ($percentage > 20 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400') }}">
                                             {{ $remaining }}
@@ -356,7 +355,8 @@
                                 <x-admin.table.header>Activity</x-admin.table.header>
                                 <x-admin.table.header>Date</x-admin.table.header>
                                 <x-admin.table.header>Time</x-admin.table.header>
-                                <x-admin.table.header>Available Slots</x-admin.table.header>
+                                <x-admin.table.header>Capacity</x-admin.table.header>
+                                <x-admin.table.header>Attendees</x-admin.table.header>
                             </tr>
                         </thead>
                         <tbody>
@@ -368,18 +368,24 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="text-sm text-gray-900 dark:text-gray-100">
-                                            {{ $schedule->schedule_date->format('M d, Y') }}
+                                            {{ $schedule->show_date->format('M d, Y') }}
                                         </div>
                                         <div class="text-xs text-gray-500 dark:text-gray-400">
-                                            {{ $schedule->schedule_date->format('l') }}
+                                            {{ $schedule->show_date->format('l') }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                                        {{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }} -
-                                        {{ \Carbon\Carbon::parse($schedule->end_time)->format('g:i A') }}
+                                        {{ \Carbon\Carbon::parse($schedule->show_time)->format('g:i A') }}
                                     </td>
                                     <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                                        {{ $schedule->available_slots }}
+                                        {{ $schedule->venue_capacity }}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm">
+                                        @if($schedule->tickets_sold > 0)
+                                            <span class="text-indigo-600 dark:text-indigo-400 font-medium">{{ $schedule->tickets_sold }}</span>
+                                        @else
+                                            <span class="text-gray-400">0</span>
+                                        @endif
                                     </td>
                                 </x-admin.table.row>
                             @endforeach

@@ -2,7 +2,8 @@
 
 namespace App\Livewire\Visitor\ThemePark;
 
-use App\Models\ThemeParkTicketRedemption;
+use App\Models\ThemeParkActivityTicket;
+use App\Services\ThemeParkTicketService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -10,7 +11,7 @@ class RedemptionHistory extends Component
 {
     use WithPagination;
 
-    public $filter = 'all'; // all, pending, validated, cancelled
+    public $filter = 'all'; // all, valid, redeemed, cancelled, expired
 
     public function mount()
     {
@@ -19,43 +20,32 @@ class RedemptionHistory extends Component
         }
     }
 
-    public function cancelRedemption($redemptionId)
+    public function cancelTicket($ticketId)
     {
-        $redemption = ThemeParkTicketRedemption::where('id', $redemptionId)
-            ->where('user_id', auth()->id())
-            ->where('status', 'pending')
-            ->first();
+        $service = app(ThemeParkTicketService::class);
+        $result = $service->cancelTicket($ticketId, auth()->id(), 'Cancelled by visitor');
 
-        if (!$redemption) {
-            session()->flash('error', 'Redemption not found or cannot be cancelled.');
-            return;
+        if ($result['success']) {
+            session()->flash('success', $result['message']);
+        } else {
+            session()->flash('error', $result['message']);
         }
-
-        $redemption->cancel('Cancelled by visitor');
-
-        // Return credits to wallet
-        $wallet = $redemption->user->themeParkWallet;
-        $wallet->credit_balance += $redemption->tickets_redeemed;
-        $wallet->total_credits_redeemed -= $redemption->tickets_redeemed;
-        $wallet->save();
-
-        session()->flash('success', 'Redemption cancelled successfully. Credits have been returned to your wallet.');
     }
 
     public function render()
     {
-        $query = ThemeParkTicketRedemption::with(['activity.zone', 'validatedBy'])
-            ->where('user_id', auth()->id())
-            ->orderBy('created_at', 'desc');
+        $query = ThemeParkActivityTicket::with(['activity.zone', 'showSchedule'])
+            ->where('guest_id', auth()->id())
+            ->orderBy('purchase_datetime', 'desc');
 
         if ($this->filter !== 'all') {
             $query->where('status', $this->filter);
         }
 
-        $redemptions = $query->paginate(10);
+        $tickets = $query->paginate(10);
 
         return view('livewire.visitor.theme-park.redemption-history', [
-            'redemptions' => $redemptions,
+            'tickets' => $tickets,
         ])->layout('layouts.visitor');
     }
 }

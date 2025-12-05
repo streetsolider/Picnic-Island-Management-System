@@ -12,7 +12,7 @@ class ThemeParkActivityTicket extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'guest_id',
         'activity_id',
         'show_schedule_id',
         'credits_spent',
@@ -55,11 +55,11 @@ class ThemeParkActivityTicket extends Model
     }
 
     /**
-     * Get the user who purchased this ticket.
+     * Get the guest who purchased this ticket.
      */
-    public function user(): BelongsTo
+    public function guest(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Guest::class, 'guest_id');
     }
 
     /**

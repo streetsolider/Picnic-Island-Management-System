@@ -10,7 +10,7 @@
                 <h1 class="text-4xl md:text-5xl font-display font-bold text-brand-dark mb-4">
                     Theme Park <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-brand-secondary">Wallet</span>
                 </h1>
-                <p class="text-xl text-brand-dark/70">Manage your balance and purchase tickets for exciting activities</p>
+                <p class="text-xl text-brand-dark/70">Manage your balance and purchase credits for exciting activities</p>
             </div>
 
             {{-- Success/Error Messages --}}
@@ -127,7 +127,7 @@
                         <div class="text-center py-16">
                             <div class="text-6xl mb-4">📋</div>
                             <h3 class="text-2xl font-display font-bold text-brand-dark mb-2">No Transactions Yet</h3>
-                            <p class="text-gray-600">Your transaction history will appear here once you top up or purchase tickets.</p>
+                            <p class="text-gray-600">Your transaction history will appear here once you top up or purchase credits.</p>
                         </div>
                     @else
                         <div class="overflow-x-auto">
@@ -160,13 +160,13 @@
                                                 @if($transaction->transaction_type === 'top_up')
                                                     <span class="text-green-600 font-bold">+MVR {{ number_format($transaction->amount_mvr, 2) }}</span>
                                                 @else
-                                                    <span class="text-purple-600 font-bold">{{ $transaction->tickets_amount }} tickets</span>
+                                                    <span class="text-purple-600 font-bold">{{ $transaction->tickets_amount }} credits</span>
                                                     <span class="text-sm text-gray-500">(MVR {{ number_format($transaction->amount_mvr, 2) }})</span>
                                                 @endif
                                             </td>
                                             <td class="px-4 py-4">
                                                 <div class="font-semibold text-gray-900">MVR {{ number_format($transaction->balance_after_mvr, 2) }}</div>
-                                                <div class="text-sm text-gray-500">{{ $transaction->balance_after_tickets }} tickets</div>
+                                                <div class="text-sm text-gray-500">{{ $transaction->balance_after_tickets }} credits</div>
                                             </td>
                                             <td class="px-4 py-4 text-sm text-gray-600">
                                                 {{ $transaction->created_at->format('M d, Y h:i A') }}
@@ -228,7 +228,7 @@
         </div>
     @endif
 
-    {{-- Purchase Tickets Modal --}}
+    {{-- Purchase Credits Modal --}}
     @if($showPurchaseForm)
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" wire:click.self="$set('showPurchaseForm', false)">
             <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">

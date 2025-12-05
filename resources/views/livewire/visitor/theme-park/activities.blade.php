@@ -201,78 +201,113 @@
     @if($selectedActivity)
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" wire:click.self="cancelRedemption">
             <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all relative" @click.stop>
-                <div class="bg-gradient-to-r from-brand-secondary to-pink-600 p-6 text-white">
-                    <h3 class="text-2xl font-display font-bold">🎟️ Confirm Activity Ticket Purchase</h3>
-                    <p class="text-white/90 text-sm mt-1">You're about to purchase activity tickets with your credits</p>
+                <div class="bg-gradient-to-r from-brand-secondary to-pink-600 p-4 text-white">
+                    <h3 class="text-xl font-display font-bold">🎟️ Confirm Activity Purchase</h3>
+                    <p class="text-white/90 text-xs mt-1">{{ $selectedActivity->name }} • 📍 {{ $selectedActivity->zone->name }}</p>
                 </div>
 
-                <form wire:submit.prevent="redeemTickets" class="p-6 space-y-4">
-                    <div>
-                        <p class="text-sm text-gray-600">Activity</p>
-                        <p class="text-xl font-bold text-brand-dark">{{ $selectedActivity->name }}</p>
-                    </div>
+                <form wire:submit.prevent="purchaseTicket" class="p-4 space-y-3">
+                    {{-- Schedule Selection (for scheduled shows only) --}}
+                    @if($selectedActivity->isScheduled())
+                        <div>
+                            <label for="selectedSchedule" class="block text-sm font-bold text-gray-700 mb-1">
+                                Select Show Time <span class="text-red-500">*</span>
+                            </label>
+                            <select id="selectedSchedule" wire:model.live="selectedSchedule"
+                                class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base font-semibold">
+                                <option value="">-- Select a schedule --</option>
+                                @foreach($selectedActivity->showSchedules as $schedule)
+                                    <option value="{{ $schedule->id }}">
+                                        {{ $schedule->show_date->format('M d, Y') }} at {{ \Carbon\Carbon::parse($schedule->show_time)->format('g:i A') }}
+                                        ({{ $schedule->getRemainingSeats() }} seats left)
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('selectedSchedule')
+                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    @endif
 
                     <div>
-                        <p class="text-sm text-gray-600">Zone</p>
-                        <p class="text-lg font-semibold text-gray-900">📍 {{ $selectedActivity->zone->name }}</p>
-                    </div>
-
-                    <div>
-                        <p class="text-sm text-gray-600">Cost per Person</p>
-                        <p class="text-lg font-semibold text-gray-900">{{ $selectedActivity->credit_cost }} credit(s)</p>
-                    </div>
-
-                    <div>
-                        <label for="numberOfPersons" class="block text-sm font-bold text-gray-700 mb-2">
+                        <label for="numberOfPersons" class="block text-sm font-bold text-gray-700 mb-1">
                             Number of Persons <span class="text-red-500">*</span>
                         </label>
                         <input type="number" id="numberOfPersons" wire:model.live="numberOfPersons" min="1" max="50"
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg font-semibold"
-                            placeholder="Enter number of persons" />
+                            class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base font-semibold"
+                            placeholder="Enter number" />
                         @error('numberOfPersons')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 border-2 border-purple-200">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm text-gray-600">Cost per person:</span>
-                            <span class="font-bold text-gray-900">{{ $selectedActivity->credit_cost }} credits</span>
+                    @php
+                        $totalCost = $selectedActivity->credit_cost * $numberOfPersons;
+                        $balanceAfter = $wallet->credit_balance - $totalCost;
+                        $hasInsufficient = $balanceAfter < 0;
+                    @endphp
+
+                    <div class="rounded-xl p-3 border-2 {{ $hasInsufficient ? 'bg-red-50 border-red-300' : 'bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200' }}">
+                        <div class="grid grid-cols-2 gap-2 text-sm mb-2">
+                            <span class="text-gray-600">Cost per person:</span>
+                            <span class="font-bold text-gray-900 text-right">{{ $selectedActivity->credit_cost }} credits</span>
+                            <span class="text-gray-600">Number of persons:</span>
+                            <span class="font-bold text-gray-900 text-right">{{ $numberOfPersons }}</span>
                         </div>
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm text-gray-600">Number of persons:</span>
-                            <span class="font-bold text-gray-900">{{ $numberOfPersons }}</span>
-                        </div>
-                        <div class="flex justify-between items-center mb-2 pt-2 border-t-2 border-purple-200">
-                            <span class="text-sm font-bold text-gray-700">Total Credits Needed:</span>
-                            <span class="text-xl font-bold text-purple-600">{{ $selectedActivity->credit_cost * $numberOfPersons }} credits</span>
-                        </div>
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm text-gray-600">Current Balance:</span>
-                            <span class="font-bold text-gray-900">{{ $wallet->credit_balance }} credits</span>
-                        </div>
-                        <div class="flex justify-between items-center pt-2 border-t-2 border-purple-200">
-                            <span class="text-sm font-bold text-gray-700">Balance After:</span>
-                            <span class="text-2xl font-bold {{ ($wallet->credit_balance - ($selectedActivity->credit_cost * $numberOfPersons)) >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                                {{ $wallet->credit_balance - ($selectedActivity->credit_cost * $numberOfPersons) }} credits
-                            </span>
+                        <div class="pt-2 border-t-2 {{ $hasInsufficient ? 'border-red-200' : 'border-purple-200' }}">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-bold text-gray-700">Total Cost:</span>
+                                <span class="text-lg font-bold text-purple-600">{{ $totalCost }} credits</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-gray-600">Current Balance:</span>
+                                <span class="font-semibold text-gray-900">{{ $wallet->credit_balance }} credits</span>
+                            </div>
+                            <div class="flex justify-between items-center mt-1 pt-1 border-t {{ $hasInsufficient ? 'border-red-200' : 'border-purple-200' }}">
+                                <span class="text-xs font-bold text-gray-700">Balance After:</span>
+                                <span class="text-base font-bold flex items-center gap-1 {{ $hasInsufficient ? 'text-red-600' : 'text-green-600' }}">
+                                    {{ $balanceAfter }} credits
+                                    @if($hasInsufficient)
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    @endif
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="bg-blue-50 rounded-2xl p-4 border-2 border-blue-200">
-                        <p class="text-sm text-blue-900">
-                            💡 After purchasing, you'll receive activity tickets with QR codes. Show these tickets to the staff at the activity entrance for validation.
-                        </p>
-                    </div>
+                    @if($hasInsufficient)
+                        <div class="bg-red-50 border-2 border-red-200 rounded-xl p-3">
+                            <div class="flex items-start gap-2">
+                                <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-xs font-bold text-red-800">Insufficient Credits</p>
+                                    <p class="text-xs text-red-700 mt-0.5">
+                                        You need <strong>{{ abs($balanceAfter) }} more credits</strong>. Please purchase credits first.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
 
-                    <div class="flex gap-3 pt-2">
-                        <button type="submit" wire:loading.attr="disabled" wire:target="redeemTickets"
-                            class="flex-1 bg-gradient-to-r from-brand-secondary to-pink-600 text-white px-6 py-3 rounded-xl font-bold hover:from-pink-600 hover:to-brand-secondary transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                            <span wire:loading.remove wire:target="redeemTickets">🎟️ Purchase Tickets</span>
-                            <span wire:loading wire:target="redeemTickets">Processing...</span>
+                    <div class="flex gap-2">
+                        <button type="submit"
+                            wire:loading.attr="disabled"
+                            wire:target="purchaseTicket"
+                            @if($hasInsufficient) disabled @endif
+                            class="flex-1 bg-gradient-to-r from-brand-secondary to-pink-600 text-white px-4 py-2.5 rounded-xl font-bold hover:from-pink-600 hover:to-brand-secondary transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm">
+                            @if($hasInsufficient)
+                                <span>Insufficient Credits</span>
+                            @else
+                                <span wire:loading.remove wire:target="purchaseTicket">🎟️ Purchase</span>
+                                <span wire:loading wire:target="purchaseTicket">Processing...</span>
+                            @endif
                         </button>
                         <button type="button" wire:click="cancelRedemption"
-                            class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-all">
+                            class="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-all text-sm">
                             Cancel
                         </button>
                     </div>

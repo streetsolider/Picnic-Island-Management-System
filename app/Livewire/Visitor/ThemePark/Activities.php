@@ -16,6 +16,7 @@ class Activities extends Component
     public $selectedZone = null;
     public $wallet;
     public $selectedActivity = null;
+    public $selectedSchedule = null;
     public $numberOfPersons = 1;
 
     public function mount()
@@ -34,18 +35,32 @@ class Activities extends Component
 
     public function selectActivity($activityId)
     {
-        $this->selectedActivity = ThemeParkActivity::with('zone')->find($activityId);
+        $this->selectedActivity = ThemeParkActivity::with(['zone', 'showSchedules' => function ($q) {
+            $q->where('show_date', '>=', now()->toDateString())
+                ->whereRaw('tickets_sold < venue_capacity')
+                ->where('status', 'scheduled')
+                ->orderBy('show_date', 'asc')
+                ->orderBy('show_time', 'asc');
+        }])->find($activityId);
         $this->numberOfPersons = 1; // Reset to 1 when selecting new activity
+        $this->selectedSchedule = null; // Reset schedule selection
     }
 
     public function cancelRedemption()
     {
         $this->selectedActivity = null;
+        $this->selectedSchedule = null;
         $this->numberOfPersons = 1; // Reset when canceling
     }
 
-    public function redeemTickets()
+    public function purchaseTicket()
     {
+        \Log::info('Purchase ticket method called', [
+            'selectedActivity' => $this->selectedActivity?->id,
+            'numberOfPersons' => $this->numberOfPersons,
+            'selectedSchedule' => $this->selectedSchedule,
+        ]);
+
         if (!$this->selectedActivity) {
             session()->flash('error', 'Please select an activity first.');
             return;
@@ -57,18 +72,54 @@ class Activities extends Component
         ]);
 
         $service = app(ThemeParkTicketService::class);
-        $result = $service->redeemTickets(auth()->id(), $this->selectedActivity->id, $this->numberOfPersons);
+
+        // Check if activity is continuous or scheduled
+        if ($this->selectedActivity->isContinuous()) {
+            // Continuous ride - no schedule needed
+            \Log::info('Calling purchaseContinuousRideTicket');
+            $result = $service->purchaseContinuousRideTicket(
+                auth()->id(),
+                $this->selectedActivity->id,
+                $this->numberOfPersons
+            );
+            \Log::info('Result from purchaseContinuousRideTicket', $result);
+        } else {
+            // Scheduled show - validate schedule selection
+            if (!$this->selectedSchedule) {
+                session()->flash('error', 'Please select a show schedule.');
+                return;
+            }
+
+            \Log::info('Calling purchaseShowTicket', [
+                'userId' => auth()->id(),
+                'activityId' => $this->selectedActivity->id,
+                'scheduleId' => $this->selectedSchedule,
+                'quantity' => $this->numberOfPersons,
+            ]);
+
+            $result = $service->purchaseShowTicket(
+                auth()->id(),
+                $this->selectedActivity->id,
+                $this->selectedSchedule,
+                $this->numberOfPersons
+            );
+
+            \Log::info('Result from purchaseShowTicket', $result);
+        }
 
         if ($result['success']) {
-            session()->flash('success', $result['message'] . ' Your redemption code is: <strong>' . $result['redemption']->redemption_reference . '</strong>');
+            $ticketRef = $result['ticket']->ticket_reference ?? 'N/A';
+            session()->flash('success', $result['message'] . ' Your ticket reference is: <strong>' . $ticketRef . '</strong>');
             $this->selectedActivity = null;
+            $this->selectedSchedule = null;
             $this->numberOfPersons = 1;
+            $this->loadWallet(); // Refresh wallet
 
             // Redirect to refresh the page and show flash message
             return $this->redirect(route('visitor.theme-park.activities'), navigate: true);
         } else {
+            \Log::error('Purchase failed', ['error' => $result['message']]);
             session()->flash('error', $result['message']);
-            $this->selectedActivity = null;
         }
     }
 

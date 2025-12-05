@@ -2,6 +2,7 @@
 
 namespace App\Livewire\ThemePark;
 
+use App\Models\ThemeParkActivity;
 use App\Services\ThemeParkValidationService;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
@@ -12,15 +13,29 @@ use Livewire\Attributes\Validate as ValidateAttribute;
 #[Title('Validate Activity Tickets')]
 class Validate extends Component
 {
-    #[ValidateAttribute('required|string|min:8')]
-    public $qrCode = '';
-
-    public $searchCode = ''; // For the search input
-
+    public $selectedActivityId = null;
+    public $searchCode = '';
     public $ticket = null;
-    public $redemption = null; // Alias for ticket (for view compatibility)
     public $validationResult = null;
     public $searchPerformed = false;
+
+    public function mount()
+    {
+        // Get assigned activities
+        $activities = ThemeParkActivity::where('assigned_staff_id', auth('staff')->id())
+            ->where('is_active', true)
+            ->get();
+
+        // Get selected activity from session or use first
+        $this->selectedActivityId = session('selected_activity_id', $activities->first()?->id);
+    }
+
+    public function selectActivity($activityId)
+    {
+        $this->selectedActivityId = $activityId;
+        session(['selected_activity_id' => $activityId]);
+        $this->resetSearch();
+    }
 
     public function searchRedemption()
     {
@@ -28,9 +43,13 @@ class Validate extends Component
             'searchCode' => 'required|string|min:8',
         ]);
 
+        if (!$this->selectedActivityId) {
+            session()->flash('error', 'Please select an activity first.');
+            return;
+        }
+
         $this->searchPerformed = true;
         $this->ticket = null;
-        $this->redemption = null;
         $this->validationResult = null;
 
         $service = app(ThemeParkValidationService::class);
@@ -39,14 +58,19 @@ class Validate extends Component
         $this->validationResult = $result;
 
         if ($result['success']) {
-            $this->ticket = $result['ticket'];
-            $this->redemption = $result['ticket']; // Set redemption as alias
-            session()->flash('success', $result['message']);
+            // Check if ticket is for the selected activity
+            if ($result['ticket']->activity_id !== $this->selectedActivityId) {
+                $selectedActivity = ThemeParkActivity::find($this->selectedActivityId);
+                session()->flash('error', "This ticket is for '{$result['ticket']->activity->name}', but you selected '{$selectedActivity->name}'. Please verify the activity.");
+                $this->ticket = $result['ticket'];
+            } else {
+                $this->ticket = $result['ticket'];
+                session()->flash('success', $result['message']);
+            }
         } else {
             session()->flash('error', $result['message']);
             if (isset($result['ticket'])) {
                 $this->ticket = $result['ticket'];
-                $this->redemption = $result['ticket']; // Set redemption as alias
             }
         }
 
@@ -67,7 +91,6 @@ class Validate extends Component
 
         $this->searchPerformed = true;
         $this->ticket = null;
-        $this->redemption = null;
         $this->validationResult = null;
 
         $service = app(ThemeParkValidationService::class);
@@ -77,7 +100,6 @@ class Validate extends Component
 
         if ($result['success']) {
             $this->ticket = $result['ticket'];
-            $this->redemption = $result['ticket']; // Set redemption as alias
             session()->flash('info', 'Ticket status retrieved (not redeemed).');
         } else {
             session()->flash('error', $result['message']);
@@ -88,20 +110,26 @@ class Validate extends Component
 
     public function resetSearch()
     {
-        $this->reset(['qrCode', 'searchCode', 'ticket', 'redemption', 'validationResult', 'searchPerformed']);
+        $this->reset(['searchCode', 'ticket', 'validationResult', 'searchPerformed']);
         $this->resetValidation();
     }
 
     public function render()
     {
-        // Check if staff has assigned activities
-        $hasAssignedActivities = \App\Models\ThemeParkActivity::where('assigned_staff_id', auth('staff')->id())
+        // Get staff's assigned activities
+        $assignedActivities = ThemeParkActivity::where('assigned_staff_id', auth('staff')->id())
             ->where('is_active', true)
-            ->exists();
+            ->with('zone')
+            ->get();
+
+        $selectedActivity = $this->selectedActivityId
+            ? ThemeParkActivity::with('zone')->find($this->selectedActivityId)
+            : null;
 
         return view('livewire.theme-park.validate', [
-            'zone' => null, // No longer using zones
-            'hasAssignedActivities' => $hasAssignedActivities,
+            'assignedActivities' => $assignedActivities,
+            'selectedActivity' => $selectedActivity,
+            'hasAssignedActivities' => $assignedActivities->isNotEmpty(),
         ]);
     }
 }

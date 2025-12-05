@@ -99,7 +99,7 @@
                                 <x-admin.table.header>Date</x-admin.table.header>
                                 <x-admin.table.header>Show Time</x-admin.table.header>
                                 <x-admin.table.header>Capacity</x-admin.table.header>
-                                <x-admin.table.header>Tickets Sold</x-admin.table.header>
+                                <x-admin.table.header>Attendees</x-admin.table.header>
                                 <x-admin.table.header>Status</x-admin.table.header>
                                 <x-admin.table.header>Actions</x-admin.table.header>
                             </tr>
@@ -472,7 +472,7 @@
                             </h3>
                             <div class="mt-2">
                                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                                    Are you sure you want to cancel this schedule? Guests with tickets will be notified.
+                                    Are you sure you want to cancel this schedule? Guests with bookings will be notified.
                                 </p>
                             </div>
                         </div>

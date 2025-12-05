@@ -9,6 +9,7 @@ use App\Models\ThemeParkWallet;
 use App\Models\ThemeParkWalletTransaction;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ThemeParkTicketService
 {
@@ -77,7 +78,7 @@ class ThemeParkTicketService
 
             // Create activity ticket
             $ticket = ThemeParkActivityTicket::create([
-                'user_id' => $userId,
+                'guest_id' => $userId,
                 'activity_id' => $activityId,
                 'show_schedule_id' => null, // Continuous ride - no schedule
                 'credits_spent' => $totalCreditsNeeded,
@@ -109,7 +110,7 @@ class ThemeParkTicketService
 
             return [
                 'success' => true,
-                'message' => "Successfully purchased ticket for {$quantity} " . str_plural('person', $quantity) . " ({$activity->name}). Show QR code to operator.",
+                'message' => "Successfully purchased ticket for {$quantity} " . Str::plural('person', $quantity) . " ({$activity->name}). Show QR code to operator.",
                 'ticket' => $ticket->load('activity'),
                 'qr_code' => $ticket->ticket_reference,
                 'wallet' => $wallet->fresh(),
@@ -213,7 +214,7 @@ class ThemeParkTicketService
 
             // Create activity ticket
             $ticket = ThemeParkActivityTicket::create([
-                'user_id' => $userId,
+                'guest_id' => $userId,
                 'activity_id' => $activityId,
                 'show_schedule_id' => $showScheduleId,
                 'credits_spent' => $totalCreditsNeeded,
@@ -221,7 +222,7 @@ class ThemeParkTicketService
                 'total_credits_paid' => $totalCreditsNeeded,
                 'status' => 'valid',
                 'purchase_datetime' => now(),
-                'valid_until' => $showSchedule->show_date->setTimeFromTimeString($showSchedule->show_time)->addMinutes(15),
+                'valid_until' => $showSchedule->show_date->copy()->endOfDay(),
             ]);
 
             // Increment tickets sold
@@ -248,7 +249,7 @@ class ThemeParkTicketService
 
             return [
                 'success' => true,
-                'message' => "Successfully purchased show ticket for {$quantity} " . str_plural('person', $quantity) . " ({$activity->name} at {$showSchedule->show_time}).",
+                'message' => "Successfully purchased show ticket for {$quantity} " . Str::plural('person', $quantity) . " ({$activity->name} at {$showSchedule->show_time}).",
                 'ticket' => $ticket->load(['activity', 'showSchedule']),
                 'qr_code' => $ticket->ticket_reference,
                 'show_info' => [
@@ -273,7 +274,7 @@ class ThemeParkTicketService
      */
     public function getUserTickets(int $userId, ?string $status = null)
     {
-        $query = ThemeParkActivityTicket::where('user_id', $userId)
+        $query = ThemeParkActivityTicket::where('guest_id', $userId)
             ->with(['activity', 'showSchedule'])
             ->orderBy('purchase_datetime', 'desc');
 
@@ -293,7 +294,7 @@ class ThemeParkTicketService
             DB::beginTransaction();
 
             $ticket = ThemeParkActivityTicket::where('id', $ticketId)
-                ->where('user_id', $userId)
+                ->where('guest_id', $userId)
                 ->first();
 
             if (!$ticket) {

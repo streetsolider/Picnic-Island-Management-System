@@ -76,17 +76,17 @@
             </x-admin.navigation.nav-link>
         @endif
 
-        {{-- Ticket Management Section (Staff Only) --}}
+        {{-- Credit Management Section (Staff Only) --}}
         @if(auth('staff')->user()->role->value === 'theme_park_staff')
             <div class="mt-4 px-3">
                 <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {{ __('Ticket Management') }}
+                    {{ __('Credit Management') }}
                 </h3>
             </div>
 
             <x-admin.navigation.nav-link :href="route('theme-park.validate')" :active="request()->routeIs('theme-park.validate')"
                 icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'>
-                {{ __('Validate Tickets') }}
+                {{ __('Validate Redemptions') }}
             </x-admin.navigation.nav-link>
         @endif
 
