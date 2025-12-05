@@ -12,11 +12,11 @@
                         Theme Park <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">Activities</span>
                     </h1>
                     <div class="bg-gradient-to-br from-purple-600 to-brand-secondary rounded-2xl px-6 py-3 text-white shadow-xl transform hover:scale-105 transition-all">
-                        <p class="text-sm font-medium">Your Tickets</p>
-                        <p class="text-3xl font-bold">{{ $wallet->ticket_balance }}</p>
+                        <p class="text-sm font-medium">Your Credits</p>
+                        <p class="text-3xl font-bold">{{ $wallet->credit_balance }}</p>
                     </div>
                 </div>
-                <p class="text-xl text-brand-dark/70">Browse and redeem tickets for exciting activities</p>
+                <p class="text-xl text-brand-dark/70">Browse and purchase activity tickets with your credits</p>
             </div>
 
             {{-- Success/Error Messages --}}
@@ -79,7 +79,7 @@
                                 <div class="flex items-start justify-between mb-3">
                                     <h3 class="text-xl font-bold flex-1">{{ $activity->name }}</h3>
                                     <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-bold bg-white/20 backdrop-blur-sm">
-                                        {{ $activity->ticket_cost }} 🎟️
+                                        {{ $activity->credit_cost }} 💳
                                     </span>
                                 </div>
                                 <p class="text-sm text-white/90 font-medium">📍 {{ $activity->zone->name }} Zone</p>
@@ -102,9 +102,9 @@
                                     </div>
                                     <div class="flex items-center text-gray-600">
                                         <svg class="w-5 h-5 mr-2 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                                         </svg>
-                                        <span class="font-medium">{{ $activity->capacity_per_session }} per session</span>
+                                        <span class="font-medium">{{ ucfirst($activity->activity_type) }}</span>
                                     </div>
                                     @if($activity->min_age || $activity->max_age)
                                         <div class="flex items-center text-gray-600">
@@ -153,15 +153,15 @@
                                     </div>
                                 @endif
 
-                                {{-- Redeem Button --}}
+                                {{-- Purchase Button --}}
                                 <button
                                     wire:click="selectActivity({{ $activity->id }})"
-                                    {{ $wallet->ticket_balance < $activity->ticket_cost ? 'disabled' : '' }}
-                                    class="w-full mt-auto px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg {{ $wallet->ticket_balance < $activity->ticket_cost ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-gradient-to-r from-brand-secondary to-pink-600 text-white hover:from-pink-600 hover:to-brand-secondary' }}">
-                                    @if($wallet->ticket_balance < $activity->ticket_cost)
-                                        ❌ Insufficient Tickets
+                                    {{ $wallet->credit_balance < $activity->credit_cost ? 'disabled' : '' }}
+                                    class="w-full mt-auto px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg {{ $wallet->credit_balance < $activity->credit_cost ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-gradient-to-r from-brand-secondary to-pink-600 text-white hover:from-pink-600 hover:to-brand-secondary' }}">
+                                    @if($wallet->credit_balance < $activity->credit_cost)
+                                        ❌ Insufficient Credits
                                     @else
-                                        🎟️ Redeem {{ $activity->ticket_cost }} Tickets
+                                        🎟️ Purchase for {{ $activity->credit_cost }} Credits
                                     @endif
                                 </button>
                             </div>
@@ -178,14 +178,14 @@
             @endif
 
             {{-- Low Balance Warning --}}
-            @if($wallet->ticket_balance < 5)
+            @if($wallet->credit_balance < 5)
                 <div class="max-w-6xl mx-auto bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-2xl px-6 py-4 shadow-lg">
                     <div class="flex items-center justify-between flex-wrap gap-4">
                         <div class="flex items-center">
                             <svg class="w-6 h-6 text-yellow-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
-                            <span class="text-yellow-900 font-bold">⚠️ Your ticket balance is low! Top up your wallet to purchase more tickets.</span>
+                            <span class="text-yellow-900 font-bold">⚠️ Your credit balance is low! Top up your wallet to purchase more credits.</span>
                         </div>
                         <a href="{{ route('visitor.theme-park.wallet') }}" wire:navigate
                             class="bg-gradient-to-r from-brand-primary to-brand-secondary text-white px-6 py-2.5 rounded-xl font-bold hover:from-brand-secondary hover:to-brand-primary transition-all transform hover:scale-105 shadow-lg">
@@ -197,13 +197,13 @@
         </div>
     </section>
 
-    {{-- Redeem Confirmation Modal --}}
+    {{-- Purchase Confirmation Modal --}}
     @if($selectedActivity)
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" wire:click.self="cancelRedemption">
             <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all relative" @click.stop>
                 <div class="bg-gradient-to-r from-brand-secondary to-pink-600 p-6 text-white">
-                    <h3 class="text-2xl font-display font-bold">🎟️ Confirm Ticket Redemption</h3>
-                    <p class="text-white/90 text-sm mt-1">You're about to redeem tickets for this activity</p>
+                    <h3 class="text-2xl font-display font-bold">🎟️ Confirm Activity Ticket Purchase</h3>
+                    <p class="text-white/90 text-sm mt-1">You're about to purchase activity tickets with your credits</p>
                 </div>
 
                 <form wire:submit.prevent="redeemTickets" class="p-6 space-y-4">
@@ -219,7 +219,7 @@
 
                     <div>
                         <p class="text-sm text-gray-600">Cost per Person</p>
-                        <p class="text-lg font-semibold text-gray-900">{{ $selectedActivity->ticket_cost }} ticket(s)</p>
+                        <p class="text-lg font-semibold text-gray-900">{{ $selectedActivity->credit_cost }} credit(s)</p>
                     </div>
 
                     <div>
@@ -237,38 +237,38 @@
                     <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 border-2 border-purple-200">
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-sm text-gray-600">Cost per person:</span>
-                            <span class="font-bold text-gray-900">{{ $selectedActivity->ticket_cost }} tickets</span>
+                            <span class="font-bold text-gray-900">{{ $selectedActivity->credit_cost }} credits</span>
                         </div>
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-sm text-gray-600">Number of persons:</span>
                             <span class="font-bold text-gray-900">{{ $numberOfPersons }}</span>
                         </div>
                         <div class="flex justify-between items-center mb-2 pt-2 border-t-2 border-purple-200">
-                            <span class="text-sm font-bold text-gray-700">Total Tickets Needed:</span>
-                            <span class="text-xl font-bold text-purple-600">{{ $selectedActivity->ticket_cost * $numberOfPersons }} tickets</span>
+                            <span class="text-sm font-bold text-gray-700">Total Credits Needed:</span>
+                            <span class="text-xl font-bold text-purple-600">{{ $selectedActivity->credit_cost * $numberOfPersons }} credits</span>
                         </div>
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-sm text-gray-600">Current Balance:</span>
-                            <span class="font-bold text-gray-900">{{ $wallet->ticket_balance }} tickets</span>
+                            <span class="font-bold text-gray-900">{{ $wallet->credit_balance }} credits</span>
                         </div>
                         <div class="flex justify-between items-center pt-2 border-t-2 border-purple-200">
                             <span class="text-sm font-bold text-gray-700">Balance After:</span>
-                            <span class="text-2xl font-bold {{ ($wallet->ticket_balance - ($selectedActivity->ticket_cost * $numberOfPersons)) >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                                {{ $wallet->ticket_balance - ($selectedActivity->ticket_cost * $numberOfPersons) }} tickets
+                            <span class="text-2xl font-bold {{ ($wallet->credit_balance - ($selectedActivity->credit_cost * $numberOfPersons)) >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                                {{ $wallet->credit_balance - ($selectedActivity->credit_cost * $numberOfPersons) }} credits
                             </span>
                         </div>
                     </div>
 
                     <div class="bg-blue-50 rounded-2xl p-4 border-2 border-blue-200">
                         <p class="text-sm text-blue-900">
-                            💡 After redeeming, you'll receive a redemption code. Show this code to the staff at the activity entrance for validation.
+                            💡 After purchasing, you'll receive activity tickets with QR codes. Show these tickets to the staff at the activity entrance for validation.
                         </p>
                     </div>
 
                     <div class="flex gap-3 pt-2">
                         <button type="submit" wire:loading.attr="disabled" wire:target="redeemTickets"
                             class="flex-1 bg-gradient-to-r from-brand-secondary to-pink-600 text-white px-6 py-3 rounded-xl font-bold hover:from-pink-600 hover:to-brand-secondary transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                            <span wire:loading.remove wire:target="redeemTickets">🎟️ Redeem Tickets</span>
+                            <span wire:loading.remove wire:target="redeemTickets">🎟️ Purchase Tickets</span>
                             <span wire:loading wire:target="redeemTickets">Processing...</span>
                         </button>
                         <button type="button" wire:click="cancelRedemption"

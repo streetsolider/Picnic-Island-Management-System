@@ -22,7 +22,10 @@ class FerryTicketService
      */
     public function getAvailableSchedules(string $date, ?int $routeId = null, int $passengers = 1)
     {
-        $dayOfWeek = Carbon::parse($date)->format('l'); // Monday, Tuesday, etc.
+        $travelDate = Carbon::parse($date);
+        $dayOfWeek = $travelDate->format('l'); // Monday, Tuesday, etc.
+        $isToday = $travelDate->isToday();
+        $currentTime = now();
 
         $query = FerrySchedule::with(['route', 'vessel'])
             ->whereHas('route', function ($q) {
@@ -39,9 +42,24 @@ class FerryTicketService
 
         $schedules = $query->get();
 
-        // Filter by capacity
-        return $schedules->filter(function ($schedule) use ($date, $passengers) {
-            return $schedule->hasCapacity($date, $passengers);
+        // Filter by capacity and departure time
+        return $schedules->filter(function ($schedule) use ($date, $passengers, $isToday, $currentTime) {
+            // Check capacity first
+            if (!$schedule->hasCapacity($date, $passengers)) {
+                return false;
+            }
+
+            // If travel date is today, ensure departure time hasn't passed
+            if ($isToday) {
+                $departureTime = Carbon::parse($schedule->departure_time->format('H:i'));
+
+                // If departure time has already passed, don't show this schedule
+                if ($departureTime->lessThan($currentTime)) {
+                    return false;
+                }
+            }
+
+            return true;
         });
     }
 
@@ -121,6 +139,14 @@ class FerryTicketService
             // Validate vessel is active
             if (!$schedule->vessel || !$schedule->vessel->is_active) {
                 $errors[] = 'This ferry vessel is not currently active.';
+            }
+
+            // Validate departure time hasn't passed if travel date is today
+            if ($travelDate->isToday()) {
+                $departureTime = Carbon::parse($schedule->departure_time->format('H:i'));
+                if ($departureTime->lessThan(now())) {
+                    $errors[] = 'This ferry schedule has already departed. Please select a future departure time.';
+                }
             }
 
             // Validate capacity
@@ -370,6 +396,7 @@ class FerryTicketService
             ->where('ferry_schedule_id', $scheduleId)
             ->where('travel_date', $date)
             ->whereIn('status', ['confirmed', 'used'])
+            ->orderByRaw("FIELD(status, 'used', 'confirmed')")
             ->orderBy('created_at', 'asc')
             ->get();
     }

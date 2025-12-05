@@ -58,6 +58,13 @@ class Index extends Component
     {
         $query = FerryRoute::query();
 
+        // Filter routes by selected vessel (only show routes this vessel operates)
+        if ($this->selectedVesselId) {
+            $query->whereHas('schedules', function($q) {
+                $q->where('ferry_vessel_id', $this->selectedVesselId);
+            });
+        }
+
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('name', 'like', '%' . $this->search . '%')

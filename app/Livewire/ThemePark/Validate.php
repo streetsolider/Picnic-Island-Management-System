@@ -2,62 +2,79 @@
 
 namespace App\Livewire\ThemePark;
 
-use App\Models\ThemeParkZone;
-use App\Services\ThemeParkTicketService;
+use App\Services\ThemeParkValidationService;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate as ValidateAttribute;
 
 #[Layout('layouts.staff')]
-#[Title('Validate Tickets')]
+#[Title('Validate Activity Tickets')]
 class Validate extends Component
 {
-    public $zone;
-
     #[ValidateAttribute('required|string|min:8')]
-    public $searchCode = '';
+    public $qrCode = '';
 
-    public $redemption = null;
+    public $ticket = null;
+    public $validationResult = null;
     public $searchPerformed = false;
 
-    public function mount()
-    {
-        $this->zone = ThemeParkZone::where('assigned_staff_id', auth()->id())->first();
-
-        if (!$this->zone) {
-            session()->flash('error', 'No zone assigned to you.');
-        }
-    }
-
-    public function searchRedemption()
+    public function validateTicket()
     {
         $this->validate([
-            'searchCode' => 'required|string|min:8',
+            'qrCode' => 'required|string|min:8',
         ]);
 
         $this->searchPerformed = true;
-        $this->redemption = null;
+        $this->ticket = null;
+        $this->validationResult = null;
 
-        $service = app(ThemeParkTicketService::class);
-        $result = $service->validateRedemption($this->searchCode, auth()->id());
+        $service = app(ThemeParkValidationService::class);
+        $result = $service->validateAndRedeemTicket($this->qrCode, auth('staff')->id());
+
+        $this->validationResult = $result;
 
         if ($result['success']) {
-            $this->redemption = $result['redemption'];
+            $this->ticket = $result['ticket'];
             session()->flash('success', $result['message']);
         } else {
             session()->flash('error', $result['message']);
-            if (isset($result['redemption'])) {
-                $this->redemption = $result['redemption'];
+            if (isset($result['ticket'])) {
+                $this->ticket = $result['ticket'];
             }
         }
 
-        $this->searchCode = '';
+        $this->qrCode = '';
+    }
+
+    public function checkStatus()
+    {
+        $this->validate([
+            'qrCode' => 'required|string|min:8',
+        ]);
+
+        $this->searchPerformed = true;
+        $this->ticket = null;
+        $this->validationResult = null;
+
+        $service = app(ThemeParkValidationService::class);
+        $result = $service->checkTicketStatus($this->qrCode);
+
+        $this->validationResult = $result;
+
+        if ($result['success']) {
+            $this->ticket = $result['ticket'];
+            session()->flash('info', 'Ticket status retrieved (not redeemed).');
+        } else {
+            session()->flash('error', $result['message']);
+        }
+
+        $this->qrCode = '';
     }
 
     public function resetSearch()
     {
-        $this->reset(['searchCode', 'redemption', 'searchPerformed']);
+        $this->reset(['qrCode', 'ticket', 'validationResult', 'searchPerformed']);
         $this->resetValidation();
     }
 

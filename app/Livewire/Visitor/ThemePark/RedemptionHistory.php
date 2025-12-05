@@ -33,13 +33,13 @@ class RedemptionHistory extends Component
 
         $redemption->cancel('Cancelled by visitor');
 
-        // Return tickets to wallet
+        // Return credits to wallet
         $wallet = $redemption->user->themeParkWallet;
-        $wallet->ticket_balance += $redemption->tickets_redeemed;
-        $wallet->total_tickets_redeemed -= $redemption->tickets_redeemed;
+        $wallet->credit_balance += $redemption->tickets_redeemed;
+        $wallet->total_credits_redeemed -= $redemption->tickets_redeemed;
         $wallet->save();
 
-        session()->flash('success', 'Redemption cancelled successfully. Tickets have been returned to your wallet.');
+        session()->flash('success', 'Redemption cancelled successfully. Credits have been returned to your wallet.');
     }
 
     public function render()

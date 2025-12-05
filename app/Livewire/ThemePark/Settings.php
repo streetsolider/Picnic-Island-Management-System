@@ -13,27 +13,27 @@ use Livewire\Attributes\Validate;
 class Settings extends Component
 {
     #[Validate('required|numeric|min:5|max:1000')]
-    public $ticketPrice;
+    public $creditPrice;
 
     public $currentPrice;
 
     public function mount()
     {
-        $this->currentPrice = ThemeParkSetting::getTicketPrice();
-        $this->ticketPrice = $this->currentPrice;
+        $this->currentPrice = ThemeParkSetting::getCreditPrice();
+        $this->creditPrice = $this->currentPrice;
     }
 
     public function save()
     {
         $this->validate();
 
-        ThemeParkSetting::setTicketPrice($this->ticketPrice, auth('staff')->id());
+        ThemeParkSetting::setCreditPrice($this->creditPrice, auth('staff')->id());
 
-        $this->currentPrice = $this->ticketPrice;
+        $this->currentPrice = $this->creditPrice;
 
-        session()->flash('success', 'Ticket price updated successfully.');
+        session()->flash('success', 'Credit price updated successfully.');
 
-        $this->dispatch('ticket-price-updated');
+        $this->dispatch('credit-price-updated');
     }
 
     public function render()

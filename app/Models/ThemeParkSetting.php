@@ -26,24 +26,24 @@ class ThemeParkSetting extends Model
     }
 
     /**
-     * Get the current ticket price in MVR.
+     * Get the current credit price in MVR.
      */
-    public static function getTicketPrice(): float
+    public static function getCreditPrice(): float
     {
-        $setting = self::where('setting_key', 'ticket_price_mvr')->first();
-        return $setting ? (float) $setting->setting_value : 10.00; // Default 10 MVR
+        $setting = self::where('setting_key', 'credit_price_mvr')->first();
+        return $setting ? (float) $setting->setting_value : 10.00; // Default 10 MVR per credit
     }
 
     /**
-     * Set the ticket price in MVR.
+     * Set the credit price in MVR.
      */
-    public static function setTicketPrice(float $price, int $userId): void
+    public static function setCreditPrice(float $price, int $userId): void
     {
         self::updateOrCreate(
-            ['setting_key' => 'ticket_price_mvr'],
+            ['setting_key' => 'credit_price_mvr'],
             [
                 'setting_value' => $price,
-                'description' => 'Price per ticket in MVR',
+                'description' => 'Price per credit in MVR',
                 'updated_by' => $userId,
             ]
         );

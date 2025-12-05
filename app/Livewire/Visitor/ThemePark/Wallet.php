@@ -13,17 +13,17 @@ class Wallet extends Component
     use WithPagination;
 
     public $stats = [];
-    public $ticketPrice = 0;
+    public $creditPrice = 0;
 
     // Top-up form
     public $showTopUpForm = false;
     #[Validate('required|numeric|min:10|max:10000')]
     public $topUpAmount = '';
 
-    // Purchase tickets form
+    // Purchase credits form
     public $showPurchaseForm = false;
     #[Validate('required|integer|min:1')]
-    public $ticketCount = 1;
+    public $creditCount = 1;
 
     public $filter = 'all'; // all, top_up, ticket_purchase
 
@@ -34,14 +34,14 @@ class Wallet extends Component
         }
 
         $this->loadStats();
-        $this->ticketPrice = ThemeParkSetting::getTicketPrice();
+        $this->creditPrice = ThemeParkSetting::getCreditPrice();
     }
 
     public function loadStats()
     {
         $service = app(ThemeParkWalletService::class);
         $this->stats = $service->getWalletStats(auth()->id());
-        $this->ticketPrice = $this->stats['ticket_price_mvr'];
+        $this->creditPrice = $this->stats['credit_price_mvr'];
     }
 
     public function openTopUpForm()
@@ -72,35 +72,35 @@ class Wallet extends Component
 
     public function openPurchaseForm()
     {
-        $this->reset(['ticketCount']);
+        $this->reset(['creditCount']);
         $this->resetValidation();
-        $this->ticketCount = 1;
+        $this->creditCount = 1;
         $this->showPurchaseForm = true;
     }
 
-    public function purchaseTickets()
+    public function purchaseCredits()
     {
         $this->validate([
-            'ticketCount' => 'required|integer|min:1',
+            'creditCount' => 'required|integer|min:1',
         ]);
 
         $service = app(ThemeParkWalletService::class);
-        $result = $service->purchaseTickets(auth()->id(), $this->ticketCount);
+        $result = $service->purchaseCredits(auth()->id(), $this->creditCount);
 
         if ($result['success']) {
             session()->flash('success', $result['message']);
             $this->loadStats();
             $this->showPurchaseForm = false;
-            $this->reset(['ticketCount']);
+            $this->reset(['creditCount']);
         } else {
             session()->flash('error', $result['message']);
         }
     }
 
-    public function updatedTicketCount()
+    public function updatedCreditCount()
     {
-        // Recalculate cost when ticket count changes
-        $this->dispatch('ticket-count-updated');
+        // Recalculate cost when credit count changes
+        $this->dispatch('credit-count-updated');
     }
 
     public function render()

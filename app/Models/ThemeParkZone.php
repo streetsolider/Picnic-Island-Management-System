@@ -20,7 +20,8 @@ class ThemeParkZone extends Model
         'name',
         'zone_type',
         'description',
-        'assigned_staff_id',
+        'opening_time',
+        'closing_time',
         'is_active',
     ];
 
@@ -33,15 +34,9 @@ class ThemeParkZone extends Model
     {
         return [
             'is_active' => 'boolean',
+            'opening_time' => 'datetime:H:i',
+            'closing_time' => 'datetime:H:i',
         ];
-    }
-
-    /**
-     * Get the staff member assigned to this zone
-     */
-    public function assignedStaff(): BelongsTo
-    {
-        return $this->belongsTo(Staff::class, 'assigned_staff_id');
     }
 
     /**
@@ -50,6 +45,51 @@ class ThemeParkZone extends Model
     public function activities(): HasMany
     {
         return $this->hasMany(ThemeParkActivity::class, 'theme_park_zone_id');
+    }
+
+    /**
+     * Get continuous ride activities in this zone.
+     */
+    public function continuousRides(): HasMany
+    {
+        return $this->activities()->where('activity_type', 'continuous');
+    }
+
+    /**
+     * Get scheduled show activities in this zone.
+     */
+    public function scheduledShows(): HasMany
+    {
+        return $this->activities()->where('activity_type', 'scheduled');
+    }
+
+    /**
+     * Check if the zone is currently open (within operating hours).
+     */
+    public function isCurrentlyOpen(): bool
+    {
+        if (!$this->is_active) {
+            return false;
+        }
+
+        if (!$this->opening_time || !$this->closing_time) {
+            return true; // If no hours set, assume always open when active
+        }
+
+        $now = now()->format('H:i');
+        return $now >= $this->opening_time && $now <= $this->closing_time;
+    }
+
+    /**
+     * Get the operating hours range as a formatted string.
+     */
+    public function getOperatingHoursAttribute(): ?string
+    {
+        if (!$this->opening_time || !$this->closing_time) {
+            return null;
+        }
+
+        return "{$this->opening_time} - {$this->closing_time}";
     }
 
     /**

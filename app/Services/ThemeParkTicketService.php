@@ -3,37 +3,46 @@
 namespace App\Services;
 
 use App\Models\ThemeParkActivity;
-use App\Models\ThemeParkTicketRedemption;
+use App\Models\ThemeParkActivityTicket;
+use App\Models\ThemeParkShowSchedule;
 use App\Models\ThemeParkWallet;
-use App\Models\ThemeParkZone;
+use App\Models\ThemeParkWalletTransaction;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Collection;
 
 class ThemeParkTicketService
 {
     /**
-     * Redeem tickets for an activity.
+     * Purchase activity ticket for continuous ride.
      */
-    public function redeemTickets(int $userId, int $activityId, int $numberOfPersons = 1): array
+    public function purchaseContinuousRideTicket(int $userId, int $activityId, int $quantity = 1): array
     {
         try {
             DB::beginTransaction();
 
-            // Validate number of persons
-            if ($numberOfPersons < 1) {
+            // Validate quantity
+            if ($quantity < 1) {
                 return [
                     'success' => false,
-                    'message' => 'Number of persons must be at least 1.',
+                    'message' => 'Quantity must be at least 1.',
                 ];
             }
 
-            // Get activity with zone
+            // Get activity
             $activity = ThemeParkActivity::with('zone')->find($activityId);
 
             if (!$activity) {
                 return [
                     'success' => false,
                     'message' => 'Activity not found.',
+                ];
+            }
+
+            // Verify it's a continuous ride
+            if (!$activity->isContinuous()) {
+                return [
+                    'success' => false,
+                    'message' => 'This activity is a scheduled show. Use purchaseShowTicket instead.',
                 ];
             }
 
@@ -44,165 +53,293 @@ class ThemeParkTicketService
                 ];
             }
 
-            // Check if zone is currently open
-            $zone = $activity->zone;
-            $now = now()->format('H:i:s');
-            if ($now < $zone->opening_time || $now > $zone->closing_time) {
+            // Check if activity is within operating hours (optional validation)
+            if (!$activity->isCurrentlyOpen()) {
                 return [
                     'success' => false,
-                    'message' => "This zone is closed. Opening hours: {$zone->opening_time} - {$zone->closing_time}.",
+                    'message' => "This activity is currently closed. Operating hours: {$activity->getOperatingHoursAttribute()}",
                 ];
             }
 
-            // Calculate total tickets needed (ticket cost per person × number of persons)
-            $totalTicketsNeeded = $activity->ticket_cost * $numberOfPersons;
+            // Calculate total credits needed
+            $totalCreditsNeeded = $activity->credit_cost * $quantity;
 
             // Get wallet
             $wallet = ThemeParkWallet::getOrCreateForUser($userId);
 
-            // Check if user has sufficient tickets
-            if (!$wallet->hasSufficientTickets($totalTicketsNeeded)) {
+            // Check if user has sufficient credits
+            if (!$wallet->hasSufficientCredits($totalCreditsNeeded)) {
                 return [
                     'success' => false,
-                    'message' => "Insufficient tickets. You need {$totalTicketsNeeded} ticket(s) ({$activity->ticket_cost} per person × {$numberOfPersons} persons) but have {$wallet->ticket_balance}.",
+                    'message' => "Insufficient credits. You need {$totalCreditsNeeded} credit(s) ({$activity->credit_cost} per person × {$quantity} persons) but have {$wallet->credit_balance}.",
                 ];
             }
 
-            // Deduct tickets from wallet
-            $wallet->ticket_balance -= $totalTicketsNeeded;
-            $wallet->total_tickets_redeemed += $totalTicketsNeeded;
-            $wallet->save();
-
-            // Create redemption record
-            $redemption = ThemeParkTicketRedemption::create([
+            // Create activity ticket
+            $ticket = ThemeParkActivityTicket::create([
                 'user_id' => $userId,
                 'activity_id' => $activityId,
-                'tickets_redeemed' => $totalTicketsNeeded,
-                'number_of_persons' => $numberOfPersons,
-                'status' => 'pending',
+                'show_schedule_id' => null, // Continuous ride - no schedule
+                'credits_spent' => $totalCreditsNeeded,
+                'quantity' => $quantity,
+                'total_credits_paid' => $totalCreditsNeeded,
+                'status' => 'valid',
+                'purchase_datetime' => now(),
+                'valid_until' => now()->endOfDay(), // Valid until end of day
+            ]);
+
+            // Deduct credits from wallet
+            $wallet->credit_balance -= $totalCreditsNeeded;
+            $wallet->total_credits_redeemed += $totalCreditsNeeded;
+            $wallet->save();
+
+            // Create wallet transaction
+            ThemeParkWalletTransaction::create([
+                'user_id' => $userId,
+                'activity_ticket_id' => $ticket->id,
+                'transaction_type' => 'activity_ticket_purchase',
+                'credits_amount' => $totalCreditsNeeded,
+                'balance_before_mvr' => $wallet->balance_mvr,
+                'balance_after_mvr' => $wallet->balance_mvr,
+                'balance_before_credits' => $wallet->credit_balance + $totalCreditsNeeded,
+                'balance_after_credits' => $wallet->credit_balance,
             ]);
 
             DB::commit();
 
             return [
                 'success' => true,
-                'message' => "Successfully redeemed {$totalTicketsNeeded} ticket(s) for {$numberOfPersons} " . str_plural('person', $numberOfPersons) . " ({$activity->name}).",
-                'redemption' => $redemption->load('activity'),
+                'message' => "Successfully purchased ticket for {$quantity} " . str_plural('person', $quantity) . " ({$activity->name}). Show QR code to operator.",
+                'ticket' => $ticket->load('activity'),
+                'qr_code' => $ticket->ticket_reference,
                 'wallet' => $wallet->fresh(),
             ];
         } catch (\Exception $e) {
             DB::rollBack();
             return [
                 'success' => false,
-                'message' => 'Failed to redeem tickets: ' . $e->getMessage(),
+                'message' => 'Failed to purchase ticket: ' . $e->getMessage(),
             ];
         }
     }
 
     /**
-     * Validate a redemption by code (staff function).
+     * Purchase activity ticket for scheduled show.
      */
-    public function validateRedemption(string $redemptionCode, int $staffId): array
+    public function purchaseShowTicket(int $userId, int $activityId, int $showScheduleId, int $quantity = 1): array
     {
         try {
             DB::beginTransaction();
 
-            $redemption = ThemeParkTicketRedemption::where('redemption_reference', $redemptionCode)
-                ->with(['activity', 'user'])
-                ->first();
-
-            if (!$redemption) {
+            // Validate quantity
+            if ($quantity < 1) {
                 return [
                     'success' => false,
-                    'message' => 'Redemption code not found.',
+                    'message' => 'Quantity must be at least 1.',
                 ];
             }
 
-            if ($redemption->status === 'validated') {
+            // Get activity
+            $activity = ThemeParkActivity::find($activityId);
+
+            if (!$activity) {
                 return [
                     'success' => false,
-                    'message' => 'This redemption has already been validated.',
-                    'redemption' => $redemption,
+                    'message' => 'Activity not found.',
                 ];
             }
 
-            if ($redemption->status === 'cancelled') {
+            // Verify it's a scheduled show
+            if (!$activity->isScheduled()) {
                 return [
                     'success' => false,
-                    'message' => 'This redemption has been cancelled.',
-                    'redemption' => $redemption,
+                    'message' => 'This activity is a continuous ride. Use purchaseContinuousRideTicket instead.',
                 ];
             }
 
-            // Validate the redemption
-            $redemption->validate($staffId);
+            if (!$activity->is_active) {
+                return [
+                    'success' => false,
+                    'message' => 'This activity is currently inactive.',
+                ];
+            }
+
+            // Get show schedule
+            $showSchedule = ThemeParkShowSchedule::find($showScheduleId);
+
+            if (!$showSchedule) {
+                return [
+                    'success' => false,
+                    'message' => 'Show schedule not found.',
+                ];
+            }
+
+            if ($showSchedule->activity_id !== $activityId) {
+                return [
+                    'success' => false,
+                    'message' => 'Show schedule does not match the selected activity.',
+                ];
+            }
+
+            if (!$showSchedule->isScheduled()) {
+                return [
+                    'success' => false,
+                    'message' => 'This show is not scheduled (cancelled or completed).',
+                ];
+            }
+
+            // Check capacity
+            $availableSeats = $showSchedule->getRemainingSeats();
+            if ($quantity > $availableSeats) {
+                return [
+                    'success' => false,
+                    'message' => "Not enough seats available. Requested: {$quantity}, Available: {$availableSeats}",
+                ];
+            }
+
+            // Calculate total credits needed
+            $totalCreditsNeeded = $activity->credit_cost * $quantity;
+
+            // Get wallet
+            $wallet = ThemeParkWallet::getOrCreateForUser($userId);
+
+            // Check if user has sufficient credits
+            if (!$wallet->hasSufficientCredits($totalCreditsNeeded)) {
+                return [
+                    'success' => false,
+                    'message' => "Insufficient credits. You need {$totalCreditsNeeded} credit(s) but have {$wallet->credit_balance}.",
+                ];
+            }
+
+            // Create activity ticket
+            $ticket = ThemeParkActivityTicket::create([
+                'user_id' => $userId,
+                'activity_id' => $activityId,
+                'show_schedule_id' => $showScheduleId,
+                'credits_spent' => $totalCreditsNeeded,
+                'quantity' => $quantity,
+                'total_credits_paid' => $totalCreditsNeeded,
+                'status' => 'valid',
+                'purchase_datetime' => now(),
+                'valid_until' => $showSchedule->show_date->setTimeFromTimeString($showSchedule->show_time)->addMinutes(15),
+            ]);
+
+            // Increment tickets sold
+            $showSchedule->incrementTicketsSold($quantity);
+
+            // Deduct credits from wallet
+            $wallet->credit_balance -= $totalCreditsNeeded;
+            $wallet->total_credits_redeemed += $totalCreditsNeeded;
+            $wallet->save();
+
+            // Create wallet transaction
+            ThemeParkWalletTransaction::create([
+                'user_id' => $userId,
+                'activity_ticket_id' => $ticket->id,
+                'transaction_type' => 'activity_ticket_purchase',
+                'credits_amount' => $totalCreditsNeeded,
+                'balance_before_mvr' => $wallet->balance_mvr,
+                'balance_after_mvr' => $wallet->balance_mvr,
+                'balance_before_credits' => $wallet->credit_balance + $totalCreditsNeeded,
+                'balance_after_credits' => $wallet->credit_balance,
+            ]);
 
             DB::commit();
 
             return [
                 'success' => true,
-                'message' => 'Redemption validated successfully.',
-                'redemption' => $redemption->fresh(['activity', 'user', 'validatedBy']),
+                'message' => "Successfully purchased show ticket for {$quantity} " . str_plural('person', $quantity) . " ({$activity->name} at {$showSchedule->show_time}).",
+                'ticket' => $ticket->load(['activity', 'showSchedule']),
+                'qr_code' => $ticket->ticket_reference,
+                'show_info' => [
+                    'date' => $showSchedule->show_date->format('F j, Y'),
+                    'time' => $showSchedule->show_time,
+                    'venue_capacity' => $showSchedule->venue_capacity,
+                    'tickets_sold' => $showSchedule->tickets_sold,
+                ],
+                'wallet' => $wallet->fresh(),
             ];
         } catch (\Exception $e) {
             DB::rollBack();
             return [
                 'success' => false,
-                'message' => 'Failed to validate redemption: ' . $e->getMessage(),
+                'message' => 'Failed to purchase show ticket: ' . $e->getMessage(),
             ];
         }
     }
 
     /**
-     * Get statistics for staff's assigned zone.
+     * Get user's activity tickets.
      */
-    public function getStaffStats(int $zoneId): array
+    public function getUserTickets(int $userId, ?string $status = null)
     {
-        $zone = ThemeParkZone::with('activities')->find($zoneId);
+        $query = ThemeParkActivityTicket::where('user_id', $userId)
+            ->with(['activity', 'showSchedule'])
+            ->orderBy('purchase_datetime', 'desc');
 
-        if (!$zone) {
-            return [];
+        if ($status) {
+            $query->where('status', $status);
         }
 
-        $activityIds = $zone->activities->pluck('id');
-
-        $totalRedemptions = ThemeParkTicketRedemption::whereIn('activity_id', $activityIds)->count();
-        $pendingRedemptions = ThemeParkTicketRedemption::whereIn('activity_id', $activityIds)
-            ->where('status', 'pending')
-            ->count();
-        $validatedRedemptions = ThemeParkTicketRedemption::whereIn('activity_id', $activityIds)
-            ->where('status', 'validated')
-            ->count();
-        $totalActivities = $zone->activities->count();
-        $activeActivities = $zone->activities->where('is_active', true)->count();
-
-        return [
-            'zone' => $zone,
-            'total_activities' => $totalActivities,
-            'active_activities' => $activeActivities,
-            'total_redemptions' => $totalRedemptions,
-            'pending_redemptions' => $pendingRedemptions,
-            'validated_redemptions' => $validatedRedemptions,
-        ];
+        return $query->get();
     }
 
     /**
-     * Get recent redemptions for a zone.
+     * Cancel an activity ticket.
      */
-    public function getRecentRedemptions(int $zoneId, int $limit = 10): Collection
+    public function cancelTicket(int $ticketId, int $userId, ?string $reason = null): array
     {
-        $zone = ThemeParkZone::with('activities')->find($zoneId);
+        try {
+            DB::beginTransaction();
 
-        if (!$zone) {
-            return collect([]);
+            $ticket = ThemeParkActivityTicket::where('id', $ticketId)
+                ->where('user_id', $userId)
+                ->first();
+
+            if (!$ticket) {
+                return [
+                    'success' => false,
+                    'message' => 'Ticket not found.',
+                ];
+            }
+
+            if ($ticket->isRedeemed()) {
+                return [
+                    'success' => false,
+                    'message' => 'Cannot cancel a ticket that has already been redeemed.',
+                ];
+            }
+
+            if ($ticket->isCancelled()) {
+                return [
+                    'success' => false,
+                    'message' => 'This ticket is already cancelled.',
+                ];
+            }
+
+            // Refund credits to wallet
+            $wallet = ThemeParkWallet::getOrCreateForUser($userId);
+            $wallet->credit_balance += $ticket->credits_spent;
+            $wallet->total_credits_redeemed -= $ticket->credits_spent;
+            $wallet->save();
+
+            // Cancel ticket (this also decrements show tickets_sold if applicable)
+            $ticket->cancel($reason);
+
+            DB::commit();
+
+            return [
+                'success' => true,
+                'message' => "Ticket cancelled successfully. {$ticket->credits_spent} credits refunded.",
+                'ticket' => $ticket->fresh(),
+                'wallet' => $wallet->fresh(),
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return [
+                'success' => false,
+                'message' => 'Failed to cancel ticket: ' . $e->getMessage(),
+            ];
         }
-
-        $activityIds = $zone->activities->pluck('id');
-
-        return ThemeParkTicketRedemption::whereIn('activity_id', $activityIds)
-            ->with(['activity', 'user', 'validatedBy'])
-            ->orderBy('created_at', 'desc')
-            ->limit($limit)
-            ->get();
     }
 }

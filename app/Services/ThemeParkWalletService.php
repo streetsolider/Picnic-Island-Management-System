@@ -35,8 +35,8 @@ class ThemeParkWalletService
                 'amount_mvr' => $amount,
                 'balance_before_mvr' => $wallet->balance_mvr,
                 'balance_after_mvr' => $wallet->balance_mvr + $amount,
-                'balance_before_tickets' => $wallet->ticket_balance,
-                'balance_after_tickets' => $wallet->ticket_balance,
+                'balance_before_credits' => $wallet->credit_balance,
+                'balance_after_credits' => $wallet->credit_balance,
             ]);
 
             // Update wallet
@@ -62,15 +62,15 @@ class ThemeParkWalletService
     }
 
     /**
-     * Purchase tickets using MVR from wallet.
+     * Purchase credits using MVR from wallet.
      */
-    public function purchaseTickets(int $userId, int $ticketCount): array
+    public function purchaseCredits(int $userId, int $creditCount): array
     {
-        // Validate ticket count
-        if ($ticketCount < 1) {
+        // Validate credit count
+        if ($creditCount < 1) {
             return [
                 'success' => false,
-                'message' => 'Ticket count must be at least 1.',
+                'message' => 'Credit count must be at least 1.',
             ];
         }
 
@@ -78,8 +78,8 @@ class ThemeParkWalletService
             DB::beginTransaction();
 
             $wallet = ThemeParkWallet::getOrCreateForUser($userId);
-            $ticketPrice = ThemeParkSetting::getTicketPrice();
-            $totalCost = $ticketPrice * $ticketCount;
+            $creditPrice = ThemeParkSetting::getCreditPrice();
+            $totalCost = $creditPrice * $creditCount;
 
             // Check if wallet has sufficient balance
             if (!$wallet->hasSufficientBalance($totalCost)) {
@@ -92,26 +92,26 @@ class ThemeParkWalletService
             // Create transaction record
             $transaction = ThemeParkWalletTransaction::create([
                 'user_id' => $userId,
-                'transaction_type' => 'ticket_purchase',
+                'transaction_type' => 'ticket_purchase', // Keep for backward compatibility
                 'amount_mvr' => $totalCost,
-                'tickets_amount' => $ticketCount,
+                'credits_amount' => $creditCount,
                 'balance_before_mvr' => $wallet->balance_mvr,
                 'balance_after_mvr' => $wallet->balance_mvr - $totalCost,
-                'balance_before_tickets' => $wallet->ticket_balance,
-                'balance_after_tickets' => $wallet->ticket_balance + $ticketCount,
+                'balance_before_credits' => $wallet->credit_balance,
+                'balance_after_credits' => $wallet->credit_balance + $creditCount,
             ]);
 
             // Update wallet
             $wallet->balance_mvr -= $totalCost;
-            $wallet->ticket_balance += $ticketCount;
-            $wallet->total_tickets_purchased += $ticketCount;
+            $wallet->credit_balance += $creditCount;
+            $wallet->total_credits_purchased += $creditCount;
             $wallet->save();
 
             DB::commit();
 
             return [
                 'success' => true,
-                'message' => "Successfully purchased {$ticketCount} ticket(s) for MVR {$totalCost}.",
+                'message' => "Successfully purchased {$creditCount} credit(s) for MVR {$totalCost}.",
                 'transaction' => $transaction,
                 'wallet' => $wallet->fresh(),
             ];
@@ -119,7 +119,7 @@ class ThemeParkWalletService
             DB::rollBack();
             return [
                 'success' => false,
-                'message' => 'Failed to purchase tickets: ' . $e->getMessage(),
+                'message' => 'Failed to purchase credits: ' . $e->getMessage(),
             ];
         }
     }
@@ -151,11 +151,11 @@ class ThemeParkWalletService
 
         return [
             'current_balance_mvr' => $wallet->balance_mvr,
-            'current_ticket_balance' => $wallet->ticket_balance,
+            'current_credit_balance' => $wallet->credit_balance,
             'total_topped_up_mvr' => $wallet->total_topped_up_mvr,
-            'total_tickets_purchased' => $wallet->total_tickets_purchased,
-            'total_tickets_redeemed' => $wallet->total_tickets_redeemed,
-            'ticket_price_mvr' => ThemeParkSetting::getTicketPrice(),
+            'total_credits_purchased' => $wallet->total_credits_purchased,
+            'total_credits_redeemed' => $wallet->total_credits_redeemed,
+            'credit_price_mvr' => ThemeParkSetting::getCreditPrice(),
         ];
     }
 }

@@ -2,11 +2,8 @@
 
 namespace App\Livewire\ThemePark\Activities;
 
-use App\Enums\StaffRole;
-use App\Models\Staff;
 use App\Models\ThemeParkZone;
 use App\Models\ThemeParkActivity;
-use App\Services\ThemeParkActivityService;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -33,14 +30,23 @@ class Index extends Component
     #[Validate('nullable|string')]
     public $description = '';
 
-    #[Validate('required|integer|min:1')]
-    public $ticket_cost = 1;
+    #[Validate('required|in:continuous,scheduled')]
+    public $activity_type = 'continuous';
 
     #[Validate('required|integer|min:1')]
-    public $capacity_per_session = 50;
+    public $credit_cost = 1;
+
+    #[Validate('nullable|integer|min:1')]
+    public $capacity = null;
 
     #[Validate('required|integer|min:5')]
     public $duration_minutes = 30;
+
+    #[Validate('nullable|date_format:H:i')]
+    public $operating_hours_start = null;
+
+    #[Validate('nullable|date_format:H:i')]
+    public $operating_hours_end = null;
 
     #[Validate('nullable|integer|min:0')]
     public $min_age = null;
@@ -50,9 +56,6 @@ class Index extends Component
 
     #[Validate('nullable|integer|min:0')]
     public $height_requirement_cm = null;
-
-    #[Validate('nullable|exists:staff,id')]
-    public $assigned_staff_id = null;
 
     public function mount()
     {
@@ -68,30 +71,35 @@ class Index extends Component
 
     public function edit($activityId)
     {
-        $activity = ThemeParkActivity::with('assignedStaff')->find($activityId);
+        $activity = ThemeParkActivity::find($activityId);
 
         if (!$activity) {
             session()->flash('error', 'Activity not found.');
             return;
         }
 
-        // Staff can only edit their assigned activities
-        if (!$this->isManager && $activity->assigned_staff_id !== auth('staff')->id()) {
-            session()->flash('error', 'Unauthorized to edit this activity.');
-            return;
+        // Staff can only edit activities in their assigned zone
+        if (!$this->isManager) {
+            $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
+            if (!$staffZone || $activity->theme_park_zone_id !== $staffZone->id) {
+                session()->flash('error', 'Unauthorized to edit this activity.');
+                return;
+            }
         }
 
         $this->activityId = $activity->id;
         $this->theme_park_zone_id = $activity->theme_park_zone_id;
         $this->name = $activity->name;
         $this->description = $activity->description;
-        $this->ticket_cost = $activity->ticket_cost;
-        $this->capacity_per_session = $activity->capacity_per_session;
+        $this->activity_type = $activity->activity_type;
+        $this->credit_cost = $activity->credit_cost;
+        $this->capacity = $activity->capacity;
         $this->duration_minutes = $activity->duration_minutes;
+        $this->operating_hours_start = $activity->operating_hours_start?->format('H:i');
+        $this->operating_hours_end = $activity->operating_hours_end?->format('H:i');
         $this->min_age = $activity->min_age;
         $this->max_age = $activity->max_age;
         $this->height_requirement_cm = $activity->height_requirement_cm;
-        $this->assigned_staff_id = $activity->assigned_staff_id;
 
         $this->editMode = true;
         $this->dispatch('open-modal', 'activity-form');
@@ -101,50 +109,68 @@ class Index extends Component
     {
         $this->validate();
 
-        $service = app(ThemeParkActivityService::class);
+        // Verify staff has access to this zone
+        if (!$this->isManager) {
+            $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
+            if (!$staffZone || $this->theme_park_zone_id != $staffZone->id) {
+                session()->flash('error', 'You can only create activities in your assigned zone.');
+                return;
+            }
+        }
 
         $data = [
             'theme_park_zone_id' => $this->theme_park_zone_id,
-            'assigned_staff_id' => $this->assigned_staff_id,
             'name' => $this->name,
             'description' => $this->description,
-            'ticket_cost' => $this->ticket_cost,
-            'capacity_per_session' => $this->capacity_per_session,
+            'activity_type' => $this->activity_type,
+            'credit_cost' => $this->credit_cost,
+            'capacity' => $this->capacity,
             'duration_minutes' => $this->duration_minutes,
+            'operating_hours_start' => $this->operating_hours_start,
+            'operating_hours_end' => $this->operating_hours_end,
             'min_age' => $this->min_age,
             'max_age' => $this->max_age,
             'height_requirement_cm' => $this->height_requirement_cm,
             'is_active' => true,
         ];
 
-        // Managers bypass authorization checks (pass null), staff pass their ID for verification
-        $staffIdForAuth = $this->isManager ? null : auth('staff')->id();
+        try {
+            if ($this->editMode) {
+                $activity = ThemeParkActivity::findOrFail($this->activityId);
+                $activity->update($data);
+                session()->flash('success', 'Activity updated successfully.');
+            } else {
+                ThemeParkActivity::create($data);
+                session()->flash('success', 'Activity created successfully.');
+            }
 
-        if ($this->editMode) {
-            $result = $service->updateActivity($this->activityId, $data, $staffIdForAuth);
-        } else {
-            $result = $service->createActivity($data, $staffIdForAuth);
-        }
-
-        if ($result['success']) {
-            session()->flash('success', $result['message']);
             $this->resetForm();
             $this->dispatch('close-modal', 'activity-form');
-        } else {
-            session()->flash('error', $result['message']);
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to save activity: ' . $e->getMessage());
         }
     }
 
     public function toggleActive($activityId)
     {
-        $service = app(ThemeParkActivityService::class);
-        $staffIdForAuth = $this->isManager ? null : auth('staff')->id();
-        $result = $service->toggleActive($activityId, $staffIdForAuth);
+        try {
+            $activity = ThemeParkActivity::findOrFail($activityId);
 
-        if ($result['success']) {
-            session()->flash('success', $result['message']);
-        } else {
-            session()->flash('error', $result['message']);
+            // Verify staff has access
+            if (!$this->isManager) {
+                $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
+                if (!$staffZone || $activity->theme_park_zone_id !== $staffZone->id) {
+                    session()->flash('error', 'Unauthorized to modify this activity.');
+                    return;
+                }
+            }
+
+            $activity->is_active = !$activity->is_active;
+            $activity->save();
+
+            session()->flash('success', 'Activity status updated successfully.');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to toggle activity: ' . $e->getMessage());
         }
     }
 
@@ -156,14 +182,22 @@ class Index extends Component
 
     public function delete()
     {
-        $service = app(ThemeParkActivityService::class);
-        $staffIdForAuth = $this->isManager ? null : auth('staff')->id();
-        $result = $service->deleteActivity($this->activityId, $staffIdForAuth);
+        try {
+            $activity = ThemeParkActivity::findOrFail($this->activityId);
 
-        if ($result['success']) {
-            session()->flash('success', $result['message']);
-        } else {
-            session()->flash('error', $result['message']);
+            // Verify staff has access
+            if (!$this->isManager) {
+                $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
+                if (!$staffZone || $activity->theme_park_zone_id !== $staffZone->id) {
+                    session()->flash('error', 'Unauthorized to delete this activity.');
+                    return;
+                }
+            }
+
+            $activity->delete();
+            session()->flash('success', 'Activity deleted successfully.');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to delete activity: ' . $e->getMessage());
         }
 
         $this->activityId = null;
@@ -174,24 +208,28 @@ class Index extends Component
         $this->reset([
             'activityId',
             'theme_park_zone_id',
-            'assigned_staff_id',
             'name',
             'description',
-            'ticket_cost',
-            'capacity_per_session',
+            'activity_type',
+            'credit_cost',
+            'capacity',
             'duration_minutes',
+            'operating_hours_start',
+            'operating_hours_end',
             'min_age',
             'max_age',
             'height_requirement_cm',
             'editMode',
         ]);
+        $this->activity_type = 'continuous';
+        $this->credit_cost = 1;
         $this->resetValidation();
     }
 
     public function render()
     {
-        // Manager sees all activities, Staff sees only their assigned activities
-        $query = ThemeParkActivity::with(['zone', 'assignedStaff']);
+        // Manager sees all activities, Staff sees only activities in their assigned zone
+        $query = ThemeParkActivity::with(['zone']);
 
         if ($this->isManager) {
             // Manager can filter by zone
@@ -199,29 +237,26 @@ class Index extends Component
                 $query->where('theme_park_zone_id', $this->selectedZoneFilter);
             }
         } else {
-            // Staff only sees activities assigned to them
-            $query->where('assigned_staff_id', auth('staff')->id());
+            // Staff only sees activities in their assigned zone
+            $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
+            if ($staffZone) {
+                $query->where('theme_park_zone_id', $staffZone->id);
+            } else {
+                // Staff has no assigned zone, show nothing
+                $query->whereRaw('1 = 0');
+            }
         }
 
         $activities = $query->orderBy('name')->paginate(10);
 
-        // Get zones for dropdowns (manager only)
+        // Get zones for dropdowns
         $zones = $this->isManager
             ? ThemeParkZone::where('is_active', true)->orderBy('name')->get()
-            : collect([]);
-
-        // Get available staff for assignment (manager only)
-        $availableStaff = $this->isManager
-            ? Staff::where('role', StaffRole::THEME_PARK_STAFF)
-                ->where('is_active', true)
-                ->orderBy('name')
-                ->get()
-            : collect([]);
+            : ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->get();
 
         return view('livewire.theme-park.activities.index', [
             'activities' => $activities,
             'zones' => $zones,
-            'availableStaff' => $availableStaff,
         ]);
     }
 }

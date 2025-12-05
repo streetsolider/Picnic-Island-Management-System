@@ -14,18 +14,18 @@ class ThemeParkWallet extends Model
     protected $fillable = [
         'user_id',
         'balance_mvr',
-        'ticket_balance',
+        'credit_balance',
         'total_topped_up_mvr',
-        'total_tickets_purchased',
-        'total_tickets_redeemed',
+        'total_credits_purchased',
+        'total_credits_redeemed',
     ];
 
     protected $casts = [
         'balance_mvr' => 'decimal:2',
         'total_topped_up_mvr' => 'decimal:2',
-        'ticket_balance' => 'integer',
-        'total_tickets_purchased' => 'integer',
-        'total_tickets_redeemed' => 'integer',
+        'credit_balance' => 'integer',
+        'total_credits_purchased' => 'integer',
+        'total_credits_redeemed' => 'integer',
     ];
 
     /**
@@ -53,11 +53,11 @@ class ThemeParkWallet extends Model
     }
 
     /**
-     * Check if wallet has sufficient tickets.
+     * Check if wallet has sufficient credits.
      */
-    public function hasSufficientTickets(int $tickets): bool
+    public function hasSufficientCredits(int $credits): bool
     {
-        return $this->ticket_balance >= $tickets;
+        return $this->credit_balance >= $credits;
     }
 
     /**
@@ -69,10 +69,10 @@ class ThemeParkWallet extends Model
             ['user_id' => $userId],
             [
                 'balance_mvr' => 0.00,
-                'ticket_balance' => 0,
+                'credit_balance' => 0,
                 'total_topped_up_mvr' => 0.00,
-                'total_tickets_purchased' => 0,
-                'total_tickets_redeemed' => 0,
+                'total_credits_purchased' => 0,
+                'total_credits_redeemed' => 0,
             ]
         );
     }

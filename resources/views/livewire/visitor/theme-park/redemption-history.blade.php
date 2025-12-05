@@ -8,9 +8,9 @@
             {{-- Header --}}
             <div class="text-center mb-12">
                 <h1 class="text-4xl md:text-5xl font-display font-bold text-brand-dark mb-4">
-                    Redemption <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-secondary to-purple-600">History</span>
+                    Activity Ticket <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-secondary to-purple-600">History</span>
                 </h1>
-                <p class="text-xl text-brand-dark/70">View your ticket redemptions and their status</p>
+                <p class="text-xl text-brand-dark/70">View your activity ticket purchases and their status</p>
             </div>
 
             {{-- Success/Error Messages --}}
@@ -61,8 +61,8 @@
             @if($redemptions->isEmpty())
                 <div class="bg-white rounded-3xl shadow-2xl p-16 text-center">
                     <div class="text-6xl mb-6">📋</div>
-                    <h3 class="text-3xl font-display font-bold text-brand-dark mb-4">No Redemptions Yet</h3>
-                    <p class="text-xl text-gray-600 mb-8">You haven't redeemed any tickets yet. Visit the activities page to get started!</p>
+                    <h3 class="text-3xl font-display font-bold text-brand-dark mb-4">No Activity Tickets Yet</h3>
+                    <p class="text-xl text-gray-600 mb-8">You haven't purchased any activity tickets yet. Visit the activities page to get started!</p>
                     <a href="{{ route('visitor.theme-park.activities') }}" wire:navigate
                         class="inline-block bg-gradient-to-r from-brand-primary to-brand-secondary text-white px-8 py-3 rounded-xl font-bold hover:from-brand-secondary hover:to-brand-primary transition-all transform hover:scale-105 shadow-lg">
                         🎢 Browse Activities
@@ -103,11 +103,11 @@
                                         <p class="text-lg font-bold text-gray-900">{{ $redemption->number_of_persons }} 👥</p>
                                     </div>
                                     <div class="bg-gray-50 rounded-xl p-4">
-                                        <p class="text-sm text-gray-600 mb-1">Tickets Used</p>
-                                        <p class="text-lg font-bold text-gray-900">{{ $redemption->tickets_redeemed }} 🎟️</p>
+                                        <p class="text-sm text-gray-600 mb-1">Credits Spent</p>
+                                        <p class="text-lg font-bold text-gray-900">{{ $redemption->tickets_redeemed }} 💳</p>
                                     </div>
                                     <div class="bg-gray-50 rounded-xl p-4">
-                                        <p class="text-sm text-gray-600 mb-1">Redeemed At</p>
+                                        <p class="text-sm text-gray-600 mb-1">Purchased At</p>
                                         <p class="text-lg font-bold text-gray-900">{{ $redemption->created_at->format('M d, Y h:i A') }}</p>
                                     </div>
                                     @if($redemption->status === 'validated')
@@ -145,9 +145,9 @@
                                             </div>
                                             <button
                                                 wire:click="cancelRedemption({{ $redemption->id }})"
-                                                wire:confirm="Are you sure you want to cancel this redemption? Your tickets will be returned."
+                                                wire:confirm="Are you sure you want to cancel this purchase? Your credits will be returned."
                                                 class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg">
-                                                ❌ Cancel Redemption
+                                                ❌ Cancel Purchase
                                             </button>
                                         </div>
                                     </div>
@@ -192,7 +192,7 @@
                                 <span class="mr-2">❌</span>
                                 <div>
                                     <strong class="text-gray-900">Cancelled:</strong>
-                                    <span class="text-gray-700">Redemption cancelled - tickets returned to your wallet</span>
+                                    <span class="text-gray-700">Purchase cancelled - credits returned to your wallet</span>
                                 </div>
                             </li>
                         </ul>

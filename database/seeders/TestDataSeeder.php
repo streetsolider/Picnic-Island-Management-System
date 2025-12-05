@@ -124,7 +124,7 @@ class TestDataSeeder extends Seeder
             $themeParkManager = Staff::where('role', 'theme_park_manager')->first();
 
             if ($themeParkManager) {
-                ThemeParkSetting::setTicketPrice(5.00, $themeParkManager->id);
+                ThemeParkSetting::setCreditPrice(5.00, $themeParkManager->id);
             }
         }
     }

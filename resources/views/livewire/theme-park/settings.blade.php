@@ -20,14 +20,14 @@
         </x-admin.alert.success>
     @endif
 
-    {{-- Ticket Price Settings Card --}}
+    {{-- Credit Price Settings Card --}}
     <x-admin.card.base>
         <x-slot name="title">
             <div class="flex items-center">
                 <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                Ticket Pricing
+                Credit Pricing
             </div>
         </x-slot>
 
@@ -36,7 +36,7 @@
                 {{-- Current Price Display --}}
                 <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Current Ticket Price
+                        Current Credit Price
                     </label>
                     <div class="flex items-baseline">
                         <span class="text-3xl font-bold text-gray-900 dark:text-white">
@@ -45,20 +45,20 @@
                         <span class="ml-2 text-lg text-gray-600 dark:text-gray-400">MVR</span>
                     </div>
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        Per ticket
+                        Per credit
                     </p>
                 </div>
 
                 {{-- New Price Input --}}
                 <div>
-                    <label for="ticketPrice" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        New Ticket Price <span class="text-red-500">*</span>
+                    <label for="creditPrice" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        New Credit Price <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <input
                             type="number"
-                            id="ticketPrice"
-                            wire:model="ticketPrice"
+                            id="creditPrice"
+                            wire:model="creditPrice"
                             step="0.01"
                             min="5"
                             max="1000"
@@ -69,7 +69,7 @@
                             MVR
                         </span>
                     </div>
-                    @error('ticketPrice')
+                    @error('creditPrice')
                         <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
                 </div>
@@ -78,12 +78,12 @@
             {{-- Info Box --}}
             <x-admin.alert.info class="mt-6">
                 <div class="text-sm">
-                    <p class="font-medium">How Theme Park Tickets Work</p>
+                    <p class="font-medium">How Theme Park Credits Work</p>
                     <p class="mt-1">
-                        <strong>1 Ticket = {{ number_format($ticketPrice, 2) }} MVR</strong>
+                        <strong>1 Credit = {{ number_format($creditPrice, 2) }} MVR</strong>
                     </p>
                     <p class="mt-2">
-                        Visitors purchase tickets at this rate. Each activity requires a specific number of tickets to participate. For example, if an activity costs 5 tickets and the ticket price is MVR 10, visitors pay MVR 50 for that activity.
+                        Visitors purchase credits at this rate. Each activity requires a specific number of credits to participate. For example, if an activity costs 5 credits and the credit price is MVR 10, visitors pay MVR 50 for that activity.
                     </p>
                 </div>
             </x-admin.alert.info>

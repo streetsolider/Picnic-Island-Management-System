@@ -55,14 +55,14 @@
                     </div>
                 </div>
 
-                {{-- Ticket Balance Card --}}
+                {{-- Credit Balance Card --}}
                 <div class="bg-gradient-to-br from-purple-600 to-brand-secondary rounded-3xl shadow-2xl overflow-hidden transform hover:scale-105 transition-all duration-300">
                     <div class="p-8 text-white">
                         <div class="flex items-center justify-between mb-6">
                             <div>
-                                <p class="text-purple-100 text-sm font-medium mb-2">Ticket Balance</p>
-                                <p class="text-5xl font-bold">{{ number_format($stats['current_ticket_balance']) }}</p>
-                                <p class="text-purple-100 text-xs mt-2">Available Tickets</p>
+                                <p class="text-purple-100 text-sm font-medium mb-2">Credit Balance</p>
+                                <p class="text-5xl font-bold">{{ number_format($stats['current_credit_balance']) }}</p>
+                                <p class="text-purple-100 text-xs mt-2">Available Credits</p>
                             </div>
                             <div class="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
                                 <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,7 +71,7 @@
                             </div>
                         </div>
                         <button wire:click="openPurchaseForm" class="w-full bg-white text-purple-600 px-6 py-3 rounded-xl font-bold hover:bg-purple-50 transition-all transform hover:scale-105 shadow-lg">
-                            🎟️ Purchase Tickets
+                            💳 Purchase Credits
                         </button>
                     </div>
                 </div>
@@ -83,7 +83,7 @@
                     <svg class="w-6 h-6 text-blue-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                     </svg>
-                    <span class="text-blue-800 font-medium">Current ticket price: <strong class="text-2xl">MVR {{ number_format($ticketPrice, 2) }}</strong> per ticket</span>
+                    <span class="text-blue-800 font-medium">Current credit price: <strong class="text-2xl">MVR {{ number_format($creditPrice, 2) }}</strong> per credit</span>
                 </div>
             </div>
 
@@ -233,28 +233,28 @@
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" wire:click.self="$set('showPurchaseForm', false)">
             <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
                 <div class="bg-gradient-to-r from-purple-600 to-brand-secondary p-6 text-white">
-                    <h3 class="text-2xl font-display font-bold">🎟️ Purchase Tickets</h3>
-                    <p class="text-purple-100 text-sm mt-1">Buy tickets for theme park activities</p>
+                    <h3 class="text-2xl font-display font-bold">🎟️ Purchase Credits</h3>
+                    <p class="text-purple-100 text-sm mt-1">Buy credits for theme park activities</p>
                 </div>
 
-                <form wire:submit.prevent="purchaseTickets" class="p-6 space-y-6">
+                <form wire:submit.prevent="purchaseCredits" class="p-6 space-y-6">
                     <div>
-                        <label for="ticketCount" class="block text-sm font-bold text-gray-700 mb-2">
-                            Number of Tickets <span class="text-red-500">*</span>
+                        <label for="creditCount" class="block text-sm font-bold text-gray-700 mb-2">
+                            Number of Credits <span class="text-red-500">*</span>
                         </label>
-                        <input type="number" id="ticketCount" wire:model.live="ticketCount" min="1"
+                        <input type="number" id="creditCount" wire:model.live="creditCount" min="1"
                             class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg font-semibold" />
-                        @error('ticketCount') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
+                        @error('creditCount') <p class="mt-2 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 border-2 border-purple-200">
                         <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm text-gray-600">Price per ticket:</span>
-                            <span class="font-bold text-gray-900">MVR {{ number_format($ticketPrice, 2) }}</span>
+                            <span class="text-sm text-gray-600">Price per credit:</span>
+                            <span class="font-bold text-gray-900">MVR {{ number_format($creditPrice, 2) }}</span>
                         </div>
                         <div class="flex justify-between items-center pt-2 border-t-2 border-purple-200">
                             <span class="text-sm font-bold text-gray-700">Total Cost:</span>
-                            <span class="text-2xl font-bold text-purple-600">MVR {{ number_format($ticketPrice * ($ticketCount ?: 1), 2) }}</span>
+                            <span class="text-2xl font-bold text-purple-600">MVR {{ number_format($creditPrice * ($creditCount ?: 1), 2) }}</span>
                         </div>
                     </div>
 
@@ -263,15 +263,15 @@
                             Current MVR Balance: <strong class="text-gray-900">MVR {{ number_format($stats['current_balance_mvr'], 2) }}</strong>
                         </p>
                         <p class="text-sm text-gray-700">
-                            Balance After Purchase: <strong class="text-gray-900">MVR {{ number_format(max(0, $stats['current_balance_mvr'] - ($ticketPrice * ($ticketCount ?: 1))), 2) }}</strong>
+                            Balance After Purchase: <strong class="text-gray-900">MVR {{ number_format(max(0, $stats['current_balance_mvr'] - ($creditPrice * ($creditCount ?: 1))), 2) }}</strong>
                         </p>
                     </div>
 
                     <div class="flex gap-3">
-                        <button type="submit" wire:loading.attr="disabled" wire:target="purchaseTickets"
+                        <button type="submit" wire:loading.attr="disabled" wire:target="purchaseCredits"
                             class="flex-1 bg-gradient-to-r from-purple-600 to-brand-secondary text-white px-6 py-3 rounded-xl font-bold hover:from-purple-700 hover:to-pink-600 transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                            <span wire:loading.remove wire:target="purchaseTickets">Purchase</span>
-                            <span wire:loading wire:target="purchaseTickets">Processing...</span>
+                            <span wire:loading.remove wire:target="purchaseCredits">Purchase</span>
+                            <span wire:loading wire:target="purchaseCredits">Processing...</span>
                         </button>
                         <button type="button" wire:click="$set('showPurchaseForm', false)"
                             class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-all">

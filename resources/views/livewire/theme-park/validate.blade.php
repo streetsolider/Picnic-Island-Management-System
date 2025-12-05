@@ -88,11 +88,11 @@
                             <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $redemption->activity->name }}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Tickets Redeemed</p>
-                            <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $redemption->tickets_redeemed }} ticket(s)</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Credits Spent</p>
+                            <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $redemption->tickets_redeemed }} credit(s)</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Redeemed At</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Purchased At</p>
                             <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $redemption->created_at->format('M d, Y h:i A') }}</p>
                         </div>
                     </div>
