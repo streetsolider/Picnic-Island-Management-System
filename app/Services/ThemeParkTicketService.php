@@ -213,6 +213,10 @@ class ThemeParkTicketService
             }
 
             // Create activity ticket
+            // For scheduled shows, valid until = show start time + duration
+            $showStartTime = $showSchedule->show_date->setTimeFromTimeString($showSchedule->show_time);
+            $validUntil = $showStartTime->copy()->addMinutes($activity->duration_minutes ?? 60);
+
             $ticket = ThemeParkActivityTicket::create([
                 'guest_id' => $userId,
                 'activity_id' => $activityId,
@@ -222,7 +226,7 @@ class ThemeParkTicketService
                 'total_credits_paid' => $totalCreditsNeeded,
                 'status' => 'valid',
                 'purchase_datetime' => now(),
-                'valid_until' => $showSchedule->show_date->copy()->endOfDay(),
+                'valid_until' => $validUntil,
             ]);
 
             // Increment tickets sold

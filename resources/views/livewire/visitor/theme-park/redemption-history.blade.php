@@ -50,10 +50,6 @@
                         class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $filter === 'redeemed' ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
                         ✅ Redeemed
                     </button>
-                    <button wire:click="$set('filter', 'cancelled')"
-                        class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $filter === 'cancelled' ? 'bg-gradient-to-r from-red-500 to-pink-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
-                        ❌ Cancelled
-                    </button>
                     <button wire:click="$set('filter', 'expired')"
                         class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $filter === 'expired' ? 'bg-gradient-to-r from-gray-500 to-gray-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
                         ⏰ Expired
@@ -85,7 +81,7 @@
                                 <div class="flex items-start justify-between">
                                     <div>
                                         <h3 class="text-2xl font-bold mb-2">{{ $ticket->activity->name }}</h3>
-                                        <p class="text-sm text-white/90 font-medium">📍 {{ $ticket->activity->zone->name }} Zone</p>
+                                        <p class="text-sm text-white/90 font-medium">📍 {{ $ticket->activity->zone->name }}</p>
                                         @if($ticket->showSchedule)
                                             <p class="text-sm text-white/90 font-medium mt-1">
                                                 📅 {{ $ticket->showSchedule->show_date->format('M d, Y') }} at {{ \Carbon\Carbon::parse($ticket->showSchedule->show_time)->format('g:i A') }}
@@ -151,13 +147,6 @@
                                             <p class="text-sm">{{ $ticket->cancellation_reason ?? 'No reason provided' }}</p>
                                         </div>
                                     </div>
-                                @elseif($ticket->status === 'expired')
-                                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-2 border-gray-200 rounded-2xl px-6 py-4">
-                                        <div class="text-gray-800">
-                                            <p class="font-bold mb-1">⏰ Expired</p>
-                                            <p class="text-sm">This ticket has expired and can no longer be used.</p>
-                                        </div>
-                                    </div>
                                 @elseif($ticket->status === 'valid')
                                     <div class="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-2xl px-6 py-4">
                                         <div class="flex items-center text-blue-900">
@@ -202,13 +191,6 @@
                                 <div>
                                     <strong class="text-gray-900">Redeemed:</strong>
                                     <span class="text-gray-700">Validated by staff - you've participated in the activity</span>
-                                </div>
-                            </li>
-                            <li class="flex items-start">
-                                <span class="mr-2">❌</span>
-                                <div>
-                                    <strong class="text-gray-900">Cancelled:</strong>
-                                    <span class="text-gray-700">Ticket cancelled - credits returned to your wallet</span>
                                 </div>
                             </li>
                             <li class="flex items-start">
