@@ -1,17 +1,13 @@
 <div class="min-h-screen bg-brand-light font-sans text-brand-dark">
     {{-- Navigation --}}
-    <nav x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 20)"
+    <nav x-data="{ scrolled: false, mobileMenuOpen: false }" @scroll.window="scrolled = (window.pageYOffset > 20)"
         :class="{ 'bg-white/90 backdrop-blur-md shadow-sm': scrolled, 'bg-transparent': !scrolled }"
         class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
-                <div class="flex items-center space-x-2">
-                    <svg class="w-8 h-8 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                        </path>
-                    </svg>
-                    <span class="text-2xl font-display font-bold text-brand-dark">Kabohera Fun Island</span>
+                <div class="flex items-center space-x-3">
+                    <img src="{{ asset('images/kabohera-logo.png') }}" alt="Kabohera Fun Island" class="h-10 w-auto">
+                    <span class="text-2xl font-display font-bold text-brand-dark hidden sm:inline">Kabohera Fun Island</span>
                 </div>
 
                 <div class="hidden md:flex items-center space-x-8">
@@ -50,12 +46,78 @@
                 </div>
 
                 {{-- Mobile menu button --}}
-                <button class="md:hidden p-2 text-brand-dark">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2 text-brand-dark relative z-50">
+                    <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
+                    <svg x-show="mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
                 </button>
+            </div>
+
+            {{-- Mobile Menu --}}
+            <div x-show="mobileMenuOpen"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 -translate-y-2"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 -translate-y-2"
+                 @click.away="mobileMenuOpen = false"
+                 class="md:hidden border-t border-gray-100 bg-white">
+                <div class="px-4 py-4 space-y-3">
+                    <a href="#home" @click="mobileMenuOpen = false"
+                        class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
+                        Home
+                    </a>
+                    <a href="#services" @click="mobileMenuOpen = false"
+                        class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
+                        Services
+                    </a>
+                    <a href="#activities" @click="mobileMenuOpen = false"
+                        class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
+                        Activities
+                    </a>
+                    <a href="#about" @click="mobileMenuOpen = false"
+                        class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
+                        About
+                    </a>
+
+                    @auth
+                        <a href="{{ route('my-bookings') }}" wire:navigate
+                            class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
+                            My Bookings
+                        </a>
+
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit"
+                                class="w-full text-left px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
+                                Logout
+                            </button>
+                        </form>
+
+                        <a href="{{ route('booking.search') }}" wire:navigate
+                            class="block px-4 py-2 bg-brand-secondary text-white hover:bg-brand-secondary/90 rounded-lg font-semibold text-center transition-colors">
+                            Book More
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" wire:navigate
+                            class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
+                            Login
+                        </a>
+                        <a href="{{ route('register') }}" wire:navigate
+                            class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
+                            Register
+                        </a>
+                        <a href="{{ route('booking.search') }}" wire:navigate
+                            class="block px-4 py-2 bg-brand-secondary text-white hover:bg-brand-secondary/90 rounded-lg font-semibold text-center transition-colors">
+                            Book Now
+                        </a>
+                    @endauth
+                </div>
             </div>
         </div>
     </nav>
@@ -343,12 +405,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-4 gap-12 mb-12">
                 <div class="col-span-1 md:col-span-2">
-                    <div class="flex items-center space-x-2 mb-6">
-                        <svg class="w-8 h-8 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                            </path>
-                        </svg>
+                    <div class="flex items-center space-x-3 mb-6">
+                        <img src="{{ asset('images/kabohera-logo.png') }}" alt="Kabohera Fun Island" class="h-10 w-auto">
                         <span class="text-2xl font-display font-bold">Kabohera Fun Island</span>
                     </div>
                     <p class="text-gray-400 max-w-md leading-relaxed">

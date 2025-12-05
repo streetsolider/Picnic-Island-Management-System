@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum UserRole: string
 {
-    case VISITOR = 'visitor';
+    // Note: Visitors/Customers use the Guest model, not User model
     case HOTEL_MANAGER = 'hotel_manager';
     case FERRY_OPERATOR = 'ferry_operator';
     case THEME_PARK_STAFF = 'theme_park_staff';
@@ -17,7 +17,6 @@ enum UserRole: string
     public function label(): string
     {
         return match($this) {
-            self::VISITOR => 'Visitor/Customer',
             self::HOTEL_MANAGER => 'Hotel Manager',
             self::FERRY_OPERATOR => 'Ferry Operator',
             self::THEME_PARK_STAFF => 'Theme Park Staff',
