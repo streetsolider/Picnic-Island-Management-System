@@ -43,27 +43,42 @@ class Dashboard extends Component
                 ->orderBy('name')
                 ->get();
         } else {
-            // Staff Dashboard: Activities in their assigned zone
-            $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
+            // Staff Dashboard: Activities assigned to this staff member
+            $data['myActivities'] = ThemeParkActivity::where('assigned_staff_id', auth('staff')->id())
+                ->with(['zone'])
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get();
 
-            if ($staffZone) {
-                $data['myZone'] = $staffZone;
-                $data['myActivities'] = ThemeParkActivity::where('theme_park_zone_id', $staffZone->id)
-                    ->with(['zone'])
-                    ->where('is_active', true)
-                    ->orderBy('name')
-                    ->get();
+            $data['totalActivities'] = $data['myActivities']->count();
+            $data['continuousRides'] = $data['myActivities']->where('activity_type', 'continuous')->count();
+            $data['scheduledShows'] = $data['myActivities']->where('activity_type', 'scheduled')->count();
 
-                $data['totalActivities'] = $data['myActivities']->count();
-                $data['continuousRides'] = $data['myActivities']->where('activity_type', 'continuous')->count();
-                $data['scheduledShows'] = $data['myActivities']->where('activity_type', 'scheduled')->count();
-            } else {
-                $data['myZone'] = null;
-                $data['myActivities'] = collect([]);
-                $data['totalActivities'] = 0;
-                $data['continuousRides'] = 0;
-                $data['scheduledShows'] = 0;
-            }
+            // Get unique zones from assigned activities
+            $data['myZones'] = $data['myActivities']->pluck('zone')->unique('id');
+
+            // Get today's schedules for assigned scheduled shows
+            $scheduledActivityIds = $data['myActivities']
+                ->where('activity_type', 'scheduled')
+                ->pluck('id');
+
+            $data['todaySchedules'] = \App\Models\ThemeParkShowSchedule::whereIn('activity_id', $scheduledActivityIds)
+                ->where('show_date', today())
+                ->where('status', 'scheduled')
+                ->with('activity')
+                ->orderBy('show_time')
+                ->get();
+
+            // Get upcoming schedules (next 7 days)
+            $data['upcomingSchedules'] = \App\Models\ThemeParkShowSchedule::whereIn('activity_id', $scheduledActivityIds)
+                ->where('show_date', '>', today())
+                ->where('show_date', '<=', today()->addDays(7))
+                ->where('status', 'scheduled')
+                ->with('activity')
+                ->orderBy('show_date')
+                ->orderBy('show_time')
+                ->limit(10)
+                ->get();
 
             $data['creditPrice'] = ThemeParkSetting::getCreditPrice();
         }

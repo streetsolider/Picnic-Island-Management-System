@@ -3,11 +3,7 @@
     <div class="mb-8">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Validate Tickets</h2>
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            @if($zone)
-                {{ $zone->name }} zone
-            @else
-                Validate visitor redemption codes
-            @endif
+            Validate visitor redemption codes for your assigned activities
         </p>
     </div>
 
@@ -24,12 +20,12 @@
         </x-admin.alert.danger>
     @endif
 
-    @if(!$zone)
-        {{-- No Zone Assigned --}}
+    @if(!$hasAssignedActivities)
+        {{-- No Activities Assigned --}}
         <x-admin.card.empty-state
             icon="⚠️"
-            title="No Zone Assigned"
-            description="You don't have any zone assigned to you yet. Please contact an administrator.">
+            title="No Activities Assigned"
+            description="You don't have any activities assigned to you yet. Please contact your manager to get activities assigned.">
         </x-admin.card.empty-state>
     @else
         {{-- Search Form --}}

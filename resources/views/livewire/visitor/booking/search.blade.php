@@ -279,7 +279,16 @@
                                         <p class="text-xs text-gray-500">MVR {{ number_format($result['price_per_night'], 2) }}/night</p>
                                     </div>
 
-                                    <a href="{{ route('booking.hotel.rooms', ['hotel' => $result['hotel']->id, 'checkIn' => $checkIn, 'checkOut' => $checkOut, 'guests' => $guests]) }}"
+                                    <a href="{{ route('booking.hotel.rooms', array_filter([
+                                        'hotel' => $result['hotel']->id,
+                                        'checkIn' => $checkIn,
+                                        'checkOut' => $checkOut,
+                                        'guests' => $guests,
+                                        'roomType' => $roomType ?: null,
+                                        'view' => $view ?: null,
+                                        'bedSize' => $bedSize ?: null,
+                                        'bedCount' => $bedCount ?: null,
+                                    ])) }}"
                                         wire:navigate
                                         class="bg-brand-secondary hover:bg-brand-secondary/90 text-white px-6 py-2.5 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg shadow-brand-secondary/30">
                                         View Rooms

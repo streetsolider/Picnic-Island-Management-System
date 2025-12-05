@@ -18,6 +18,11 @@ class Schedules extends Component
     use WithPagination;
 
     public $isManager = false;
+
+    // View mode: 'shows' or 'hours'
+    public $viewMode = 'shows';
+
+    // Scheduled shows properties
     public $editMode = false;
     public $scheduleId;
     public $selectedActivity = '';
@@ -33,6 +38,16 @@ class Schedules extends Component
 
     #[Validate('required|integer|min:1')]
     public $venue_capacity = 50;
+
+    // Operating hours properties (for continuous rides)
+    public $editHoursMode = false;
+    public $hoursActivityId = '';
+
+    #[Validate('nullable|date_format:H:i')]
+    public $hours_opening_time = '';
+
+    #[Validate('nullable|date_format:H:i')]
+    public $hours_closing_time = '';
 
     public function mount()
     {
@@ -60,8 +75,7 @@ class Schedules extends Component
 
         // Verify staff has access
         if (!$this->isManager) {
-            $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
-            if (!$staffZone || $schedule->activity->theme_park_zone_id !== $staffZone->id) {
+            if ($schedule->activity->assigned_staff_id !== auth('staff')->id()) {
                 session()->flash('error', 'Unauthorized to edit this schedule.');
                 return;
             }
@@ -96,9 +110,8 @@ class Schedules extends Component
 
         // Verify staff has access
         if (!$this->isManager) {
-            $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
-            if (!$staffZone || $activity->theme_park_zone_id !== $staffZone->id) {
-                session()->flash('error', 'You can only create schedules for activities in your assigned zone.');
+            if ($activity->assigned_staff_id !== auth('staff')->id()) {
+                session()->flash('error', 'You can only create schedules for activities assigned to you.');
                 return;
             }
         }
@@ -165,8 +178,7 @@ class Schedules extends Component
 
             // Verify staff has access
             if (!$this->isManager) {
-                $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
-                if (!$staffZone || $schedule->activity->theme_park_zone_id !== $staffZone->id) {
+                if ($schedule->activity->assigned_staff_id !== auth('staff')->id()) {
                     session()->flash('error', 'Unauthorized to cancel this schedule.');
                     return;
                 }
@@ -196,8 +208,7 @@ class Schedules extends Component
 
             // Verify staff has access
             if (!$this->isManager) {
-                $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
-                if (!$staffZone || $schedule->activity->theme_park_zone_id !== $staffZone->id) {
+                if ($schedule->activity->assigned_staff_id !== auth('staff')->id()) {
                     session()->flash('error', 'Unauthorized to delete this schedule.');
                     return;
                 }
@@ -233,6 +244,128 @@ class Schedules extends Component
         $this->resetValidation();
     }
 
+    // Operating Hours Management Methods
+
+    public function switchView($mode)
+    {
+        $this->viewMode = $mode;
+        $this->resetPage();
+    }
+
+    public function openHoursForm()
+    {
+        $this->resetHoursForm();
+        $this->dispatch('open-modal', 'hours-form');
+    }
+
+    public function editHours($activityId)
+    {
+        $activity = ThemeParkActivity::find($activityId);
+
+        if (!$activity || $activity->activity_type !== 'continuous') {
+            session()->flash('error', 'Activity not found or not a continuous ride.');
+            return;
+        }
+
+        // Verify staff has access
+        if (!$this->isManager) {
+            if ($activity->assigned_staff_id !== auth('staff')->id()) {
+                session()->flash('error', 'Unauthorized to edit this activity.');
+                return;
+            }
+        }
+
+        $this->hoursActivityId = $activity->id;
+        $this->hours_opening_time = $activity->operating_hours_start ? $activity->operating_hours_start->format('H:i') : '';
+        $this->hours_closing_time = $activity->operating_hours_end ? $activity->operating_hours_end->format('H:i') : '';
+
+        $this->editHoursMode = true;
+        $this->dispatch('open-modal', 'hours-form');
+    }
+
+    public function saveHours()
+    {
+        $this->validate([
+            'hoursActivityId' => 'required|exists:theme_park_activities,id',
+            'hours_opening_time' => 'nullable|date_format:H:i',
+            'hours_closing_time' => 'nullable|date_format:H:i',
+        ]);
+
+        $activity = ThemeParkActivity::find($this->hoursActivityId);
+
+        if (!$activity || $activity->activity_type !== 'continuous') {
+            session()->flash('error', 'Activity not found or not a continuous ride.');
+            return;
+        }
+
+        // Verify staff has access
+        if (!$this->isManager) {
+            if ($activity->assigned_staff_id !== auth('staff')->id()) {
+                session()->flash('error', 'Unauthorized to modify this activity.');
+                return;
+            }
+        }
+
+        // Validate that closing time is after opening time
+        if ($this->hours_opening_time && $this->hours_closing_time) {
+            if ($this->hours_closing_time <= $this->hours_opening_time) {
+                $this->addError('hours_closing_time', 'Closing time must be after opening time.');
+                return;
+            }
+        }
+
+        try {
+            $activity->operating_hours_start = $this->hours_opening_time ?: null;
+            $activity->operating_hours_end = $this->hours_closing_time ?: null;
+            $activity->save();
+
+            session()->flash('success', 'Operating hours updated successfully.');
+            $this->resetHoursForm();
+            $this->dispatch('close-modal', 'hours-form');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to update operating hours: ' . $e->getMessage());
+        }
+    }
+
+    public function clearHours($activityId)
+    {
+        $activity = ThemeParkActivity::find($activityId);
+
+        if (!$activity || $activity->activity_type !== 'continuous') {
+            session()->flash('error', 'Activity not found or not a continuous ride.');
+            return;
+        }
+
+        // Verify staff has access
+        if (!$this->isManager) {
+            if ($activity->assigned_staff_id !== auth('staff')->id()) {
+                session()->flash('error', 'Unauthorized to modify this activity.');
+                return;
+            }
+        }
+
+        try {
+            $activity->operating_hours_start = null;
+            $activity->operating_hours_end = null;
+            $activity->save();
+
+            session()->flash('success', 'Operating hours cleared. Activity will use zone hours.');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to clear operating hours: ' . $e->getMessage());
+        }
+    }
+
+    public function resetHoursForm()
+    {
+        $this->reset([
+            'hoursActivityId',
+            'hours_opening_time',
+            'hours_closing_time',
+            'editHoursMode',
+        ]);
+        $this->resetValidation();
+    }
+
     public function render()
     {
         // Get scheduled show activities based on role
@@ -242,29 +375,27 @@ class Schedules extends Component
                 ->orderBy('name')
                 ->get();
         } else {
-            // Staff only sees scheduled shows in their assigned zone
-            $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
-            $activities = $staffZone
-                ? ThemeParkActivity::where('activity_type', 'scheduled')
-                    ->where('theme_park_zone_id', $staffZone->id)
-                    ->where('is_active', true)
-                    ->orderBy('name')
-                    ->get()
-                : collect([]);
+            // Staff only sees scheduled shows assigned to them
+            $activities = ThemeParkActivity::where('activity_type', 'scheduled')
+                ->where('assigned_staff_id', auth('staff')->id())
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get();
         }
 
         // Get show schedules
         $query = ThemeParkShowSchedule::with(['activity']);
 
-        // Filter by staff zone
+        // Filter by staff's assigned activities
         if (!$this->isManager) {
-            $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
-            if ($staffZone) {
-                $query->whereHas('activity', function ($q) use ($staffZone) {
-                    $q->where('theme_park_zone_id', $staffZone->id);
-                });
+            $staffActivityIds = ThemeParkActivity::where('assigned_staff_id', auth('staff')->id())
+                ->where('activity_type', 'scheduled')
+                ->pluck('id');
+
+            if ($staffActivityIds->isNotEmpty()) {
+                $query->whereIn('activity_id', $staffActivityIds);
             } else {
-                $query->whereRaw('1 = 0'); // Show nothing if no zone assigned
+                $query->whereRaw('1 = 0'); // Show nothing if no activities assigned
             }
         }
 
@@ -277,9 +408,28 @@ class Schedules extends Component
             ->orderBy('show_time', 'asc')
             ->paginate(15);
 
+        // Get continuous ride activities for operating hours management
+        if ($this->isManager) {
+            $continuousActivities = ThemeParkActivity::where('activity_type', 'continuous')
+                ->where('is_active', true)
+                ->with('zone')
+                ->orderBy('name')
+                ->get();
+        } else {
+            // Staff only sees continuous rides assigned to them
+            $continuousActivities = ThemeParkActivity::where('activity_type', 'continuous')
+                ->where('assigned_staff_id', auth('staff')->id())
+                ->where('is_active', true)
+                ->with('zone')
+                ->orderBy('name')
+                ->get();
+        }
+
         return view('livewire.theme-park.schedules', [
             'schedules' => $schedules,
             'activities' => $activities,
+            'myActivities' => $activities, // For staff empty state check
+            'continuousActivities' => $continuousActivities,
         ]);
     }
 }

@@ -125,28 +125,28 @@
                                 </div>
 
                                 {{-- Available Schedules --}}
-                                @if($activity->schedules->isNotEmpty())
+                                @if($activity->showSchedules->isNotEmpty())
                                     <div class="mb-4 pt-4 border-t-2 border-gray-100">
                                         <p class="text-xs font-bold text-gray-700 mb-3 uppercase">📅 Available Schedules:</p>
                                         <div class="space-y-2 max-h-32 overflow-y-auto">
-                                            @foreach($activity->schedules->take(3) as $schedule)
+                                            @foreach($activity->showSchedules->take(3) as $schedule)
                                                 <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg px-3 py-2 border border-blue-200">
                                                     <div class="flex items-center justify-between text-xs">
                                                         <span class="font-bold text-brand-dark">
-                                                            {{ $schedule->schedule_date->format('M d') }}
+                                                            {{ $schedule->show_date->format('M d') }}
                                                         </span>
                                                         <span class="text-gray-600 font-medium">
-                                                            {{ \Carbon\Carbon::parse($schedule->start_time)->format('g:i A') }}
+                                                            {{ \Carbon\Carbon::parse($schedule->show_time)->format('g:i A') }}
                                                         </span>
                                                     </div>
                                                     <div class="text-xs text-gray-600 mt-1">
-                                                        ✓ {{ $schedule->getRemainingSlots() }} slots available
+                                                        ✓ {{ $schedule->getRemainingSeats() }} seats available
                                                     </div>
                                                 </div>
                                             @endforeach
-                                            @if($activity->schedules->count() > 3)
+                                            @if($activity->showSchedules->count() > 3)
                                                 <p class="text-xs text-gray-500 text-center py-1 font-medium">
-                                                    +{{ $activity->schedules->count() - 3 }} more schedule(s)
+                                                    +{{ $activity->showSchedules->count() - 3 }} more schedule(s)
                                                 </p>
                                             @endif
                                         </div>

@@ -76,18 +76,20 @@ class Activities extends Component
     {
         $zones = ThemeParkZone::with('activities')->get();
 
-        $query = ThemeParkActivity::with(['zone', 'schedules' => function ($q) {
-                // Only load future schedules with available slots
-                $q->where('schedule_date', '>=', now()->toDateString())
-                    ->whereRaw('booked_slots < available_slots')
-                    ->orderBy('schedule_date', 'asc')
-                    ->orderBy('start_time', 'asc');
+        $query = ThemeParkActivity::with(['zone', 'showSchedules' => function ($q) {
+                // Only load future schedules with available seats
+                $q->where('show_date', '>=', now()->toDateString())
+                    ->whereRaw('tickets_sold < venue_capacity')
+                    ->where('status', 'scheduled')
+                    ->orderBy('show_date', 'asc')
+                    ->orderBy('show_time', 'asc');
             }])
             ->where('is_active', true)
             // Only show activities that have at least one active schedule
-            ->whereHas('schedules', function ($q) {
-                $q->where('schedule_date', '>=', now()->toDateString())
-                    ->whereRaw('booked_slots < available_slots');
+            ->whereHas('showSchedules', function ($q) {
+                $q->where('show_date', '>=', now()->toDateString())
+                    ->whereRaw('tickets_sold < venue_capacity')
+                    ->where('status', 'scheduled');
             });
 
         if ($this->selectedZone) {

@@ -220,7 +220,19 @@
                                 {{ $booking->check_out_date->format('M d, Y') }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                                {{ now()->diffInDays($booking->check_out_date) }} nights
+                                @php
+                                    $checkoutTime = $booking->check_out_date->copy()->setTime(12, 0); // Checkout at 12:00 PM
+                                    $hoursRemaining = (int) now()->diffInHours($checkoutTime, false);
+                                @endphp
+                                @if($hoursRemaining < 0)
+                                    <span class="text-red-600 dark:text-red-400 font-medium">Overdue</span>
+                                @elseif($hoursRemaining < 6)
+                                    <span class="text-orange-600 dark:text-orange-400 font-medium">{{ $hoursRemaining }} hours</span>
+                                @elseif($hoursRemaining < 24)
+                                    <span class="text-yellow-600 dark:text-yellow-400 font-medium">{{ $hoursRemaining }} hours</span>
+                                @else
+                                    {{ $hoursRemaining }} hours
+                                @endif
                             </td>
                         </x-admin.table.row>
                     @endforeach

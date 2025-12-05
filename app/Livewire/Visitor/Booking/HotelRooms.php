@@ -16,6 +16,12 @@ class HotelRooms extends Component
     public $guests = 2;
     public $sortBy = 'price_asc'; // price_asc, price_desc, type_asc
 
+    // Filters from search page
+    public $roomType = '';
+    public $view = '';
+    public $bedSize = '';
+    public $bedCount = '';
+
     public $roomTypes = [];
 
     protected $queryString = [
@@ -23,6 +29,10 @@ class HotelRooms extends Component
         'checkOut',
         'guests',
         'sortBy',
+        'roomType',
+        'view',
+        'bedSize',
+        'bedCount',
     ];
 
     public function mount(Hotel $hotel)
@@ -45,12 +55,16 @@ class HotelRooms extends Component
         $bookingService = app(BookingService::class);
         $pricingCalculator = app(PricingCalculator::class);
 
-        // Get all available rooms for this hotel
+        // Get all available rooms for this hotel with filters applied
         $availableRooms = $bookingService->getAvailableRooms(
             $this->hotel,
             $this->checkIn,
             $this->checkOut,
-            $this->guests
+            $this->guests,
+            $this->roomType ?: null,
+            $this->view ?: null,
+            $this->bedSize ?: null,
+            $this->bedCount ?: null
         );
 
         // Group rooms by their unique configuration

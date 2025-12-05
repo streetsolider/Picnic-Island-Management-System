@@ -5,15 +5,15 @@
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Select Vessel
             </label>
-            <div class="flex flex-wrap gap-2">
+            <select
+                wire:change="selectVessel($event.target.value)"
+                class="w-full md:w-96 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                 @foreach($vessels as $vessel)
-                    <button
-                        wire:click="selectVessel({{ $vessel->id }})"
-                        class="px-4 py-2 rounded-lg font-medium transition-colors {{ $selectedVesselId == $vessel->id ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600' }}">
-                        {{ $vessel->name }} ({{ $vessel->registration_number }})
-                    </button>
+                    <option value="{{ $vessel->id }}" {{ $selectedVesselId == $vessel->id ? 'selected' : '' }}>
+                        {{ $vessel->name }} - {{ $vessel->registration_number }}
+                    </option>
                 @endforeach
-            </div>
+            </select>
         </div>
     @endif
 

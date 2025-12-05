@@ -94,12 +94,12 @@
                     <p class="text-3xl font-bold text-green-600">MVR {{ number_format($stats['total_topped_up_mvr'], 2) }}</p>
                 </div>
                 <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-purple-500 transform hover:scale-105 transition-all">
-                    <p class="text-gray-600 text-sm mb-1">Tickets Purchased</p>
-                    <p class="text-3xl font-bold text-purple-600">{{ number_format($stats['total_tickets_purchased']) }}</p>
+                    <p class="text-gray-600 text-sm mb-1">Credits Purchased</p>
+                    <p class="text-3xl font-bold text-purple-600">{{ number_format($stats['total_credits_purchased']) }}</p>
                 </div>
                 <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-brand-secondary transform hover:scale-105 transition-all">
-                    <p class="text-gray-600 text-sm mb-1">Tickets Redeemed</p>
-                    <p class="text-3xl font-bold text-brand-secondary">{{ number_format($stats['total_tickets_redeemed']) }}</p>
+                    <p class="text-gray-600 text-sm mb-1">Credits Redeemed</p>
+                    <p class="text-3xl font-bold text-brand-secondary">{{ number_format($stats['total_credits_redeemed']) }}</p>
                 </div>
             </div>
 

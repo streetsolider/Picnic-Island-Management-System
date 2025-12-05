@@ -33,7 +33,7 @@ Route::middleware('guest:staff')->group(function () {
         ->name('staff.login');
 });
 
-// Staff logout route
+// Staff logout routes
 Route::middleware('auth:staff')->group(function () {
     Route::post('staff-logout', function () {
         auth('staff')->logout();
@@ -41,6 +41,16 @@ Route::middleware('auth:staff')->group(function () {
         request()->session()->regenerateToken();
         return redirect()->route('staff.login');
     })->name('staff.logout');
+});
+
+// Handle GET requests to staff-logout (redirect to login)
+Route::get('staff-logout', function () {
+    if (auth('staff')->check()) {
+        auth('staff')->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+    }
+    return redirect()->route('staff.login');
 });
 
 Route::middleware('auth')->group(function () {

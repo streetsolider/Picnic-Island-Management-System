@@ -21,6 +21,11 @@ class Index extends Component
     public $editMode = false;
     public $activityId;
 
+    // Staff assignment
+    public $showStaffAssignmentModal = false;
+    public $activityToAssign = null;
+    public $selectedStaffId = '';
+
     #[Validate('required|exists:theme_park_zones,id')]
     public $theme_park_zone_id = '';
 
@@ -39,8 +44,8 @@ class Index extends Component
     #[Validate('nullable|integer|min:1')]
     public $capacity = null;
 
-    #[Validate('required|integer|min:5')]
-    public $duration_minutes = 30;
+    #[Validate('nullable|integer|min:5')]
+    public $duration_minutes = null;
 
     #[Validate('nullable|date_format:H:i')]
     public $operating_hours_start = null;
@@ -63,6 +68,17 @@ class Index extends Component
         $this->isManager = auth('staff')->user()->role->value === 'theme_park_manager';
     }
 
+    /**
+     * Clear operating hours when activity type changes to scheduled.
+     */
+    public function updatedActivityType($value)
+    {
+        if ($value === 'scheduled') {
+            $this->operating_hours_start = null;
+            $this->operating_hours_end = null;
+        }
+    }
+
     public function openForm()
     {
         $this->resetForm();
@@ -78,10 +94,9 @@ class Index extends Component
             return;
         }
 
-        // Staff can only edit activities in their assigned zone
+        // Staff can only edit activities assigned to them
         if (!$this->isManager) {
-            $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
-            if (!$staffZone || $activity->theme_park_zone_id !== $staffZone->id) {
+            if ($activity->assigned_staff_id !== auth('staff')->id()) {
                 session()->flash('error', 'Unauthorized to edit this activity.');
                 return;
             }
@@ -107,17 +122,26 @@ class Index extends Component
 
     public function save()
     {
-        $this->validate();
-
-        // Verify staff has access to this zone
-        if (!$this->isManager) {
-            $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
-            if (!$staffZone || $this->theme_park_zone_id != $staffZone->id) {
-                session()->flash('error', 'You can only create activities in your assigned zone.');
-                return;
-            }
+        // Custom validation: duration is required for scheduled shows
+        $rules = [];
+        if ($this->activity_type === 'scheduled') {
+            $rules['duration_minutes'] = 'required|integer|min:5';
         }
 
+        if (!empty($rules)) {
+            $this->validate($rules);
+        } else {
+            $this->validate();
+        }
+
+        // Managers can create activities for any zone
+        // Staff can create activities but must assign them to themselves
+        if (!$this->isManager) {
+            // Staff can only create activities for themselves
+            // The activity will be auto-assigned to them after creation
+        }
+
+        // Prepare data - scheduled shows don't use operating hours
         $data = [
             'theme_park_zone_id' => $this->theme_park_zone_id,
             'name' => $this->name,
@@ -126,8 +150,8 @@ class Index extends Component
             'credit_cost' => $this->credit_cost,
             'capacity' => $this->capacity,
             'duration_minutes' => $this->duration_minutes,
-            'operating_hours_start' => $this->operating_hours_start,
-            'operating_hours_end' => $this->operating_hours_end,
+            'operating_hours_start' => $this->activity_type === 'continuous' ? $this->operating_hours_start : null,
+            'operating_hours_end' => $this->activity_type === 'continuous' ? $this->operating_hours_end : null,
             'min_age' => $this->min_age,
             'max_age' => $this->max_age,
             'height_requirement_cm' => $this->height_requirement_cm,
@@ -140,7 +164,14 @@ class Index extends Component
                 $activity->update($data);
                 session()->flash('success', 'Activity updated successfully.');
             } else {
-                ThemeParkActivity::create($data);
+                $activity = ThemeParkActivity::create($data);
+
+                // Auto-assign staff to their own activities
+                if (!$this->isManager) {
+                    $activity->assigned_staff_id = auth('staff')->id();
+                    $activity->save();
+                }
+
                 session()->flash('success', 'Activity created successfully.');
             }
 
@@ -158,8 +189,7 @@ class Index extends Component
 
             // Verify staff has access
             if (!$this->isManager) {
-                $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
-                if (!$staffZone || $activity->theme_park_zone_id !== $staffZone->id) {
+                if ($activity->assigned_staff_id !== auth('staff')->id()) {
                     session()->flash('error', 'Unauthorized to modify this activity.');
                     return;
                 }
@@ -187,8 +217,7 @@ class Index extends Component
 
             // Verify staff has access
             if (!$this->isManager) {
-                $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
-                if (!$staffZone || $activity->theme_park_zone_id !== $staffZone->id) {
+                if ($activity->assigned_staff_id !== auth('staff')->id()) {
                     session()->flash('error', 'Unauthorized to delete this activity.');
                     return;
                 }
@@ -201,6 +230,51 @@ class Index extends Component
         }
 
         $this->activityId = null;
+    }
+
+    public function openStaffAssignment($activityId)
+    {
+        $this->activityToAssign = ThemeParkActivity::with('assignedStaff')->find($activityId);
+
+        if (!$this->activityToAssign) {
+            session()->flash('error', 'Activity not found.');
+            return;
+        }
+
+        $this->selectedStaffId = $this->activityToAssign->assigned_staff_id ?? '';
+        $this->showStaffAssignmentModal = true;
+    }
+
+    public function assignStaff()
+    {
+        if (!$this->activityToAssign) {
+            session()->flash('error', 'No activity selected.');
+            return;
+        }
+
+        try {
+            $activity = ThemeParkActivity::findOrFail($this->activityToAssign->id);
+
+            // Allow null to unassign staff
+            $activity->assigned_staff_id = $this->selectedStaffId ?: null;
+            $activity->save();
+
+            $message = $this->selectedStaffId
+                ? 'Staff assigned successfully.'
+                : 'Staff unassigned successfully.';
+
+            session()->flash('success', $message);
+            $this->showStaffAssignmentModal = false;
+            $this->reset(['activityToAssign', 'selectedStaffId']);
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to assign staff: ' . $e->getMessage());
+        }
+    }
+
+    public function closeStaffAssignmentModal()
+    {
+        $this->showStaffAssignmentModal = false;
+        $this->reset(['activityToAssign', 'selectedStaffId']);
     }
 
     public function resetForm()
@@ -228,8 +302,8 @@ class Index extends Component
 
     public function render()
     {
-        // Manager sees all activities, Staff sees only activities in their assigned zone
-        $query = ThemeParkActivity::with(['zone']);
+        // Manager sees all activities, Staff sees only activities assigned to them
+        $query = ThemeParkActivity::with(['zone', 'assignedStaff']);
 
         if ($this->isManager) {
             // Manager can filter by zone
@@ -237,14 +311,8 @@ class Index extends Component
                 $query->where('theme_park_zone_id', $this->selectedZoneFilter);
             }
         } else {
-            // Staff only sees activities in their assigned zone
-            $staffZone = ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->first();
-            if ($staffZone) {
-                $query->where('theme_park_zone_id', $staffZone->id);
-            } else {
-                // Staff has no assigned zone, show nothing
-                $query->whereRaw('1 = 0');
-            }
+            // Staff only sees activities assigned to them
+            $query->where('assigned_staff_id', auth('staff')->id());
         }
 
         $activities = $query->orderBy('name')->paginate(10);
@@ -252,11 +320,17 @@ class Index extends Component
         // Get zones for dropdowns
         $zones = $this->isManager
             ? ThemeParkZone::where('is_active', true)->orderBy('name')->get()
-            : ThemeParkZone::where('assigned_staff_id', auth('staff')->id())->get();
+            : ThemeParkZone::where('is_active', true)->orderBy('name')->get(); // Staff can see all zones when creating activities
+
+        // Get theme park staff for assignment (manager only)
+        $themeParkStaff = $this->isManager
+            ? \App\Models\Staff::where('role', 'theme_park_staff')->orderBy('name')->get()
+            : collect();
 
         return view('livewire.theme-park.activities.index', [
             'activities' => $activities,
             'zones' => $zones,
+            'themeParkStaff' => $themeParkStaff,
         ]);
     }
 }
