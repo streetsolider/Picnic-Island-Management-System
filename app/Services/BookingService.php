@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Hotel;
 use App\Models\Room;
 use App\Models\HotelBooking;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Exception;

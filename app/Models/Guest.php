@@ -20,6 +20,8 @@ class Guest extends Authenticatable
         'email',
         'password',
         'guest_id',
+        'google_id',
+        'email_verified_at',
         'phone',
     ];
 

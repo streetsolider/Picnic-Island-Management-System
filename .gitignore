@@ -25,3 +25,7 @@ Thumbs.db
 .claude
 CLAUDE.md
 development.txt
+
+# Google OAuth Credentials
+client_secret_*.json
+google_oauth_credentials.json
