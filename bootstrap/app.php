@@ -20,8 +20,21 @@ return Application::configure(basePath: dirname(__DIR__))
             'checked_in' => EnsureGuestIsCheckedIn::class,
         ]);
 
-        // Configure authentication redirects
-        $middleware->redirectGuestsTo(fn ($request) => route('staff.login'));
+        // Configure authentication redirects based on the route being accessed
+        $middleware->redirectGuestsTo(function ($request) {
+            // Check if the request is for a staff, admin, ferry, theme-park, or beach route
+            if ($request->is('staff/*') ||
+                $request->is('staff-login') ||
+                $request->is('admin/*') ||
+                $request->is('ferry/*') ||
+                $request->is('theme-park/*') ||
+                $request->is('beach/*')) {
+                return route('staff.login');
+            }
+
+            // Otherwise, redirect to visitor login
+            return route('login');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

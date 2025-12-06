@@ -36,9 +36,17 @@ class Activities extends Component
     public function selectActivity($activityId)
     {
         $this->selectedActivity = ThemeParkActivity::with(['zone', 'showSchedules' => function ($q) {
-            $q->where('show_date', '>=', now()->toDateString())
+            $q->where('status', 'scheduled')
                 ->whereRaw('tickets_sold < venue_capacity')
-                ->where('status', 'scheduled')
+                ->where(function ($query) {
+                    // Future dates
+                    $query->where('show_date', '>', now()->toDateString())
+                        // OR today but not started yet
+                        ->orWhere(function ($q) {
+                            $q->where('show_date', '=', now()->toDateString())
+                                ->whereRaw("TIME(show_time) > TIME(?)", [now()->toTimeString()]);
+                        });
+                })
                 ->orderBy('show_date', 'asc')
                 ->orderBy('show_time', 'asc');
         }])->find($activityId);
@@ -129,18 +137,38 @@ class Activities extends Component
 
         $query = ThemeParkActivity::with(['zone', 'showSchedules' => function ($q) {
                 // Only load future schedules with available seats
-                $q->where('show_date', '>=', now()->toDateString())
+                $q->where('status', 'scheduled')
                     ->whereRaw('tickets_sold < venue_capacity')
-                    ->where('status', 'scheduled')
+                    ->where(function ($query) {
+                        // Show schedules where date is in the future
+                        $query->where('show_date', '>', now()->toDateString())
+                            // OR date is today but show hasn't started yet
+                            ->orWhere(function ($q) {
+                                $q->where('show_date', '=', now()->toDateString())
+                                    ->whereRaw("TIME(show_time) > TIME(?)", [now()->toTimeString()]);
+                            });
+                    })
                     ->orderBy('show_date', 'asc')
                     ->orderBy('show_time', 'asc');
             }])
             ->where('is_active', true)
-            // Only show activities that have at least one active schedule
-            ->whereHas('showSchedules', function ($q) {
-                $q->where('show_date', '>=', now()->toDateString())
-                    ->whereRaw('tickets_sold < venue_capacity')
-                    ->where('status', 'scheduled');
+            ->where(function ($query) {
+                // Show ALL continuous rides (regardless of operating hours)
+                $query->where('activity_type', 'continuous')
+                    // OR scheduled shows that have at least one future schedule
+                    ->orWhereHas('showSchedules', function ($scheduleQuery) {
+                        $scheduleQuery->where('status', 'scheduled')
+                            ->whereRaw('tickets_sold < venue_capacity')
+                            ->where(function ($timeQuery) {
+                                // Future dates
+                                $timeQuery->where('show_date', '>', now()->toDateString())
+                                    // OR today but not started yet
+                                    ->orWhere(function ($todayQuery) {
+                                        $todayQuery->where('show_date', '=', now()->toDateString())
+                                            ->whereRaw("TIME(show_time) > TIME(?)", [now()->toTimeString()]);
+                                    });
+                            });
+                    });
             });
 
         if ($this->selectedZone) {

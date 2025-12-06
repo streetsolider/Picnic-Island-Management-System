@@ -124,9 +124,32 @@
                                     @endif
                                 </div>
 
-                                {{-- Available Schedules --}}
-                                @if($activity->showSchedules->isNotEmpty())
-                                    <div class="mb-4 pt-4 border-t-2 border-gray-100">
+                                {{-- Current Schedule / Operating Hours --}}
+                                <div class="mb-4 pt-4 border-t-2 border-gray-100">
+                                    @if($activity->isContinuous())
+                                        {{-- Show operating hours for continuous rides --}}
+                                        <p class="text-xs font-bold text-gray-700 mb-3 uppercase">🕐 Operating Hours:</p>
+                                        @if($activity->operating_hours_start && $activity->operating_hours_end)
+                                            <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg px-3 py-2 border border-blue-200">
+                                                <div class="flex items-center justify-between text-xs">
+                                                    <span class="font-bold text-brand-dark">Daily</span>
+                                                    <span class="text-gray-600 font-medium">
+                                                        {{ $activity->operating_hours_start->format('g:i A') }} - {{ $activity->operating_hours_end->format('g:i A') }}
+                                                    </span>
+                                                </div>
+                                                <div class="text-xs mt-1">
+                                                    @if($activity->isCurrentlyOpen())
+                                                        <span class="text-green-600 font-bold">✓ Currently Open</span>
+                                                    @else
+                                                        <span class="text-red-600 font-bold">✗ Currently Closed</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @else
+                                            <p class="text-xs text-gray-500 italic">Operating hours not set</p>
+                                        @endif
+                                    @elseif($activity->showSchedules->isNotEmpty())
+                                        {{-- Show available schedules for scheduled shows --}}
                                         <p class="text-xs font-bold text-gray-700 mb-3 uppercase">📅 Available Schedules:</p>
                                         <div class="space-y-2 max-h-32 overflow-y-auto">
                                             @foreach($activity->showSchedules->take(3) as $schedule)
@@ -150,16 +173,28 @@
                                                 </p>
                                             @endif
                                         </div>
-                                    </div>
-                                @endif
+                                    @else
+                                        <p class="text-xs text-gray-500 italic">No schedules available</p>
+                                    @endif
+                                </div>
 
                                 {{-- Purchase Button --}}
+                                @php
+                                    $isDisabled = $wallet->credit_balance < $activity->credit_cost ||
+                                                  ($activity->isContinuous() && !$activity->isCurrentlyOpen()) ||
+                                                  (!$activity->isContinuous() && $activity->showSchedules->isEmpty());
+                                @endphp
                                 <button
                                     wire:click="selectActivity({{ $activity->id }})"
-                                    {{ $wallet->credit_balance < $activity->credit_cost ? 'disabled' : '' }}
-                                    class="w-full mt-auto px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-lg {{ $wallet->credit_balance < $activity->credit_cost ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-gradient-to-r from-brand-secondary to-pink-600 text-white hover:from-pink-600 hover:to-brand-secondary' }}">
+                                    {{ $isDisabled ? 'disabled' : '' }}
+                                    class="w-full mt-auto px-6 py-3 rounded-xl font-bold transition-all transform shadow-lg
+                                        {{ $isDisabled ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-gradient-to-r from-brand-secondary to-pink-600 text-white hover:from-pink-600 hover:to-brand-secondary hover:scale-105' }}">
                                     @if($wallet->credit_balance < $activity->credit_cost)
                                         ❌ Insufficient Credits
+                                    @elseif($activity->isContinuous() && !$activity->isCurrentlyOpen())
+                                        🔒 Currently Closed
+                                    @elseif(!$activity->isContinuous() && $activity->showSchedules->isEmpty())
+                                        📅 No Shows Available
                                     @else
                                         🎟️ Purchase for {{ $activity->credit_cost }} Credits
                                     @endif

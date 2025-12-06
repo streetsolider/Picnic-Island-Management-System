@@ -115,6 +115,8 @@ class ThemeParkActivity extends Model
         }
 
         $now = now()->format('H:i');
-        return $now >= $this->operating_hours_start && $now <= $this->operating_hours_end;
+        $start = $this->operating_hours_start->format('H:i');
+        $end = $this->operating_hours_end->format('H:i');
+        return $now >= $start && $now <= $end;
     }
 }

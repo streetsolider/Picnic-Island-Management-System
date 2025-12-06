@@ -53,20 +53,34 @@ class Validate extends Component
         $this->validationResult = null;
 
         $service = app(ThemeParkValidationService::class);
+
+        // First, check ticket status without redeeming
+        $checkResult = $service->checkTicketStatus($this->searchCode);
+
+        if (!$checkResult['success']) {
+            session()->flash('error', $checkResult['message']);
+            if (isset($checkResult['ticket'])) {
+                $this->ticket = $checkResult['ticket'];
+            }
+            return;
+        }
+
+        // Check if ticket is for the selected activity BEFORE redeeming
+        if ($checkResult['ticket']->activity_id !== $this->selectedActivityId) {
+            $selectedActivity = ThemeParkActivity::find($this->selectedActivityId);
+            session()->flash('error', "This ticket is for '{$checkResult['ticket']->activity->name}', but you selected '{$selectedActivity->name}'. Cannot redeem.");
+            $this->ticket = $checkResult['ticket'];
+            return;
+        }
+
+        // Now redeem the ticket (only if it matches the selected activity)
         $result = $service->validateAndRedeemTicket($this->searchCode, auth('staff')->id());
 
         $this->validationResult = $result;
 
         if ($result['success']) {
-            // Check if ticket is for the selected activity
-            if ($result['ticket']->activity_id !== $this->selectedActivityId) {
-                $selectedActivity = ThemeParkActivity::find($this->selectedActivityId);
-                session()->flash('error', "This ticket is for '{$result['ticket']->activity->name}', but you selected '{$selectedActivity->name}'. Please verify the activity.");
-                $this->ticket = $result['ticket'];
-            } else {
-                $this->ticket = $result['ticket'];
-                session()->flash('success', $result['message']);
-            }
+            $this->ticket = $result['ticket'];
+            session()->flash('success', $result['message']);
         } else {
             session()->flash('error', $result['message']);
             if (isset($result['ticket'])) {

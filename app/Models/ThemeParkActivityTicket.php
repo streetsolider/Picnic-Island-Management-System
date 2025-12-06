@@ -83,7 +83,7 @@ class ThemeParkActivityTicket extends Model
      */
     public function redeemedByStaff(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'redeemed_by_staff_id');
+        return $this->belongsTo(Staff::class, 'redeemed_by_staff_id');
     }
 
     /**
