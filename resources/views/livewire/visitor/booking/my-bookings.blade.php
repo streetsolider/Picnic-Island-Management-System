@@ -43,38 +43,83 @@
             </div>
         @endif
 
-        {{-- Booking Type Tabs --}}
-        <div class="bg-white rounded-2xl shadow-sm p-2 mb-6 inline-flex gap-2">
-            <button wire:click="$set('bookingType', 'hotel')"
-                class="px-6 py-2.5 rounded-xl font-semibold transition-all {{ $bookingType === 'hotel' ? 'bg-brand-primary text-white' : 'text-gray-600 hover:bg-gray-50' }}">
-                🏨 Hotel Bookings
-            </button>
-            <button wire:click="$set('bookingType', 'ferry')"
-                class="px-6 py-2.5 rounded-xl font-semibold transition-all {{ $bookingType === 'ferry' ? 'bg-brand-primary text-white' : 'text-gray-600 hover:bg-gray-50' }}">
-                🚢 Ferry Tickets
-            </button>
-        </div>
-
-        {{-- Status Filter Tabs --}}
-        <div class="bg-white rounded-2xl shadow-sm p-2 mb-6 inline-flex gap-2">
-            @if($bookingType === 'hotel')
-                <button wire:click="$set('activeTab', 'current')"
-                    class="px-6 py-2.5 rounded-xl font-semibold transition-all {{ $activeTab === 'current' ? 'bg-brand-primary text-white' : 'text-gray-600 hover:bg-gray-50' }}">
-                    Current
+        {{-- Booking Type Tabs & Status Filter Dropdown --}}
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+            {{-- Booking Type Tabs (Left) --}}
+            <div class="bg-white rounded-2xl shadow-sm p-2 inline-flex gap-2">
+                <button wire:click="$set('bookingType', 'hotel')"
+                    class="px-6 py-2.5 rounded-xl font-semibold transition-all {{ $bookingType === 'hotel' ? 'bg-brand-primary text-white' : 'text-gray-600 hover:bg-gray-50' }}">
+                    🏨 Hotel Bookings
                 </button>
-            @endif
-            <button wire:click="$set('activeTab', 'upcoming')"
-                class="px-6 py-2.5 rounded-xl font-semibold transition-all {{ $activeTab === 'upcoming' ? 'bg-brand-primary text-white' : 'text-gray-600 hover:bg-gray-50' }}">
-                Upcoming
-            </button>
-            <button wire:click="$set('activeTab', 'past')"
-                class="px-6 py-2.5 rounded-xl font-semibold transition-all {{ $activeTab === 'past' ? 'bg-brand-primary text-white' : 'text-gray-600 hover:bg-gray-50' }}">
-                Past
-            </button>
-            <button wire:click="$set('activeTab', 'cancelled')"
-                class="px-6 py-2.5 rounded-xl font-semibold transition-all {{ $activeTab === 'cancelled' ? 'bg-brand-primary text-white' : 'text-gray-600 hover:bg-gray-50' }}">
-                Cancelled
-            </button>
+                <button wire:click="$set('bookingType', 'ferry')"
+                    class="px-6 py-2.5 rounded-xl font-semibold transition-all {{ $bookingType === 'ferry' ? 'bg-brand-primary text-white' : 'text-gray-600 hover:bg-gray-50' }}">
+                    🚢 Ferry Tickets
+                </button>
+            </div>
+
+            {{-- Status Filter Dropdown (Right) --}}
+            <div class="relative w-full md:w-auto" x-data="{ open: false }">
+                <button @click="open = !open" type="button"
+                    class="w-full md:w-auto bg-white rounded-xl shadow-sm px-5 py-2.5 font-semibold text-gray-700 hover:bg-gray-50 transition-all flex items-center gap-2 md:min-w-[180px] justify-between">
+                    <span class="capitalize">{{ $activeTab === 'current' ? '📍 Current' : '' }}{{ $activeTab === 'upcoming' ? '📅 Upcoming' : '' }}{{ $activeTab === 'past' ? '📜 Past' : '' }}{{ $activeTab === 'cancelled' ? '❌ Cancelled' : '' }}</span>
+                    <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+
+                {{-- Dropdown Menu --}}
+                <div x-show="open" @click.away="open = false" x-cloak
+                    x-transition:enter="transition ease-out duration-100"
+                    x-transition:enter-start="transform opacity-0 scale-95"
+                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-75"
+                    x-transition:leave-start="transform opacity-100 scale-100"
+                    x-transition:leave-end="transform opacity-0 scale-95"
+                    class="absolute right-0 mt-2 w-full bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden z-10">
+                    @if($bookingType === 'hotel')
+                        <button wire:click="$set('activeTab', 'current')" @click="open = false"
+                            class="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center gap-3 {{ $activeTab === 'current' ? 'bg-brand-primary/10 text-brand-primary font-semibold' : 'text-gray-700' }}">
+                            <span>📍</span>
+                            <span>Current</span>
+                            @if($activeTab === 'current')
+                                <svg class="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            @endif
+                        </button>
+                    @endif
+                    <button wire:click="$set('activeTab', 'upcoming')" @click="open = false"
+                        class="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center gap-3 {{ $activeTab === 'upcoming' ? 'bg-brand-primary/10 text-brand-primary font-semibold' : 'text-gray-700' }}">
+                        <span>📅</span>
+                        <span>Upcoming</span>
+                        @if($activeTab === 'upcoming')
+                            <svg class="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        @endif
+                    </button>
+                    <button wire:click="$set('activeTab', 'past')" @click="open = false"
+                        class="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center gap-3 {{ $activeTab === 'past' ? 'bg-brand-primary/10 text-brand-primary font-semibold' : 'text-gray-700' }}">
+                        <span>📜</span>
+                        <span>Past</span>
+                        @if($activeTab === 'past')
+                            <svg class="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        @endif
+                    </button>
+                    <button wire:click="$set('activeTab', 'cancelled')" @click="open = false"
+                        class="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center gap-3 {{ $activeTab === 'cancelled' ? 'bg-brand-primary/10 text-brand-primary font-semibold' : 'text-gray-700' }}">
+                        <span>❌</span>
+                        <span>Cancelled</span>
+                        @if($activeTab === 'cancelled')
+                            <svg class="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        @endif
+                    </button>
+                </div>
+            </div>
         </div>
 
         {{-- Bookings List --}}
