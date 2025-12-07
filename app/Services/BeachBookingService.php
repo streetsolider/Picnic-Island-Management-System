@@ -34,25 +34,8 @@ class BeachBookingService
             ];
         }
 
-        // If activity date is provided, validate against checkout date
-        if ($activityDate) {
-            $activityDateCarbon = Carbon::parse($activityDate);
-
-            // Prevent bookings on checkout day
-            // Beach activities are full-day experiences, guests should not book on checkout day
-            if ($activityDateCarbon->isSameDay($booking->check_out_date)) {
-                $checkoutTime = $booking->getEffectiveCheckoutTime()->format('g:i A');
-                return [
-                    'valid' => false,
-                    'booking' => null,
-                    'errors' => [
-                        "Beach activities cannot be booked on your checkout day ({$booking->check_out_date->format('M d, Y')}). " .
-                        "You are scheduled to checkout at {$checkoutTime}. " .
-                        "Please choose a date during your stay (check-in to the day before checkout)."
-                    ],
-                ];
-            }
-        }
+        // Note: Checkout day validation is handled in validateBooking() method
+        // where we have access to activity start/end times
 
         return [
             'valid' => true,
@@ -66,9 +49,10 @@ class BeachBookingService
      *
      * @param BeachService $service
      * @param string $date Date in Y-m-d format
+     * @param HotelBooking|null $hotelBooking Optional hotel booking for checkout validation
      * @return array
      */
-    public function getAvailableSlots(BeachService $service, string $date): array
+    public function getAvailableSlots(BeachService $service, string $date, ?HotelBooking $hotelBooking = null): array
     {
         $date = Carbon::parse($date);
         $isToday = $date->isToday();
@@ -79,9 +63,9 @@ class BeachBookingService
         }
 
         if ($service->isFixedSlot()) {
-            return $this->generateFixedSlots($service, $date);
+            return $this->generateFixedSlots($service, $date, $hotelBooking);
         } else {
-            return $this->generateFlexibleSlots($service, $date);
+            return $this->generateFlexibleSlots($service, $date, $hotelBooking);
         }
     }
 
@@ -90,9 +74,10 @@ class BeachBookingService
      *
      * @param BeachService $service
      * @param Carbon $date
+     * @param HotelBooking|null $hotelBooking
      * @return array
      */
-    protected function generateFixedSlots(BeachService $service, Carbon $date): array
+    protected function generateFixedSlots(BeachService $service, Carbon $date, ?HotelBooking $hotelBooking = null): array
     {
         $slots = [];
 
@@ -105,6 +90,10 @@ class BeachBookingService
         $now = now();
         $isToday = $date->isToday();
 
+        // Check if this is checkout day
+        $isCheckoutDay = $hotelBooking && $date->isSameDay($hotelBooking->check_out_date);
+        $checkoutTime = $isCheckoutDay ? $hotelBooking->getEffectiveCheckoutTime() : null;
+
         while ($currentSlot->lessThan($closingTime)) {
             $slotEnd = $currentSlot->copy()->addMinutes($service->slot_duration_minutes);
 
@@ -112,6 +101,15 @@ class BeachBookingService
             if ($isToday && $currentSlot->lessThanOrEqualTo($now)) {
                 $currentSlot = $slotEnd;
                 continue;
+            }
+
+            // Skip slots that would end after checkout time on checkout day
+            if ($isCheckoutDay) {
+                $slotEndWithDate = Carbon::parse($date->toDateString() . ' ' . $slotEnd->format('H:i:s'));
+                if ($slotEndWithDate->greaterThan($checkoutTime)) {
+                    $currentSlot = $slotEnd;
+                    continue;
+                }
             }
 
             // Check if slot end exceeds closing time
@@ -147,9 +145,10 @@ class BeachBookingService
      *
      * @param BeachService $service
      * @param Carbon $date
+     * @param HotelBooking|null $hotelBooking
      * @return array
      */
-    protected function generateFlexibleSlots(BeachService $service, Carbon $date): array
+    protected function generateFlexibleSlots(BeachService $service, Carbon $date, ?HotelBooking $hotelBooking = null): array
     {
         $slots = [];
 
@@ -256,12 +255,29 @@ class BeachBookingService
 
         $hotelBooking = $hotelValidation['booking'];
 
-        // Check if booking date is within hotel stay (excluding checkout day - handled in validateHotelBooking)
+        // Check if booking date is within hotel stay
         $bookingDate = Carbon::parse($data['booking_date']);
         if ($bookingDate->lessThan($hotelBooking->check_in_date) ||
             $bookingDate->greaterThan($hotelBooking->check_out_date)) {
             $errors[] = 'Booking date must be within your hotel stay period.';
             return ['valid' => false, 'errors' => $errors];
+        }
+
+        // CHECKOUT DAY VALIDATION: Activities can be booked on checkout day
+        // but must END before checkout time
+        if ($bookingDate->isSameDay($hotelBooking->check_out_date)) {
+            $checkoutTime = $hotelBooking->getEffectiveCheckoutTime();
+            $activityEndTime = Carbon::parse($data['booking_date'] . ' ' . $data['end_time']);
+
+            if ($activityEndTime->greaterThan($checkoutTime)) {
+                $checkoutTimeFormatted = $checkoutTime->format('g:i A');
+                $activityEndFormatted = $activityEndTime->format('g:i A');
+                $errors[] = "Beach activities on your checkout day ({$hotelBooking->check_out_date->format('M d, Y')}) " .
+                           "must end before your checkout time of {$checkoutTimeFormatted}. " .
+                           "Your selected activity ends at {$activityEndFormatted}. " .
+                           "Please choose an earlier time or a different date.";
+                return ['valid' => false, 'errors' => $errors];
+            }
         }
 
         // Validate booking date is not in the past

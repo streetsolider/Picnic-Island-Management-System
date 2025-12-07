@@ -79,6 +79,12 @@ class ServiceDetails extends Component
     public function updatedSelectedStartTime()
     {
         if ($this->service->isFlexibleDuration() && $this->selectedStartTime) {
+            // Reset duration to 1 hour when changing start time on checkout day
+            // to ensure it doesn't exceed checkout time
+            $selectedDate = Carbon::parse($this->selectedDate);
+            if ($this->hotelBooking && $selectedDate->isSameDay($this->hotelBooking->check_out_date)) {
+                $this->durationHours = 1;
+            }
             $this->calculateEndTime();
         }
     }
@@ -90,6 +96,25 @@ class ServiceDetails extends Component
         }
     }
 
+    public function getMaxDuration()
+    {
+        if (!$this->selectedStartTime || !$this->selectedDate) {
+            return 8; // Default max
+        }
+
+        $selectedDate = Carbon::parse($this->selectedDate);
+        $isCheckoutDay = $this->hotelBooking && $selectedDate->isSameDay($this->hotelBooking->check_out_date);
+
+        if ($isCheckoutDay) {
+            $checkoutTime = $this->hotelBooking->getEffectiveCheckoutTime();
+            $startTime = Carbon::parse($this->selectedDate . ' ' . $this->selectedStartTime);
+            $maxHours = (int) floor($startTime->diffInMinutes($checkoutTime) / 60);
+            return max(1, min($maxHours, 8)); // Between 1 and 8 hours
+        }
+
+        return 8; // Default max duration
+    }
+
     public function loadAvailableSlots()
     {
         if (!$this->selectedDate) {
@@ -97,7 +122,7 @@ class ServiceDetails extends Component
         }
 
         $bookingService = app(BeachBookingService::class);
-        $this->availableSlots = $bookingService->getAvailableSlots($this->service, $this->selectedDate);
+        $this->availableSlots = $bookingService->getAvailableSlots($this->service, $this->selectedDate, $this->hotelBooking);
 
         if ($this->service->isFlexibleDuration()) {
             $this->availableStartTimes = $this->generateStartTimes();
@@ -126,9 +151,37 @@ class ServiceDetails extends Component
         $current = Carbon::parse($this->service->opening_time);
         $closing = Carbon::parse($this->service->closing_time);
 
+        // Get current time if the selected date is today
+        $selectedDate = Carbon::parse($this->selectedDate);
+        $isToday = $selectedDate->isToday();
+        $now = now();
+
+        // Check if selected date is checkout day
+        $isCheckoutDay = $this->hotelBooking && $selectedDate->isSameDay($this->hotelBooking->check_out_date);
+        $checkoutTime = $isCheckoutDay ? $this->hotelBooking->getEffectiveCheckoutTime() : null;
+
         // For flexible duration, generate start times in 30-minute intervals
         while ($current->lessThan($closing)) {
-            $times[] = $current->format('H:i');
+            $timeString = $current->format('H:i');
+            $timeDateTime = Carbon::parse($this->selectedDate . ' ' . $timeString);
+
+            // Skip if selected date is today and time has passed
+            // Show times that haven't started yet (current time or future)
+            if ($isToday && $timeDateTime->lessThanOrEqualTo($now)) {
+                $current->addMinutes(30);
+                continue;
+            }
+
+            // Skip if checkout day and start time + minimum duration (1 hour) would exceed checkout time
+            if ($isCheckoutDay) {
+                $endTimeWithMinDuration = $timeDateTime->copy()->addHours(1);
+                if ($endTimeWithMinDuration->greaterThan($checkoutTime)) {
+                    $current->addMinutes(30);
+                    continue;
+                }
+            }
+
+            $times[] = $timeString;
             $current->addMinutes(30);
         }
 
@@ -180,6 +233,15 @@ class ServiceDetails extends Component
             $selectedDate->greaterThan($this->hotelBooking->check_out_date)) {
             session()->flash('error', 'Invalid booking date. Please select a date during your hotel stay.');
             return;
+        }
+
+        // Check if selected time is in the past (for today's bookings)
+        if ($selectedDate->isToday()) {
+            $selectedDateTime = Carbon::parse($this->selectedDate . ' ' . $this->selectedStartTime);
+            if ($selectedDateTime->lessThanOrEqualTo(now())) {
+                session()->flash('error', 'The selected time has already passed. Please choose a future time slot.');
+                return;
+            }
         }
 
         // Redirect to create with parameters

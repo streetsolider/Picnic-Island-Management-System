@@ -76,17 +76,29 @@ class MyBookings extends Component
 
         // Filter by tab
         if ($this->tab === 'upcoming') {
-            $query->where('booking_date', '>=', now()->toDateString())
+            // Check both date and time to exclude past events on today's date
+            $query->where(function ($q) {
+                      $q->where('booking_date', '>', now()->toDateString())
+                        ->orWhere(function ($subQ) {
+                            $subQ->where('booking_date', '=', now()->toDateString())
+                                 ->whereRaw("CONCAT(booking_date, ' ', start_time) >= ?", [now()->format('Y-m-d H:i:s')]);
+                        });
+                  })
                   ->whereIn('status', ['confirmed', 'redeemed'])
                   ->orderBy('booking_date')
                   ->orderBy('start_time');
         } elseif ($this->tab === 'past') {
+            // Events are past if: date is before today OR (date is today AND time has passed)
             $query->where(function ($q) {
-                $q->where('booking_date', '<', now()->toDateString())
-                  ->whereIn('status', ['confirmed', 'redeemed']);
-            })->orWhere('status', 'expired')
-              ->orderBy('booking_date', 'desc')
-              ->orderBy('start_time', 'desc');
+                      $q->where('booking_date', '<', now()->toDateString())
+                        ->orWhere(function ($subQ) {
+                            $subQ->where('booking_date', '=', now()->toDateString())
+                                 ->whereRaw("CONCAT(booking_date, ' ', start_time) < ?", [now()->format('Y-m-d H:i:s')]);
+                        });
+                  })
+                  ->whereIn('status', ['confirmed', 'redeemed'])
+                  ->orderBy('booking_date', 'desc')
+                  ->orderBy('start_time', 'desc');
         } elseif ($this->tab === 'cancelled') {
             $query->where('status', 'cancelled')
                   ->orderBy('booking_date', 'desc')

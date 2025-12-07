@@ -243,18 +243,28 @@
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-3">
                                     Duration: {{ $durationHours }} {{ $durationHours == 1 ? 'hour' : 'hours' }}
+                                    @php
+                                        $maxDuration = $this->getMaxDuration();
+                                    @endphp
+                                    @if($selectedDate && $hotelBooking && \Carbon\Carbon::parse($selectedDate)->isSameDay($hotelBooking->check_out_date))
+                                        <span class="text-xs text-orange-600 font-normal">
+                                            (Max {{ $maxDuration }} hrs - must end before {{ $hotelBooking->getEffectiveCheckoutTime()->format('g:i A') }} checkout)
+                                        </span>
+                                    @endif
                                 </label>
                                 <input
                                     wire:model.live="durationHours"
                                     type="range"
                                     min="1"
-                                    max="8"
+                                    max="{{ $maxDuration }}"
                                     step="1"
                                     class="w-full h-3 bg-gray-200 rounded-full appearance-none cursor-pointer accent-brand-primary">
                                 <div class="flex justify-between text-sm text-gray-500 mt-2">
                                     <span>1 hr</span>
-                                    <span>4 hrs</span>
-                                    <span>8 hrs</span>
+                                    @if($maxDuration >= 4)
+                                        <span>{{ floor($maxDuration / 2) }} hrs</span>
+                                    @endif
+                                    <span>{{ $maxDuration }} hrs</span>
                                 </div>
                             </div>
                         </div>

@@ -19,10 +19,9 @@ class ThemeParkTicketService
      * Validate guest has valid hotel booking (CRITICAL - same as beach/ferry)
      *
      * @param int $guestId
-     * @param string|null $activityDate Date of the activity in Y-m-d format
      * @return array ['valid' => bool, 'booking' => HotelBooking|null, 'errors' => array]
      */
-    public function validateHotelBooking(int $guestId, ?string $activityDate = null): array
+    public function validateHotelBooking(int $guestId): array
     {
         $booking = HotelBooking::where('guest_id', $guestId)
             ->whereIn('status', ['confirmed', 'checked_in'])
@@ -37,26 +36,6 @@ class ThemeParkTicketService
                 'booking' => null,
                 'errors' => ['No valid hotel booking found. You must have a confirmed or checked-in hotel booking to purchase theme park tickets.'],
             ];
-        }
-
-        // If activity date is provided, validate against checkout date
-        if ($activityDate) {
-            $activityDateCarbon = Carbon::parse($activityDate);
-
-            // Prevent bookings on checkout day
-            // Theme park activities are full-day experiences, guests should not use them on checkout day
-            if ($activityDateCarbon->isSameDay($booking->check_out_date)) {
-                $checkoutTime = $booking->getEffectiveCheckoutTime()->format('g:i A');
-                return [
-                    'valid' => false,
-                    'booking' => null,
-                    'errors' => [
-                        "Theme park tickets cannot be used on your checkout day ({$booking->check_out_date->format('M d, Y')}). " .
-                        "You are scheduled to checkout at {$checkoutTime}. " .
-                        "Theme park activities are full-day experiences. Please purchase tickets for dates during your stay (check-in to the day before checkout)."
-                    ],
-                ];
-            }
         }
 
         return [
@@ -75,14 +54,16 @@ class ThemeParkTicketService
         try {
             DB::beginTransaction();
 
-            // Validate hotel booking (continuous rides are used today)
-            $hotelValidation = $this->validateHotelBooking($userId, now()->toDateString());
+            // Validate hotel booking
+            $hotelValidation = $this->validateHotelBooking($userId);
             if (!$hotelValidation['valid']) {
                 return [
                     'success' => false,
                     'message' => implode(' ', $hotelValidation['errors']),
                 ];
             }
+
+            $hotelBooking = $hotelValidation['booking'];
 
             // Validate quantity
             if ($quantity < 1) {
@@ -123,6 +104,22 @@ class ThemeParkTicketService
                     'success' => false,
                     'message' => "This activity is currently closed. Operating hours: {$activity->getOperatingHoursAttribute()}",
                 ];
+            }
+
+            // CHECKOUT DAY VALIDATION: For continuous rides, check if ride STARTS before checkout time
+            if (now()->isSameDay($hotelBooking->check_out_date)) {
+                $checkoutTime = $hotelBooking->getEffectiveCheckoutTime();
+
+                if ($activity->operating_hours_start) {
+                    $rideStartTime = Carbon::parse(now()->toDateString() . ' ' . $activity->operating_hours_start->format('H:i:s'));
+
+                    if ($rideStartTime->greaterThanOrEqualTo($checkoutTime)) {
+                        return [
+                            'success' => false,
+                            'message' => "This ride starts at {$rideStartTime->format('g:i A')}, which is at or after your checkout time ({$checkoutTime->format('g:i A')}). You cannot purchase tickets for rides that start at or after checkout time.",
+                        ];
+                    }
+                }
             }
 
             // Calculate total credits needed
@@ -238,13 +235,28 @@ class ThemeParkTicketService
                 ];
             }
 
-            // Validate hotel booking (for the show date)
-            $hotelValidation = $this->validateHotelBooking($userId, $showSchedule->show_date->format('Y-m-d'));
+            // Validate hotel booking
+            $hotelValidation = $this->validateHotelBooking($userId);
             if (!$hotelValidation['valid']) {
                 return [
                     'success' => false,
                     'message' => implode(' ', $hotelValidation['errors']),
                 ];
+            }
+
+            $hotelBooking = $hotelValidation['booking'];
+
+            // CHECKOUT DAY VALIDATION: Shows cannot start at or after checkout time
+            if ($showSchedule->show_date->isSameDay($hotelBooking->check_out_date)) {
+                $checkoutTime = $hotelBooking->getEffectiveCheckoutTime();
+                $showStartTime = Carbon::parse($showSchedule->show_date->toDateString() . ' ' . $showSchedule->show_time);
+
+                if ($showStartTime->greaterThanOrEqualTo($checkoutTime)) {
+                    return [
+                        'success' => false,
+                        'message' => "This show starts at {$showStartTime->format('g:i A')} on your checkout day ({$hotelBooking->check_out_date->format('M d, Y')}), which is at or after your checkout time ({$checkoutTime->format('g:i A')}). Shows cannot start at or after checkout time. Please choose an earlier show or a different date.",
+                    ];
+                }
             }
 
             if ($showSchedule->activity_id !== $activityId) {
