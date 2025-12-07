@@ -57,17 +57,16 @@ class Wallet extends Component
             'topUpAmount' => 'required|numeric|min:10|max:10000',
         ]);
 
-        $service = app(ThemeParkWalletService::class);
-        $result = $service->topUpWallet(auth()->id(), $this->topUpAmount);
+        // Store top-up data in session and redirect to payment gateway
+        session()->put('pending_booking', [
+            'booking_type' => 'wallet_topup',
+            'guest_id' => auth()->id(),
+            'amount' => $this->topUpAmount,
+            'total_price' => $this->topUpAmount,
+            'description' => 'Theme Park Wallet Top-up',
+        ]);
 
-        if ($result['success']) {
-            session()->flash('success', $result['message']);
-            $this->loadStats();
-            $this->showTopUpForm = false;
-            $this->reset(['topUpAmount']);
-        } else {
-            session()->flash('error', $result['message']);
-        }
+        return redirect()->route('payment.gateway');
     }
 
     public function openPurchaseForm()

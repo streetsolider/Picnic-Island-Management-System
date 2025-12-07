@@ -120,22 +120,27 @@ class HotelBooking extends Model
     public function scopeUpcoming($query)
     {
         return $query->where('status', 'confirmed')
+            ->whereNull('checked_in_at')
             ->where('check_in_date', '>=', now()->toDateString());
     }
 
     public function scopeCurrent($query)
     {
         return $query->whereIn('status', ['confirmed', 'checked_in'])
-            ->where('check_in_date', '<=', now()->toDateString())
-            ->where('check_out_date', '>=', now()->toDateString());
+            ->whereNotNull('checked_in_at')
+            ->whereNull('checked_out_at');
     }
 
     public function scopePast($query)
     {
         return $query->where('status', '!=', 'cancelled')
             ->where(function ($q) {
-                $q->whereIn('status', ['completed', 'no-show'])
-                  ->orWhere('check_out_date', '<', now()->toDateString());
+                $q->whereNotNull('checked_out_at')
+                  ->orWhereIn('status', ['completed', 'no-show'])
+                  ->orWhere(function($subq) {
+                      $subq->where('check_out_date', '<', now()->toDateString())
+                           ->whereNull('checked_in_at');
+                  });
             });
     }
 

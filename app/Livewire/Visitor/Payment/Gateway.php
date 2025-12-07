@@ -157,6 +157,16 @@ class Gateway extends Component
 
         $this->validate();
 
+        // Validate that selected bank matches saved card's bank
+        if ($this->useSavedCard && $this->savedCardId) {
+            $savedCard = SavedPaymentMethod::find($this->savedCardId);
+            if ($savedCard && $savedCard->bank !== $this->selectedBank) {
+                $this->addError('selectedBank', 'Selected bank must match the saved card\'s bank (' . $savedCard->bank . ')');
+                $this->processing = false;
+                return;
+            }
+        }
+
         // Validate card expiry
         if (!$this->validateExpiry()) {
             $this->processing = false;
@@ -229,6 +239,43 @@ class Gateway extends Component
             $payment = Payment::findOrFail($this->paymentId);
             $paymentService = app(PaymentService::class);
 
+            // Handle wallet top-up
+            if ($this->bookingType === 'wallet_topup') {
+                // Mark payment as completed
+                $payment->update([
+                    'status' => 'completed',
+                    'completed_at' => now(),
+                ]);
+
+                // Add funds to wallet
+                $walletService = app(\App\Services\ThemeParkWalletService::class);
+                $result = $walletService->topUpWallet(auth()->id(), $this->bookingData['amount']);
+
+                if (!$result['success']) {
+                    throw new \Exception($result['message']);
+                }
+
+                // Save card if requested
+                if ($this->saveCard && !$this->useSavedCard) {
+                    $expiry = $paymentService->formatExpiry("{$this->expiryMonth}/{$this->expiryYear}");
+
+                    $paymentService->savePaymentMethod(auth()->user(), [
+                        'bank' => $this->selectedBank,
+                        'card_type' => $payment->card_type,
+                        'card_last_four' => $payment->card_last_four,
+                        'card_expiry' => $expiry,
+                        'card_holder_name' => $this->cardHolder,
+                    ], $this->setAsDefault);
+                }
+
+                // Clear session
+                session()->forget('pending_booking');
+
+                // Redirect to wallet with success message
+                session()->flash('success', 'Wallet topped up successfully! MVR ' . number_format($this->bookingData['amount'], 2) . ' has been added to your account.');
+                return redirect()->route('visitor.theme-park.wallet');
+            }
+
             // Complete payment and create booking
             $booking = $paymentService->completePayment($payment, $this->bookingData);
 
@@ -256,7 +303,7 @@ class Gateway extends Component
             }
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Booking creation failed: ' . $e->getMessage());
+            session()->flash('error', 'Transaction failed: ' . $e->getMessage());
             $this->processing = false;
             $this->showSimulation = false;
         }

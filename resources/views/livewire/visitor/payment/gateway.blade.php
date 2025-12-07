@@ -23,12 +23,19 @@
                         {{-- Bank Selection --}}
                         <div class="mb-6">
                             <h3 class="text-xl font-display font-bold text-brand-dark mb-4">Select Bank</h3>
+                            @if($useSavedCard && $savedCardId)
+                                <p class="text-sm text-gray-600 mb-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                    <strong>Note:</strong> Bank is automatically selected based on your saved card.
+                                </p>
+                            @endif
                             <div class="grid grid-cols-3 gap-4">
                                 @foreach($banks as $code => $bank)
                                     <button
                                         type="button"
                                         wire:click="selectBank('{{ $code }}')"
+                                        @if($useSavedCard && $savedCardId) disabled @endif
                                         class="p-4 border-2 rounded-xl transition-all
+                                            {{ $useSavedCard && $savedCardId ? 'opacity-50 cursor-not-allowed' : '' }}
                                             {{ $selectedBank === $code
                                                 ? 'border-brand-primary bg-brand-primary/5 shadow-md'
                                                 : 'border-gray-200 hover:border-brand-primary/50 hover:shadow' }}">
@@ -47,7 +54,7 @@
 
                         {{-- Saved Cards Section --}}
                         @if($savedCards->isNotEmpty())
-                            <div class="mb-6 pb-6 border-t border-gray-100 pt-6">
+                            <div class="pb-6 border-t border-gray-100 pt-6">
                                 <label class="flex items-center gap-2 cursor-pointer">
                                     <input type="checkbox" wire:model.live="useSavedCard" class="rounded text-brand-primary focus:ring-brand-primary">
                                     <span class="font-semibold text-brand-dark">Use saved card</span>
@@ -165,7 +172,7 @@
                             </div>
                         @else
                             {{-- CVV for saved card --}}
-                            <div class="mb-6 pb-6 border-t border-gray-100 pt-6">
+                            <div class="pb-6 border-t border-gray-100 pt-6">
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">CVV Security Code</label>
                                 <input type="text"
                                        wire:model="cvv"
@@ -224,6 +231,23 @@
                             <div class="p-3 bg-gray-50 rounded-xl">
                                 <p class="text-xs text-gray-600 mb-1">Guests</p>
                                 <p class="font-semibold text-brand-dark">{{ $bookingData['number_of_guests'] ?? 'N/A' }} {{ Str::plural('Guest', $bookingData['number_of_guests'] ?? 1) }}</p>
+                            </div>
+                        </div>
+                    @elseif($bookingType === 'wallet_topup')
+                        <div class="space-y-3 text-sm">
+                            <div class="p-4 bg-gradient-to-br from-brand-primary/10 to-brand-secondary/10 rounded-xl border-2 border-brand-primary/20">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-12 h-12 bg-brand-primary/20 rounded-full flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-600 mb-1">Service</p>
+                                        <p class="font-bold text-brand-dark text-lg">{{ $bookingData['description'] ?? 'Wallet Top-up' }}</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-3">Add funds to your Theme Park wallet to purchase credits and book activities.</p>
                             </div>
                         </div>
                     @else
