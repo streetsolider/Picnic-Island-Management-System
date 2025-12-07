@@ -17,6 +17,7 @@ class Index extends Component
     public $routes;
     public $showForm = false;
     public $editingRouteId = null;
+    public $deletingRouteId = null;
 
     // Form fields
     public $origin = '';
@@ -58,17 +59,21 @@ class Index extends Component
     {
         $query = FerryRoute::query();
 
-        // Filter routes by selected vessel (only show routes this vessel operates)
+        // Show routes that either:
+        // 1. Have schedules for this vessel, OR
+        // 2. Don't have any schedules yet (newly created routes)
         if ($this->selectedVesselId) {
-            $query->whereHas('schedules', function($q) {
-                $q->where('ferry_vessel_id', $this->selectedVesselId);
+            $query->where(function($q) {
+                $q->whereHas('schedules', function($scheduleQuery) {
+                    $scheduleQuery->where('ferry_vessel_id', $this->selectedVesselId);
+                })
+                ->orWhereDoesntHave('schedules');
             });
         }
 
         if ($this->search) {
             $query->where(function($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('origin', 'like', '%' . $this->search . '%')
+                $q->where('origin', 'like', '%' . $this->search . '%')
                   ->orWhere('destination', 'like', '%' . $this->search . '%');
             });
         }
@@ -142,19 +147,39 @@ class Index extends Component
         }
     }
 
-    public function deleteRoute($routeId)
+    public function confirmDelete($routeId)
     {
-        $route = FerryRoute::findOrFail($routeId);
+        $this->deletingRouteId = $routeId;
+        $this->dispatch('open-modal', 'delete-route-modal');
+    }
+
+    public function deleteRoute()
+    {
+        if (!$this->deletingRouteId) {
+            return;
+        }
+
+        $route = FerryRoute::findOrFail($this->deletingRouteId);
 
         // Check if route has schedules
         if ($route->schedules()->count() > 0) {
             session()->flash('error', 'Cannot delete route with existing schedules.');
+            $this->dispatch('close-modal', 'delete-route-modal');
+            $this->deletingRouteId = null;
             return;
         }
 
         $route->delete();
         session()->flash('success', 'Route deleted successfully.');
+        $this->dispatch('close-modal', 'delete-route-modal');
+        $this->deletingRouteId = null;
         $this->loadRoutes();
+    }
+
+    public function cancelDelete()
+    {
+        $this->deletingRouteId = null;
+        $this->dispatch('close-modal', 'delete-route-modal');
     }
 
     public function updatedSearch()

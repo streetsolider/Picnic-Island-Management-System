@@ -100,6 +100,11 @@ class HotelBooking extends Model
         return $this->hasOne(LateCheckoutRequest::class);
     }
 
+    public function payment()
+    {
+        return $this->morphOne(Payment::class, 'payable');
+    }
+
     // Accessor for number of nights
     public function getNumberOfNightsAttribute(): int
     {

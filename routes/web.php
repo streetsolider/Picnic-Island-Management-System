@@ -53,6 +53,14 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
         Route::get('/tickets/{ticket}', \App\Livewire\Visitor\FerryTickets\Show::class)->name('show');
     });
 
+    // Payment Routes (Auth Required)
+    Route::prefix('payment')->name('payment.')->group(function () {
+        Route::get('/gateway', \App\Livewire\Visitor\Payment\Gateway::class)->name('gateway');
+    });
+
+    // Profile - Saved Cards
+    Route::get('/profile/saved-cards', \App\Livewire\Visitor\Profile\SavedCards::class)->name('profile.saved-cards');
+
     // Beach Activities Routes (Auth Required)
     Route::prefix('beach-activities')->name('visitor.beach-activities.')->group(function () {
         Route::get('/create', \App\Livewire\Visitor\BeachActivities\Create::class)->name('create');

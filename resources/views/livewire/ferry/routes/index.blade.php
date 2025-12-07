@@ -17,6 +17,19 @@
         </div>
     @endif
 
+    {{-- Flash Messages --}}
+    @if (session()->has('success'))
+        <x-admin.alert.success dismissible class="mb-6">
+            {{ session('success') }}
+        </x-admin.alert.success>
+    @endif
+
+    @if (session()->has('error'))
+        <x-admin.alert.danger dismissible class="mb-6">
+            {{ session('error') }}
+        </x-admin.alert.danger>
+    @endif
+
     {{-- Header --}}
     <div class="mb-6 flex items-center justify-between">
         <div>
@@ -87,7 +100,7 @@
                                     <x-admin.button.secondary size="sm" wire:click="edit({{ $route->id }})">
                                         Edit
                                     </x-admin.button.secondary>
-                                    <x-admin.button.danger size="sm" wire:click="deleteRoute({{ $route->id }})" wire:confirm="Are you sure you want to delete this route?">
+                                    <x-admin.button.danger size="sm" wire:click="confirmDelete({{ $route->id }})">
                                         Delete
                                     </x-admin.button.danger>
                                 </div>
@@ -173,6 +186,43 @@
                 </x-admin.button.primary>
             </div>
         </form>
+        </div>
+    </x-overlays.modal>
+
+    {{-- Delete Confirmation Modal --}}
+    <x-overlays.modal name="delete-route-modal" maxWidth="md" focusable>
+        <div class="p-6">
+            <div class="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 dark:bg-red-900/20 rounded-full mb-4">
+                <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+
+            <h3 class="text-lg font-semibold text-center text-gray-900 dark:text-white mb-2">
+                Delete Route
+            </h3>
+            <p class="text-sm text-center text-gray-600 dark:text-gray-400 mb-6">
+                Are you sure you want to delete this route? This action cannot be undone.
+            </p>
+
+            <div class="flex items-center justify-center gap-3">
+                <x-admin.button.secondary
+                    type="button"
+                    wire:click="cancelDelete"
+                    size="md">
+                    Cancel
+                </x-admin.button.secondary>
+
+                <x-admin.button.danger
+                    type="button"
+                    wire:click="deleteRoute"
+                    size="md"
+                    wire:loading.attr="disabled"
+                    wire:target="deleteRoute">
+                    <span wire:loading.remove wire:target="deleteRoute">Delete Route</span>
+                    <span wire:loading wire:target="deleteRoute">Deleting...</span>
+                </x-admin.button.danger>
+            </div>
         </div>
     </x-overlays.modal>
 </div>

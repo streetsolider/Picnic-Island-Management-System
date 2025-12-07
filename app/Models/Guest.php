@@ -81,6 +81,30 @@ class Guest extends Authenticatable
     }
 
     /**
+     * Get the payments for the guest
+     */
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Get the saved payment methods for the guest
+     */
+    public function savedPaymentMethods()
+    {
+        return $this->hasMany(SavedPaymentMethod::class);
+    }
+
+    /**
+     * Get the default payment method for the guest
+     */
+    public function defaultPaymentMethod()
+    {
+        return $this->hasOne(SavedPaymentMethod::class)->where('is_default', true);
+    }
+
+    /**
      * Boot method to auto-generate guest ID
      */
     protected static function boot()

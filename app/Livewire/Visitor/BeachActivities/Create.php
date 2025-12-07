@@ -86,10 +86,6 @@ class Create extends Component
     public function confirmBooking()
     {
         try {
-            DB::beginTransaction();
-
-            $bookingService = app(BeachBookingService::class);
-
             // Calculate duration in hours for flexible duration
             $durationHours = null;
             if ($this->service->isFlexibleDuration()) {
@@ -98,7 +94,9 @@ class Create extends Component
                 $durationHours = $start->diffInHours($end);
             }
 
-            $booking = $bookingService->createBooking([
+            // Store booking data in session for payment page
+            session()->put('pending_booking', [
+                'booking_type' => 'beach',
                 'guest_id' => auth()->id(),
                 'beach_service_id' => $this->service->id,
                 'hotel_booking_id' => $this->hotelBooking->id,
@@ -108,19 +106,14 @@ class Create extends Component
                 'duration_hours' => $durationHours,
                 'price_per_unit' => $this->pricing['price_per_unit'],
                 'total_price' => $this->pricing['total_price'],
-                'payment_status' => 'paid', // For now, mark as paid
+                'service_name' => $this->service->name,
             ]);
 
-            DB::commit();
-
-            session()->flash('success', 'Beach activity booking confirmed successfully!');
-            return redirect()->route('visitor.beach-activities.confirmation', $booking);
+            // Redirect to payment gateway
+            return redirect()->route('payment.gateway');
 
         } catch (\Exception $e) {
-            DB::rollBack();
-            \Log::error('Beach booking failed: ' . $e->getMessage());
-            session()->flash('error', 'Failed to create booking: ' . $e->getMessage());
-            return;
+            session()->flash('error', $e->getMessage());
         }
     }
 

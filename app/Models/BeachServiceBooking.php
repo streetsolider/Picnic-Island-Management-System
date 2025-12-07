@@ -113,6 +113,14 @@ class BeachServiceBooking extends Model
     }
 
     /**
+     * Get the payment for this booking
+     */
+    public function payment()
+    {
+        return $this->morphOne(Payment::class, 'payable');
+    }
+
+    /**
      * Check if booking is confirmed
      */
     public function isConfirmed(): bool

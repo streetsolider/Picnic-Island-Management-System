@@ -353,7 +353,7 @@ class BeachBookingService
                 'price_per_unit' => $pricing['price_per_unit'],
                 'total_price' => $pricing['total_price'],
                 'status' => 'confirmed',
-                'payment_status' => $data['payment_status'] ?? 'paid',
+                'payment_status' => $data['payment_status'] ?? 'pending',
             ]);
 
             return $booking;

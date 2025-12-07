@@ -54,11 +54,10 @@ class Create extends Component
 
     public function confirmBooking()
     {
-        $bookingService = app(BookingService::class);
-
         try {
-            // Create booking
-            $booking = $bookingService->createBooking([
+            // Store booking data in session for payment page
+            session()->put('pending_booking', [
+                'booking_type' => 'hotel',
                 'room_id' => $this->room->id,
                 'guest_id' => auth()->id(),
                 'check_in_date' => $this->checkIn,
@@ -66,12 +65,13 @@ class Create extends Component
                 'number_of_guests' => $this->guests,
                 'number_of_rooms' => 1,
                 'special_requests' => $this->specialRequests,
-                'payment_status' => 'paid', // In real app, this would be after payment
-                'payment_method' => 'online', // Placeholder
+                'total_price' => $this->pricing['total_price'],
+                'hotel_name' => $this->room->hotel->name,
+                'room_number' => $this->room->room_number,
             ]);
 
-            // Redirect to confirmation page
-            return redirect()->route('booking.confirmation', $booking->id);
+            // Redirect to payment gateway
+            return redirect()->route('payment.gateway');
 
         } catch (\Exception $e) {
             session()->flash('error', $e->getMessage());
