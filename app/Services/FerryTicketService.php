@@ -71,9 +71,20 @@ class FerryTicketService
      */
     public function validateHotelBooking(int $guestId): array
     {
+        // Find either upcoming confirmed bookings OR currently active checked-in bookings
         $booking = HotelBooking::where('guest_id', $guestId)
-            ->where('status', 'confirmed')
-            ->where('check_in_date', '>=', now()->toDateString())
+            ->where(function ($query) {
+                $query->where(function ($q) {
+                    // Upcoming confirmed bookings
+                    $q->where('status', 'confirmed')
+                      ->where('check_in_date', '>=', now()->toDateString());
+                })->orWhere(function ($q) {
+                    // Currently active checked-in bookings
+                    $q->where('status', 'checked_in')
+                      ->where('check_in_date', '<=', now()->toDateString())
+                      ->where('check_out_date', '>=', now()->toDateString());
+                });
+            })
             ->orderBy('check_in_date', 'asc')
             ->first();
 
@@ -81,7 +92,7 @@ class FerryTicketService
             return [
                 'valid' => false,
                 'booking' => null,
-                'errors' => ['No valid hotel booking found. You must have a confirmed hotel booking to purchase ferry tickets.'],
+                'errors' => ['No valid hotel booking found. You must have a confirmed or checked-in hotel booking to purchase ferry tickets.'],
             ];
         }
 
@@ -114,8 +125,8 @@ class FerryTicketService
         $hotelBooking = HotelBooking::find($data['hotel_booking_id']);
         if (!$hotelBooking) {
             $errors[] = 'Hotel booking not found.';
-        } elseif ($hotelBooking->status !== 'confirmed') {
-            $errors[] = 'Hotel booking must be confirmed.';
+        } elseif (!in_array($hotelBooking->status, ['confirmed', 'checked_in'])) {
+            $errors[] = 'Hotel booking must be confirmed or checked-in.';
         } else {
             // Validate travel date is within hotel booking date range
             $checkInDate = $hotelBooking->check_in_date->format('Y-m-d');

@@ -19,7 +19,7 @@ class BeachBookingService
     public function validateHotelBooking(int $guestId): array
     {
         $booking = HotelBooking::where('guest_id', $guestId)
-            ->where('status', 'confirmed')
+            ->whereIn('status', ['confirmed', 'checked_in'])
             ->where('check_in_date', '<=', now()->toDateString())
             ->where('check_out_date', '>=', now()->toDateString())
             ->first();
@@ -28,7 +28,7 @@ class BeachBookingService
             return [
                 'valid' => false,
                 'booking' => null,
-                'errors' => ['No valid hotel booking found. You must have a confirmed hotel booking to book beach activities.'],
+                'errors' => ['No valid hotel booking found. You must have a confirmed or checked-in hotel booking to book beach activities.'],
             ];
         }
 
@@ -103,16 +103,16 @@ class BeachBookingService
             // Check availability
             $available = $service->isAvailable($date->toDateString(), $startTime, $endTime);
 
-            if ($available) {
-                $slots[] = [
-                    'start_time' => $startTime,
-                    'end_time' => $endTime,
-                    'start_time_formatted' => $currentSlot->format('g:i A'),
-                    'end_time_formatted' => $slotEnd->format('g:i A'),
-                    'price' => (float) $service->slot_price,
-                    'available' => true,
-                ];
-            }
+            // Add all slots (both available and unavailable) for display purposes
+            $slots[] = [
+                'start_time' => $startTime,
+                'end_time' => $endTime,
+                'time' => $currentSlot->format('g:i A') . ' - ' . $slotEnd->format('g:i A'),
+                'start_time_formatted' => $currentSlot->format('g:i A'),
+                'end_time_formatted' => $slotEnd->format('g:i A'),
+                'price' => (float) $service->slot_price,
+                'available' => $available,
+            ];
 
             $currentSlot = $slotEnd;
         }
@@ -234,10 +234,10 @@ class BeachBookingService
 
         $hotelBooking = $hotelValidation['booking'];
 
-        // Check if booking date is within hotel stay
+        // Check if booking date is within hotel stay (inclusive of checkout day)
         $bookingDate = Carbon::parse($data['booking_date']);
         if ($bookingDate->lessThan($hotelBooking->check_in_date) ||
-            $bookingDate->greaterThanOrEqualTo($hotelBooking->check_out_date)) {
+            $bookingDate->greaterThan($hotelBooking->check_out_date)) {
             $errors[] = 'Booking date must be within your hotel stay period.';
             return ['valid' => false, 'errors' => $errors];
         }

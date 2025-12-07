@@ -24,12 +24,6 @@ class Create extends Component
     public $endTime;
     public $pricing;
 
-    #[Validate('required')]
-    public $paymentMethod = 'card';
-
-    #[Validate('accepted')]
-    public $termsAccepted = false;
-
     public function mount()
     {
         // Get parameters from query string
@@ -52,7 +46,7 @@ class Create extends Component
         // Check if guest is checked in (SECURITY: prevent booking before check-in)
         $today = today();
         $isCheckedIn = $this->hotelBooking->check_in_date->lessThanOrEqualTo($today)
-                    && $this->hotelBooking->check_out_date->greaterThan($today);
+                    && $this->hotelBooking->check_out_date->greaterThanOrEqualTo($today);
 
         if (!$isCheckedIn) {
             session()->flash('error', 'You must be checked into your hotel to book beach activities.');
@@ -61,10 +55,11 @@ class Create extends Component
 
         // Validate booking date is within hotel stay (SECURITY: prevent URL manipulation)
         $bookingDate = Carbon::parse($this->selectedDate);
-        $maxAllowedDate = $this->hotelBooking->check_out_date->copy()->subDay();
 
-        if ($bookingDate->lessThan($today) || $bookingDate->greaterThan($maxAllowedDate)) {
-            session()->flash('error', 'Invalid booking date. You can only book for dates during your hotel stay (before check-out day).');
+        if ($bookingDate->lessThan($today) ||
+            $bookingDate->lessThan($this->hotelBooking->check_in_date) ||
+            $bookingDate->greaterThan($this->hotelBooking->check_out_date)) {
+            session()->flash('error', 'Invalid booking date. You can only book for dates during your hotel stay.');
             return redirect()->route('visitor.beach-activities.details', $this->service);
         }
 
@@ -90,8 +85,6 @@ class Create extends Component
 
     public function confirmBooking()
     {
-        $this->validate();
-
         try {
             DB::beginTransaction();
 
@@ -125,7 +118,8 @@ class Create extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            session()->flash('error', 'Failed to create booking. Please try again.');
+            \Log::error('Beach booking failed: ' . $e->getMessage());
+            session()->flash('error', 'Failed to create booking: ' . $e->getMessage());
             return;
         }
     }

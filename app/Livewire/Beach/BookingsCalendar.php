@@ -14,12 +14,24 @@ use Livewire\Attributes\Title;
 class BookingsCalendar extends Component
 {
     public $selectedDate;
+    public $selectedServiceId;
     public $selectedBooking = null;
     public $showBookingModal = false;
 
     public function mount()
     {
         $this->selectedDate = today()->toDateString();
+
+        // Get selected service from session or default to first assigned service
+        $staffId = auth('staff')->id();
+        $this->selectedServiceId = session('beach_selected_service_id',
+            BeachService::where('assigned_staff_id', $staffId)->value('id')
+        );
+    }
+
+    public function updatedSelectedServiceId($value)
+    {
+        session(['beach_selected_service_id' => $value]);
     }
 
     public function changeDate($direction)
@@ -53,10 +65,16 @@ class BookingsCalendar extends Component
 
     public function generateTimeSlots()
     {
-        $staffId = auth('staff')->id();
-        $assignedService = BeachService::where('assigned_staff_id', $staffId)->first();
+        $assignedService = BeachService::find($this->selectedServiceId);
+
+        \Log::info('BookingsCalendar::generateTimeSlots called', [
+            'selected_service_id' => $this->selectedServiceId,
+            'assigned_service_id' => $assignedService?->id,
+            'selected_date' => $this->selectedDate,
+        ]);
 
         if (!$assignedService || !$assignedService->opening_time || !$assignedService->closing_time) {
+            \Log::info('No service or no operating hours');
             return [];
         }
 
@@ -74,32 +92,60 @@ class BookingsCalendar extends Component
                 $slotEnd = $closingTime->copy();
             }
 
-            // Get bookings that overlap with this time slot
+            $startTime = $slotStart->format('H:i:s');
+            $endTime = $slotEnd->format('H:i:s');
+
+            \Log::info('Checking slot', [
+                'slot_time' => $slotStart->format('g:i A'),
+                'slot_start' => $startTime,
+                'slot_end' => $endTime,
+                'date' => $this->selectedDate,
+            ]);
+
+            // Get bookings that START in this time slot (not overlapping)
+            // This ensures each booking appears only once at its start time
             $overlappingBookings = BeachServiceBooking::where('beach_service_id', $assignedService->id)
                 ->where('booking_date', $this->selectedDate)
                 ->whereIn('status', ['confirmed', 'redeemed', 'cancelled'])
-                ->where(function ($query) use ($slotStart, $slotEnd) {
-                    $startTime = $slotStart->format('H:i:s');
-                    $endTime = $slotEnd->format('H:i:s');
-
-                    $query->whereBetween('start_time', [$startTime, $endTime])
-                          ->orWhereBetween('end_time', [$startTime, $endTime])
-                          ->orWhere(function ($q) use ($startTime, $endTime) {
-                              $q->where('start_time', '<=', $startTime)
-                                ->where('end_time', '>=', $endTime);
-                          });
-                })
+                ->where('start_time', '>=', $startTime)
+                ->where('start_time', '<', $endTime)
                 ->with(['guest'])
                 ->get();
+
+            \Log::info('Bookings found for slot', [
+                'slot_time' => $slotStart->format('g:i A'),
+                'count' => $overlappingBookings->count(),
+                'booking_ids' => $overlappingBookings->pluck('id')->toArray(),
+                'booking_times' => $overlappingBookings->map(function($b) {
+                    return $b->start_time . ' - ' . $b->end_time;
+                })->toArray(),
+            ]);
+
+            // Add duration info to each booking
+            $bookingsWithDuration = $overlappingBookings->map(function ($booking) {
+                $start = Carbon::parse($booking->start_time);
+                $end = Carbon::parse($booking->end_time);
+                $durationHours = $start->diffInHours($end);
+                $durationMinutes = $start->diffInMinutes($end);
+
+                return [
+                    'booking' => $booking,
+                    'duration_hours' => $durationHours,
+                    'duration_minutes' => $durationMinutes,
+                    'height_multiplier' => max(1, $durationHours), // Minimum 1 hour height
+                ];
+            });
 
             $slots[] = [
                 'time' => $slotStart->format('g:i A'),
                 'timeValue' => $slotStart->format('H:i'),
-                'bookings' => $overlappingBookings,
+                'bookings' => $bookingsWithDuration,
             ];
 
             $currentTime->addHour();
         }
+
+        \Log::info('Total slots generated', ['count' => count($slots)]);
 
         return $slots;
     }
@@ -108,22 +154,18 @@ class BookingsCalendar extends Component
     {
         $staffId = auth('staff')->id();
 
-        // Get the selected service from session
-        $selectedServiceId = session('beach_selected_service_id');
+        // Get all services assigned to this staff
+        $allServices = BeachService::where('assigned_staff_id', $staffId)
+            ->with('category')
+            ->get();
 
-        // Get the beach service
-        $assignedService = $selectedServiceId
-            ? BeachService::where('id', $selectedServiceId)
-                ->where('assigned_staff_id', $staffId)
-                ->with('category')
-                ->first()
-            : BeachService::where('assigned_staff_id', $staffId)
-                ->with('category')
-                ->first();
+        // Get the currently selected service
+        $assignedService = $allServices->firstWhere('id', $this->selectedServiceId);
 
         if (!$assignedService) {
             return view('livewire.beach.bookings-calendar', [
                 'assignedService' => null,
+                'allServices' => $allServices,
                 'timeSlots' => [],
                 'selectedDateFormatted' => '',
                 'isToday' => false,
@@ -135,6 +177,7 @@ class BookingsCalendar extends Component
 
         return view('livewire.beach.bookings-calendar', [
             'assignedService' => $assignedService,
+            'allServices' => $allServices,
             'timeSlots' => $timeSlots,
             'selectedDateFormatted' => $selectedDateCarbon->format('F j, Y'),
             'isToday' => $selectedDateCarbon->isToday(),

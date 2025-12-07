@@ -153,17 +153,16 @@ class BeachService extends Model
      */
     public function isAvailable(string $date, string $startTime, string $endTime): bool
     {
+        // Two time periods overlap if:
+        // - One starts before the other ends AND
+        // - One ends after the other starts
+        // Using < and > (not <= and >=) to exclude adjacent slots
+        // Example: Booking 11:30-13:00 does NOT overlap with 13:00-14:30
         $overlappingBookings = $this->bookings()
             ->where('booking_date', $date)
             ->whereIn('status', ['confirmed', 'redeemed'])
-            ->where(function ($query) use ($startTime, $endTime) {
-                $query->whereBetween('start_time', [$startTime, $endTime])
-                      ->orWhereBetween('end_time', [$startTime, $endTime])
-                      ->orWhere(function ($q) use ($startTime, $endTime) {
-                          $q->where('start_time', '<=', $startTime)
-                            ->where('end_time', '>=', $endTime);
-                      });
-            })
+            ->where('start_time', '<', $endTime)
+            ->where('end_time', '>', $startTime)
             ->count();
 
         return $overlappingBookings < $this->concurrent_capacity;

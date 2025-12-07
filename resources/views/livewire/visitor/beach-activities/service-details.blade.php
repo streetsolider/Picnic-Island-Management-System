@@ -202,10 +202,10 @@
                                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                     @foreach($availableSlots as $slot)
                                         <button
-                                            wire:click="selectSlot('{{ $slot['time'] }}')"
+                                            wire:click="selectSlot('{{ $slot['start_time_formatted'] }}')"
                                             @if(!$slot['available']) disabled @endif
                                             class="px-4 py-4 rounded-xl font-semibold transition-all
-                                                @if($selectedSlot === $slot['time'])
+                                                @if($selectedSlot === $slot['start_time_formatted'])
                                                     bg-brand-primary text-white shadow-lg shadow-brand-primary/30
                                                 @elseif(!$slot['available'])
                                                     bg-gray-100 text-gray-400 cursor-not-allowed

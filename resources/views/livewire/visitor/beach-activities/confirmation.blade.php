@@ -1,168 +1,157 @@
-<div class="min-h-screen bg-gradient-to-br from-brand-light via-blue-50 to-brand-primary/10 py-8">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        {{-- Success Message --}}
-        <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-500 rounded-3xl p-8 md:p-12 text-center">
-            <div class="flex justify-center mb-6">
-                <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center animate-pulse">
-                    <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                </div>
+<div class="min-h-screen bg-gradient-to-br from-brand-light via-blue-50 to-brand-primary/10 py-16">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{-- Success Icon Animation --}}
+        <div class="text-center mb-8" x-data="{ show: false }" x-init="setTimeout(() => show = true, 100)">
+            <div class="inline-flex items-center justify-center w-24 h-24 bg-green-100 rounded-full mb-6"
+                x-show="show"
+                x-transition:enter="transition ease-out duration-500 transform"
+                x-transition:enter-start="scale-0"
+                x-transition:enter-end="scale-100">
+                <svg class="w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
             </div>
-            <h1 class="text-4xl font-display font-bold text-green-900 mb-3">
-                Booking Confirmed!
+
+            <h1 class="text-4xl font-display font-bold text-brand-dark mb-2">
+                Booking <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">Confirmed!</span>
             </h1>
-            <p class="text-lg text-green-700 mb-8">
-                Your beach activity has been successfully booked. Please save your booking reference.
-            </p>
-
-            {{-- Booking Reference --}}
-            <div class="bg-white rounded-2xl p-8 inline-block shadow-lg">
-                <p class="text-sm text-gray-600 mb-2">Booking Reference</p>
-                <p class="text-5xl font-mono font-bold text-brand-primary tracking-wider">
-                    {{ $booking->booking_reference }}
-                </p>
-            </div>
+            <p class="text-xl text-gray-600">Your beach activity has been successfully booked</p>
         </div>
 
-        {{-- Booking Details --}}
-        <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-            <div class="bg-gradient-to-r from-brand-primary to-brand-secondary p-6">
-                <h2 class="text-2xl font-display font-bold text-white">Booking Details</h2>
+        {{-- Booking Reference Card --}}
+        <div class="bg-white rounded-3xl shadow-2xl p-8 mb-6">
+            <div class="text-center pb-6 border-b border-gray-100">
+                <p class="text-sm text-gray-500 mb-2">Booking Reference</p>
+                <p class="text-3xl font-bold text-brand-primary font-mono">{{ $booking->booking_reference }}</p>
+                <p class="text-sm text-gray-500 mt-2">Please save this reference number for your records</p>
             </div>
-            <div class="p-8">
-                <div class="space-y-8">
-                    {{-- Activity Info --}}
-                    <div class="flex items-start gap-6 pb-8 border-b border-gray-200">
-                        <span class="text-6xl">{{ $booking->service->category->icon }}</span>
+
+            {{-- Booking Details --}}
+            <div class="grid md:grid-cols-2 gap-6 py-6">
+                {{-- Activity --}}
+                <div class="md:col-span-2">
+                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Activity</h3>
+                    <div class="flex items-start gap-4">
+                        <span class="text-5xl">{{ $booking->service->category->icon }}</span>
                         <div class="flex-1">
-                            <h3 class="text-2xl font-display font-bold text-brand-dark mb-2">
-                                {{ $booking->service->name }}
-                            </h3>
-                            <p class="text-gray-600">
-                                {{ $booking->service->category->name }}
-                            </p>
+                            <p class="font-semibold text-brand-dark text-lg">{{ $booking->service->name }}</p>
+                            <p class="text-gray-600">{{ $booking->service->category->name }}</p>
                         </div>
                     </div>
+                </div>
 
-                    {{-- Date & Time --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-gray-50 rounded-2xl p-6">
-                            <p class="text-sm font-semibold text-gray-500 mb-2">Date</p>
-                            <p class="text-xl font-bold text-brand-dark">
-                                {{ $booking->booking_date->format('l, F j, Y') }}
-                            </p>
-                        </div>
+                {{-- Guest Info --}}
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Guest Details</h3>
+                    <div class="space-y-2">
+                        <p class="font-semibold text-brand-dark">{{ $booking->guest->name }}</p>
+                        <p class="text-gray-600">{{ $booking->guest->email }}</p>
+                    </div>
+                </div>
 
-                        <div class="bg-gray-50 rounded-2xl p-6">
-                            <p class="text-sm font-semibold text-gray-500 mb-2">Time</p>
-                            <p class="text-xl font-bold text-brand-dark">
-                                {{ \Carbon\Carbon::parse($booking->start_time)->format('g:i A') }} -
-                                {{ \Carbon\Carbon::parse($booking->end_time)->format('g:i A') }}
-                            </p>
-                        </div>
+                {{-- Hotel Booking --}}
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Hotel Booking</h3>
+                    <div class="space-y-2">
+                        <p class="font-mono text-brand-primary font-semibold">{{ $booking->hotelBooking->booking_reference }}</p>
+                        <p class="text-gray-600 text-sm">
+                            {{ $booking->hotelBooking->check_in_date->format('M j') }} -
+                            {{ $booking->hotelBooking->check_out_date->format('M j, Y') }}
+                        </p>
+                    </div>
+                </div>
 
+                {{-- Date --}}
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Activity Date</h3>
+                    <p class="text-2xl font-bold text-brand-dark">{{ $booking->booking_date->format('d') }}</p>
+                    <p class="text-gray-600">{{ $booking->booking_date->format('F Y') }}</p>
+                    <p class="text-sm text-gray-500">{{ $booking->booking_date->format('l') }}</p>
+                </div>
+
+                {{-- Time --}}
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Time Slot</h3>
+                    <p class="text-lg font-bold text-brand-dark">
+                        {{ \Carbon\Carbon::parse($booking->start_time)->format('g:i A') }} -
+                        {{ \Carbon\Carbon::parse($booking->end_time)->format('g:i A') }}
+                    </p>
+                    @if($booking->duration_hours)
+                        <p class="text-sm text-gray-500">{{ $booking->duration_hours }} {{ $booking->duration_hours == 1 ? 'hour' : 'hours' }}</p>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Total Price --}}
+            <div class="border-t border-gray-100 pt-6 mt-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Total Amount</p>
                         @if($booking->duration_hours)
-                            <div class="bg-gray-50 rounded-2xl p-6">
-                                <p class="text-sm font-semibold text-gray-500 mb-2">Duration</p>
-                                <p class="text-xl font-bold text-brand-dark">
-                                    {{ $booking->duration_hours }} {{ $booking->duration_hours == 1 ? 'hour' : 'hours' }}
-                                </p>
-                            </div>
+                            <p class="text-gray-600">{{ $booking->duration_hours }} {{ $booking->duration_hours == 1 ? 'hour' : 'hours' }}</p>
+                        @else
+                            <p class="text-gray-600">1 slot</p>
                         @endif
-
-                        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border-2 border-green-200">
-                            <p class="text-sm font-semibold text-gray-600 mb-2">Total Amount Paid</p>
-                            <p class="text-2xl font-bold text-green-600">
-                                MVR {{ number_format($booking->total_price, 2) }}
-                            </p>
-                        </div>
                     </div>
-
-                    {{-- Guest Info --}}
-                    <div class="pt-8 border-t border-gray-200">
-                        <h4 class="text-lg font-bold text-gray-900 mb-4">Guest Information</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <p class="text-sm text-gray-500 mb-1">Name</p>
-                                <p class="font-bold text-brand-dark">{{ $booking->guest->name }}</p>
-                            </div>
-                            <div>
-                                <p class="text-sm text-gray-500 mb-1">Email</p>
-                                <p class="font-bold text-brand-dark">{{ $booking->guest->email }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Status --}}
-                    <div class="pt-8 border-t border-gray-200">
-                        <div class="flex items-center justify-between">
-                            <span class="text-lg font-bold text-gray-900">Status</span>
-                            <span class="px-4 py-2 inline-flex text-sm leading-5 font-bold rounded-full bg-blue-100 text-blue-800">
-                                {{ ucfirst($booking->status) }}
-                            </span>
-                        </div>
+                    <div class="text-right">
+                        <p class="text-3xl font-bold text-brand-primary">MVR {{ number_format($booking->total_price, 2) }}</p>
+                        <p class="text-sm text-green-600 font-semibold">✓ Confirmed</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Important Information --}}
-        <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-            <div class="bg-gradient-to-r from-brand-primary to-brand-secondary p-6">
-                <h2 class="text-2xl font-display font-bold text-white">Important Information</h2>
-            </div>
-            <div class="p-8">
-                <div class="space-y-4">
-                    <div class="flex items-start gap-4 p-4 bg-brand-primary/5 rounded-2xl">
-                        <svg class="w-6 h-6 text-brand-primary mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                        </svg>
-                        <p class="text-gray-700">Please arrive at least <strong>10 minutes before</strong> your scheduled activity time.</p>
-                    </div>
-                    <div class="flex items-start gap-4 p-4 bg-brand-primary/5 rounded-2xl">
-                        <svg class="w-6 h-6 text-brand-primary mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                        </svg>
-                        <p class="text-gray-700">Present your <strong>booking reference</strong> ({{ $booking->booking_reference }}) to the beach staff for validation.</p>
-                    </div>
-                    <div class="flex items-start gap-4 p-4 bg-brand-primary/5 rounded-2xl">
-                        <svg class="w-6 h-6 text-brand-primary mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                        </svg>
-                        <p class="text-gray-700">Cancellations must be made at least <strong>24 hours in advance</strong> for a full refund.</p>
-                    </div>
-                    <div class="flex items-start gap-4 p-4 bg-brand-primary/5 rounded-2xl">
-                        <svg class="w-6 h-6 text-brand-primary mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                        </svg>
-                        <p class="text-gray-700">Activities are subject to weather conditions and may be rescheduled for safety.</p>
-                    </div>
-                </div>
-            </div>
+        {{-- What's Next --}}
+        <div class="bg-brand-primary/5 border border-brand-primary/20 rounded-2xl p-6 mb-6">
+            <h3 class="font-semibold text-brand-dark mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                What's Next?
+            </h3>
+            <ul class="space-y-3 text-sm text-gray-700">
+                <li class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-brand-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Please arrive at least <strong>10 minutes before</strong> your scheduled activity time
+                </li>
+                <li class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-brand-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Present your <strong>booking reference ({{ $booking->booking_reference }})</strong> to the beach staff for validation
+                </li>
+                <li class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-brand-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Cancellations must be made at least <strong>24 hours in advance</strong>
+                </li>
+                <li class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-brand-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+                    </svg>
+                    Activities are subject to weather conditions and may be rescheduled for safety
+                </li>
+            </ul>
         </div>
 
         {{-- Action Buttons --}}
         <div class="flex flex-col sm:flex-row gap-4">
             <a href="{{ route('visitor.beach-activities.my-bookings') }}" wire:navigate
-                class="flex-1 bg-brand-primary hover:bg-brand-primary/90 text-white py-4 rounded-full font-semibold text-center transition-all transform hover:scale-105 shadow-lg shadow-brand-primary/30">
-                View My Bookings
+                class="flex-1 bg-brand-primary hover:bg-brand-primary/90 text-white px-6 py-4 rounded-xl font-semibold text-center transition-all transform hover:scale-105 shadow-lg">
+                View All Bookings
             </a>
-
             <a href="{{ route('visitor.beach-activities.browse') }}" wire:navigate
-                class="flex-1 bg-white hover:bg-gray-50 text-brand-primary py-4 rounded-full font-semibold text-center border-2 border-brand-primary transition-all">
+                class="flex-1 bg-white hover:bg-gray-50 text-brand-dark border border-gray-200 px-6 py-4 rounded-xl font-semibold text-center transition-all">
                 Book Another Activity
             </a>
         </div>
     </div>
 </div>
-
-@push('scripts')
-<script>
-    document.addEventListener('livewire:init', () => {
-        Livewire.on('navigate', (event) => {
-            window.location.href = event.url;
-        });
-    });
-</script>
-@endpush

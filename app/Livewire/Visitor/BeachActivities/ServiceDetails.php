@@ -60,10 +60,10 @@ class ServiceDetails extends Component
             return;
         }
 
-        // Set date range: today to day before check-out
-        // (guests check out on check_out_date, so can't book activities that day)
+        // Set date range: today to checkout date (inclusive)
+        // Guests can book activities on their checkout day since they're still checked in
         $this->minDate = $today->toDateString();
-        $this->maxDate = $this->hotelBooking->check_out_date->subDay()->toDateString();
+        $this->maxDate = $this->hotelBooking->check_out_date->toDateString();
 
         // Set minimum date to today (since already checked in)
         $this->selectedDate = $today->toDateString();
@@ -117,7 +117,7 @@ class ServiceDetails extends Component
     public function calculateEndTime()
     {
         $startTime = Carbon::parse($this->selectedDate . ' ' . $this->selectedStartTime);
-        $this->selectedEndTime = $startTime->addHours($this->durationHours)->format('H:i');
+        $this->selectedEndTime = $startTime->addHours((int) $this->durationHours)->format('H:i');
     }
 
     public function generateStartTimes()
@@ -152,9 +152,9 @@ class ServiceDetails extends Component
 
     public function proceedToBooking()
     {
-        // Check if checked in
-        if (!$this->isCheckedIn) {
-            session()->flash('error', 'You must be checked into your hotel to book beach activities.');
+        // Check if user has hotel booking
+        if (!$this->hotelBooking) {
+            session()->flash('error', 'You must have a valid hotel booking to book beach activities.');
             return;
         }
 
@@ -172,10 +172,13 @@ class ServiceDetails extends Component
         // Date validation is already enforced by min/max in the date picker
         // But double-check for security
         $selectedDate = Carbon::parse($this->selectedDate);
-        $maxAllowedDate = $this->hotelBooking->check_out_date->copy()->subDay();
+        $today = today();
 
-        if ($selectedDate->lessThan(today()) || $selectedDate->greaterThan($maxAllowedDate)) {
-            session()->flash('error', 'Invalid booking date. Please select a date during your hotel stay (before check-out day).');
+        // Re-check if guest is still within their hotel stay period
+        if ($selectedDate->lessThan($today) ||
+            $selectedDate->lessThan($this->hotelBooking->check_in_date) ||
+            $selectedDate->greaterThan($this->hotelBooking->check_out_date)) {
+            session()->flash('error', 'Invalid booking date. Please select a date during your hotel stay.');
             return;
         }
 
