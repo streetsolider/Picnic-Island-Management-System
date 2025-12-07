@@ -4,6 +4,7 @@ namespace App\Livewire\Hotel\Operations;
 
 use App\Models\Hotel;
 use App\Models\HotelBooking;
+use App\Models\LateCheckoutRequest;
 use Carbon\Carbon;
 use Livewire\Component;
 
@@ -17,6 +18,10 @@ class Dashboard extends Component
 
     // Check-out form
     public $checkOutNotes = '';
+
+    // Late checkout approval
+    public $selectedLateCheckoutRequest = null;
+    public $lateCheckoutManagerNotes = '';
 
     public function mount()
     {
@@ -47,7 +52,7 @@ class Dashboard extends Component
     public function getInHouseGuestsProperty()
     {
         return $this->hotel->bookings()
-            ->with(['guest', 'room'])
+            ->with(['guest', 'room', 'hotel', 'lateCheckoutRequest'])
             ->where('status', 'checked_in')
             ->get();
     }
@@ -84,6 +89,17 @@ class Dashboard extends Component
             ->whereDate('check_in_date', Carbon::today())
             ->where('payment_status', 'paid')
             ->sum('total_price');
+    }
+
+    public function getPendingLateCheckoutRequestsProperty()
+    {
+        return LateCheckoutRequest::whereHas('booking', function($query) {
+                $query->where('hotel_id', $this->hotel->id);
+            })
+            ->with(['booking.guest', 'booking.room'])
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'asc')
+            ->get();
     }
 
     // Check-in operations
@@ -136,6 +152,59 @@ class Dashboard extends Component
         $this->checkOutNotes = '';
     }
 
+    // Late checkout approval operations
+    public function openApproveLateCheckoutModal($requestId)
+    {
+        $this->selectedLateCheckoutRequest = LateCheckoutRequest::with(['booking.guest', 'booking.room', 'booking.hotel'])
+            ->findOrFail($requestId);
+        $this->lateCheckoutManagerNotes = '';
+        $this->dispatch('open-modal', 'approve-late-checkout');
+    }
+
+    public function openRejectLateCheckoutModal($requestId)
+    {
+        $this->selectedLateCheckoutRequest = LateCheckoutRequest::with(['booking.guest', 'booking.room', 'booking.hotel'])
+            ->findOrFail($requestId);
+        $this->lateCheckoutManagerNotes = '';
+        $this->dispatch('open-modal', 'reject-late-checkout');
+    }
+
+    public function approveLateCheckout()
+    {
+        $this->validate([
+            'lateCheckoutManagerNotes' => 'nullable|string|max:500',
+        ]);
+
+        $this->selectedLateCheckoutRequest->approve(
+            auth('staff')->id(),
+            $this->lateCheckoutManagerNotes
+        );
+
+        session()->flash('success', 'Late checkout request approved successfully!');
+        $this->dispatch('close-modal', 'approve-late-checkout');
+        $this->selectedLateCheckoutRequest = null;
+        $this->lateCheckoutManagerNotes = '';
+    }
+
+    public function rejectLateCheckout()
+    {
+        $this->validate([
+            'lateCheckoutManagerNotes' => 'required|string|max:500',
+        ], [
+            'lateCheckoutManagerNotes.required' => 'Please provide a reason for rejection.',
+        ]);
+
+        $this->selectedLateCheckoutRequest->reject(
+            auth('staff')->id(),
+            $this->lateCheckoutManagerNotes
+        );
+
+        session()->flash('success', 'Late checkout request rejected.');
+        $this->dispatch('close-modal', 'reject-late-checkout');
+        $this->selectedLateCheckoutRequest = null;
+        $this->lateCheckoutManagerNotes = '';
+    }
+
     public function render()
     {
         return view('livewire.hotel.operations.dashboard', [
@@ -145,6 +214,7 @@ class Dashboard extends Component
             'upcomingBookings' => $this->upcomingBookings,
             'occupancyStats' => $this->occupancyStats,
             'todayRevenue' => $this->todayRevenue,
+            'pendingLateCheckoutRequests' => $this->pendingLateCheckoutRequests,
         ])->layout('layouts.hotel');
     }
 }

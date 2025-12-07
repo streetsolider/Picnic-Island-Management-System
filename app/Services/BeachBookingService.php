@@ -14,14 +14,16 @@ class BeachBookingService
      * Validate guest has valid hotel booking (CRITICAL - same as ferry tickets)
      *
      * @param int $guestId
+     * @param string|null $activityDate Date of the activity in Y-m-d format
      * @return array ['valid' => bool, 'booking' => HotelBooking|null, 'errors' => array]
      */
-    public function validateHotelBooking(int $guestId): array
+    public function validateHotelBooking(int $guestId, ?string $activityDate = null): array
     {
         $booking = HotelBooking::where('guest_id', $guestId)
             ->whereIn('status', ['confirmed', 'checked_in'])
             ->where('check_in_date', '<=', now()->toDateString())
             ->where('check_out_date', '>=', now()->toDateString())
+            ->with(['hotel', 'lateCheckoutRequest'])
             ->first();
 
         if (!$booking) {
@@ -30,6 +32,26 @@ class BeachBookingService
                 'booking' => null,
                 'errors' => ['No valid hotel booking found. You must have a confirmed or checked-in hotel booking to book beach activities.'],
             ];
+        }
+
+        // If activity date is provided, validate against checkout date
+        if ($activityDate) {
+            $activityDateCarbon = Carbon::parse($activityDate);
+
+            // Prevent bookings on checkout day
+            // Beach activities are full-day experiences, guests should not book on checkout day
+            if ($activityDateCarbon->isSameDay($booking->check_out_date)) {
+                $checkoutTime = $booking->getEffectiveCheckoutTime()->format('g:i A');
+                return [
+                    'valid' => false,
+                    'booking' => null,
+                    'errors' => [
+                        "Beach activities cannot be booked on your checkout day ({$booking->check_out_date->format('M d, Y')}). " .
+                        "You are scheduled to checkout at {$checkoutTime}. " .
+                        "Please choose a date during your stay (check-in to the day before checkout)."
+                    ],
+                ];
+            }
         }
 
         return [
@@ -226,15 +248,15 @@ class BeachBookingService
             return ['valid' => false, 'errors' => $errors];
         }
 
-        // Validate hotel booking
-        $hotelValidation = $this->validateHotelBooking($data['guest_id']);
+        // Validate hotel booking with activity date
+        $hotelValidation = $this->validateHotelBooking($data['guest_id'], $data['booking_date']);
         if (!$hotelValidation['valid']) {
             return $hotelValidation;
         }
 
         $hotelBooking = $hotelValidation['booking'];
 
-        // Check if booking date is within hotel stay (inclusive of checkout day)
+        // Check if booking date is within hotel stay (excluding checkout day - handled in validateHotelBooking)
         $bookingDate = Carbon::parse($data['booking_date']);
         if ($bookingDate->lessThan($hotelBooking->check_in_date) ||
             $bookingDate->greaterThan($hotelBooking->check_out_date)) {

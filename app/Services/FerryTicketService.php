@@ -122,7 +122,7 @@ class FerryTicketService
         }
 
         // Validate hotel booking
-        $hotelBooking = HotelBooking::find($data['hotel_booking_id']);
+        $hotelBooking = HotelBooking::with(['hotel', 'lateCheckoutRequest'])->find($data['hotel_booking_id']);
         if (!$hotelBooking) {
             $errors[] = 'Hotel booking not found.';
         } elseif (!in_array($hotelBooking->status, ['confirmed', 'checked_in'])) {
@@ -205,6 +205,35 @@ class FerryTicketService
                 $maxOccupancy = $hotelBooking->room->max_occupancy;
                 if ($data['number_of_passengers'] > $maxOccupancy) {
                     $errors[] = "Number of passengers ({$data['number_of_passengers']}) cannot exceed your room's maximum occupancy ({$maxOccupancy} persons).";
+                }
+            }
+
+            // Rule: Departure ferry on checkout day must be after checkout time + 30 min buffer
+            if ($direction === 'from_island' && $schedule) {
+                $travelDateCarbon = Carbon::parse($data['travel_date']);
+
+                // Check if departure is on checkout day
+                if ($travelDateCarbon->isSameDay($hotelBooking->check_out_date)) {
+                    // Get effective checkout time (considers late checkout approval)
+                    $effectiveCheckout = $hotelBooking->getEffectiveCheckoutTime();
+
+                    // Get ferry departure time on the travel date
+                    $ferryDepartureTime = Carbon::parse(
+                        $data['travel_date'] . ' ' . $schedule->departure_time->format('H:i:s')
+                    );
+
+                    // Add 30 minute buffer to checkout time
+                    $minimumDepartureTime = $effectiveCheckout->copy()->addMinutes(30);
+
+                    // Ensure ferry departs at least 30 minutes after checkout
+                    if ($ferryDepartureTime->lessThan($minimumDepartureTime)) {
+                        $checkoutTimeFormatted = $effectiveCheckout->format('g:i A');
+                        $ferryTimeFormatted = $ferryDepartureTime->format('g:i A');
+                        $minimumTimeFormatted = $minimumDepartureTime->format('g:i A');
+
+                        $errors[] = "Departure ferry at {$ferryTimeFormatted} is too close to your checkout time ({$checkoutTimeFormatted}). " .
+                                   "Please select a ferry departing at {$minimumTimeFormatted} or later to allow sufficient time for checkout.";
+                    }
                 }
             }
         }

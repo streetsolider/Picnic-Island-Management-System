@@ -24,6 +24,7 @@ class Hotel extends Model
         'room_capacity',
         'manager_id',
         'is_active',
+        'default_checkout_time',
     ];
 
     /**
@@ -38,8 +39,14 @@ class Hotel extends Model
             'star_rating' => 'integer',
             'room_capacity' => 'integer',
             'location' => 'array',
+            'default_checkout_time' => 'datetime:H:i:s',
         ];
     }
+
+    /**
+     * Maximum late checkout time constant
+     */
+    public const MAX_LATE_CHECKOUT_TIME = '18:00:00';
 
     /**
      * Get the hotel manager assigned to this hotel
@@ -63,6 +70,22 @@ class Hotel extends Model
     public function getStarRatingDisplayAttribute(): string
     {
         return str_repeat('⭐', $this->star_rating);
+    }
+
+    /**
+     * Get the formatted checkout time (e.g., "12:00 PM")
+     */
+    public function getFormattedCheckoutTimeAttribute(): string
+    {
+        return \Carbon\Carbon::parse($this->default_checkout_time)->format('g:i A');
+    }
+
+    /**
+     * Get the maximum late checkout time
+     */
+    public function getMaxLateCheckoutTimeAttribute(): string
+    {
+        return self::MAX_LATE_CHECKOUT_TIME;
     }
 
     /**

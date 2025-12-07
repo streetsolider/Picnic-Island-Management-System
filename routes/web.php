@@ -43,6 +43,7 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
 
     // My Bookings
     Route::get('/my-bookings', \App\Livewire\Visitor\Booking\MyBookings::class)->name('my-bookings');
+    Route::get('/bookings/{booking}', \App\Livewire\Visitor\Booking\Show::class)->name('bookings.show');
 
     // Ferry Ticket Routes (Auth Required)
     Route::prefix('ferry-tickets')->name('ferry-tickets.')->group(function () {
@@ -109,6 +110,12 @@ Route::middleware(['auth:staff'])->group(function () {
         // Booking Management
         Route::get('/bookings', \App\Livewire\Hotel\Bookings\Index::class)->name('bookings.index');
         Route::get('/bookings/{booking}', \App\Livewire\Hotel\Bookings\Show::class)->name('bookings.show');
+
+        // Late Checkout Management
+        Route::get('/late-checkout', \App\Livewire\Hotel\LateCheckout\Manage::class)->name('late-checkout.manage');
+
+        // Settings
+        Route::get('/settings/checkout-time', \App\Livewire\Hotel\Settings\CheckoutTime::class)->name('settings.checkout-time');
 
         // Room Availability Management (Coming Soon)
         // Route::get('/availability', \App\Livewire\Hotel\Availability\Manage::class)->name('availability.manage');

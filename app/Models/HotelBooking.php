@@ -95,6 +95,11 @@ class HotelBooking extends Model
         return $this->hasMany(BeachServiceBooking::class);
     }
 
+    public function lateCheckoutRequest()
+    {
+        return $this->hasOne(LateCheckoutRequest::class);
+    }
+
     // Accessor for number of nights
     public function getNumberOfNightsAttribute(): int
     {
@@ -115,7 +120,7 @@ class HotelBooking extends Model
 
     public function scopeCurrent($query)
     {
-        return $query->where('status', 'confirmed')
+        return $query->whereIn('status', ['confirmed', 'checked_in'])
             ->where('check_in_date', '<=', now()->toDateString())
             ->where('check_out_date', '>=', now()->toDateString());
     }
@@ -269,6 +274,72 @@ class HotelBooking extends Model
     {
         $totalBooked = $this->getTotalFerryPassengers();
         return max(0, $this->room->max_occupancy - $totalBooked);
+    }
+
+    // Late Checkout helper methods
+    public function hasLateCheckoutRequest(): bool
+    {
+        return $this->lateCheckoutRequest()->exists();
+    }
+
+    public function hasPendingLateCheckoutRequest(): bool
+    {
+        return $this->lateCheckoutRequest()
+            ->where('status', 'pending')
+            ->exists();
+    }
+
+    public function hasApprovedLateCheckoutRequest(): bool
+    {
+        return $this->lateCheckoutRequest()
+            ->where('status', 'approved')
+            ->exists();
+    }
+
+    public function getEffectiveCheckoutTime(): \Carbon\Carbon
+    {
+        $approvedRequest = $this->lateCheckoutRequest()
+            ->where('status', 'approved')
+            ->first();
+
+        if ($approvedRequest) {
+            // Extract just the time portion (H:i:s) from the datetime
+            $timeString = \Carbon\Carbon::parse($approvedRequest->requested_checkout_time)->format('H:i:s');
+            return \Carbon\Carbon::parse(
+                $this->check_out_date->format('Y-m-d') . ' ' . $timeString
+            );
+        }
+
+        // Extract just the time portion from default_checkout_time
+        $defaultTime = \Carbon\Carbon::parse($this->hotel->default_checkout_time)->format('H:i:s');
+        return \Carbon\Carbon::parse(
+            $this->check_out_date->format('Y-m-d') . ' ' . $defaultTime
+        );
+    }
+
+    public function getCheckoutDateTimeAttribute(): \Carbon\Carbon
+    {
+        return $this->getEffectiveCheckoutTime();
+    }
+
+    public function canRequestLateCheckout(): bool
+    {
+        if (!in_array($this->status, ['confirmed', 'checked_in'])) {
+            return false;
+        }
+
+        if ($this->hasLateCheckoutRequest() &&
+            in_array($this->lateCheckoutRequest->status, ['pending', 'approved'])) {
+            return false;
+        }
+
+        // Allow requests up to and including the checkout day
+        // Only block if checkout date has already passed (yesterday or earlier)
+        if ($this->check_out_date->isBefore(now()->startOfDay())) {
+            return false;
+        }
+
+        return true;
     }
 
     // Operations methods

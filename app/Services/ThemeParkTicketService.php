@@ -2,17 +2,71 @@
 
 namespace App\Services;
 
+use App\Models\HotelBooking;
 use App\Models\ThemeParkActivity;
 use App\Models\ThemeParkActivityTicket;
 use App\Models\ThemeParkShowSchedule;
 use App\Models\ThemeParkWallet;
 use App\Models\ThemeParkWalletTransaction;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ThemeParkTicketService
 {
+    /**
+     * Validate guest has valid hotel booking (CRITICAL - same as beach/ferry)
+     *
+     * @param int $guestId
+     * @param string|null $activityDate Date of the activity in Y-m-d format
+     * @return array ['valid' => bool, 'booking' => HotelBooking|null, 'errors' => array]
+     */
+    public function validateHotelBooking(int $guestId, ?string $activityDate = null): array
+    {
+        $booking = HotelBooking::where('guest_id', $guestId)
+            ->whereIn('status', ['confirmed', 'checked_in'])
+            ->where('check_in_date', '<=', now()->toDateString())
+            ->where('check_out_date', '>=', now()->toDateString())
+            ->with(['hotel', 'lateCheckoutRequest'])
+            ->first();
+
+        if (!$booking) {
+            return [
+                'valid' => false,
+                'booking' => null,
+                'errors' => ['No valid hotel booking found. You must have a confirmed or checked-in hotel booking to purchase theme park tickets.'],
+            ];
+        }
+
+        // If activity date is provided, validate against checkout date
+        if ($activityDate) {
+            $activityDateCarbon = Carbon::parse($activityDate);
+
+            // Prevent bookings on checkout day
+            // Theme park activities are full-day experiences, guests should not use them on checkout day
+            if ($activityDateCarbon->isSameDay($booking->check_out_date)) {
+                $checkoutTime = $booking->getEffectiveCheckoutTime()->format('g:i A');
+                return [
+                    'valid' => false,
+                    'booking' => null,
+                    'errors' => [
+                        "Theme park tickets cannot be used on your checkout day ({$booking->check_out_date->format('M d, Y')}). " .
+                        "You are scheduled to checkout at {$checkoutTime}. " .
+                        "Theme park activities are full-day experiences. Please purchase tickets for dates during your stay (check-in to the day before checkout)."
+                    ],
+                ];
+            }
+        }
+
+        return [
+            'valid' => true,
+            'booking' => $booking,
+            'errors' => [],
+        ];
+    }
+
+
     /**
      * Purchase activity ticket for continuous ride.
      */
@@ -20,6 +74,15 @@ class ThemeParkTicketService
     {
         try {
             DB::beginTransaction();
+
+            // Validate hotel booking (continuous rides are used today)
+            $hotelValidation = $this->validateHotelBooking($userId, now()->toDateString());
+            if (!$hotelValidation['valid']) {
+                return [
+                    'success' => false,
+                    'message' => implode(' ', $hotelValidation['errors']),
+                ];
+            }
 
             // Validate quantity
             if ($quantity < 1) {
@@ -172,6 +235,15 @@ class ThemeParkTicketService
                 return [
                     'success' => false,
                     'message' => 'Show schedule not found.',
+                ];
+            }
+
+            // Validate hotel booking (for the show date)
+            $hotelValidation = $this->validateHotelBooking($userId, $showSchedule->show_date->format('Y-m-d'));
+            if (!$hotelValidation['valid']) {
+                return [
+                    'success' => false,
+                    'message' => implode(' ', $hotelValidation['errors']),
                 ];
             }
 

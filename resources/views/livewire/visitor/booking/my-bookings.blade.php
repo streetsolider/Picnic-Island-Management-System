@@ -57,6 +57,12 @@
 
         {{-- Status Filter Tabs --}}
         <div class="bg-white rounded-2xl shadow-sm p-2 mb-6 inline-flex gap-2">
+            @if($bookingType === 'hotel')
+                <button wire:click="$set('activeTab', 'current')"
+                    class="px-6 py-2.5 rounded-xl font-semibold transition-all {{ $activeTab === 'current' ? 'bg-brand-primary text-white' : 'text-gray-600 hover:bg-gray-50' }}">
+                    Current
+                </button>
+            @endif
             <button wire:click="$set('activeTab', 'upcoming')"
                 class="px-6 py-2.5 rounded-xl font-semibold transition-all {{ $activeTab === 'upcoming' ? 'bg-brand-primary text-white' : 'text-gray-600 hover:bg-gray-50' }}">
                 Upcoming
@@ -79,7 +85,7 @@
                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
                 <h3 class="text-2xl font-display font-bold text-brand-dark mb-2">
-                    No {{ $activeTab === 'upcoming' ? 'Upcoming' : ($activeTab === 'past' ? 'Past' : 'Cancelled') }} {{ $bookingType === 'hotel' ? 'Bookings' : 'Tickets' }}
+                    No {{ ucfirst($activeTab) }} {{ $bookingType === 'hotel' ? 'Bookings' : 'Tickets' }}
                 </h3>
                 <p class="text-gray-600 mb-6">You don't have any {{ $activeTab }} {{ $bookingType === 'hotel' ? 'hotel bookings' : 'ferry tickets' }} at the moment.</p>
                 <a href="{{ $bookingType === 'hotel' ? route('booking.search') : route('ferry-tickets.browse') }}" wire:navigate
@@ -92,8 +98,8 @@
                 @foreach ($bookings as $booking)
                     <div class="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300">
                         <div class="grid md:grid-cols-4 gap-6 p-6">
-                            {{-- Hotel & Room Image --}}
-                            <div class="md:col-span-1">
+                            {{-- Hotel & Room Image - Clickable --}}
+                            <a href="{{ route('bookings.show', $booking) }}" wire:navigate class="md:col-span-1 block">
                                 @php
                                     $primaryImage = $booking->room->getPrimaryImage();
                                 @endphp
@@ -110,10 +116,10 @@
                                         </svg>
                                     </div>
                                 @endif
-                            </div>
+                            </a>
 
-                            {{-- Booking Details --}}
-                            <div class="md:col-span-2">
+                            {{-- Booking Details - Clickable --}}
+                            <a href="{{ route('bookings.show', $booking) }}" wire:navigate class="md:col-span-2 block">
                                 <div class="flex items-start justify-between mb-4">
                                     <div>
                                         <h3 class="text-xl font-display font-bold text-brand-dark mb-1">
@@ -142,6 +148,13 @@
                                         <p class="text-gray-500 mb-1">Check-out</p>
                                         <p class="font-semibold text-brand-dark">{{ $booking->check_out_date->format('M d, Y') }}</p>
                                         <p class="text-xs text-gray-500">{{ $booking->check_out_date->format('l') }}</p>
+                                        <p class="text-xs text-brand-primary font-medium mt-1">
+                                            @if($booking->hasApprovedLateCheckoutRequest())
+                                                ⏰ {{ $booking->lateCheckoutRequest->formatted_requested_time }} (Late Checkout)
+                                            @else
+                                                ⏰ {{ $booking->hotel->formatted_checkout_time }}
+                                            @endif
+                                        </p>
                                     </div>
                                     <div>
                                         <p class="text-gray-500 mb-1">Guests</p>
@@ -159,7 +172,7 @@
                                         <p class="text-sm text-gray-700">{{ $booking->special_requests }}</p>
                                     </div>
                                 @endif
-                            </div>
+                            </a>
 
                             {{-- Price & Actions --}}
                             <div class="md:col-span-1 flex flex-col justify-between">
@@ -250,6 +263,12 @@
                                             </div>
                                         </div>
                                     @endif
+
+                                    {{-- View Details Button --}}
+                                    <a href="{{ route('bookings.show', $booking) }}" wire:navigate
+                                        class="block w-full text-center text-sm text-brand-primary hover:text-brand-primary/80 font-semibold py-2 px-4 border-2 border-brand-primary/20 rounded-lg hover:bg-brand-primary/5 transition-colors">
+                                        View Details
+                                    </a>
                                 </div>
                             </div>
                         </div>
