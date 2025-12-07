@@ -25,69 +25,113 @@
 </head>
 
 <body class="font-sans antialiased">
-    <x-admin.navigation.side-nav app-name="{{ auth('staff')->user()->role->label() }}">
+    @php
+        $user = auth('staff')->user();
+        $role = $user->role->value;
+        $dashboardRoute = $user->getDashboardRoute();
+    @endphp
+
+    <x-admin.navigation.side-nav app-name="{{ $user->role->label() }}">
         <x-slot:logo>
-            <a href="{{ route('theme-park.dashboard') }}" wire:navigate>
-                <x-common.application-logo class="w-10 h-10 fill-current text-gray-500" />
+            <a href="{{ route($dashboardRoute) }}" wire:navigate>
+                <x-common.application-logo class="w-10 h-10 fill-current text-gray-500 dark:text-gray-400" />
             </a>
         </x-slot:logo>
 
         {{-- Navigation Links --}}
-        <x-admin.navigation.nav-link :href="route('theme-park.dashboard')" :active="request()->routeIs('theme-park.dashboard')"
+        <x-admin.navigation.nav-link :href="route($dashboardRoute)" :active="request()->routeIs($dashboardRoute)"
             icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>'>
             {{ __('Dashboard') }}
         </x-admin.navigation.nav-link>
 
-        @if(auth('staff')->user()->role->value === 'theme_park_manager')
-            {{-- Manager Only Section --}}
+        {{-- BEACH STAFF NAVIGATION --}}
+        @if($role === 'beach_staff')
             <div class="mt-4 px-3">
                 <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {{ __('Management') }}
+                    {{ __('Service Management') }}
                 </h3>
             </div>
 
-            <x-admin.navigation.nav-link :href="route('theme-park.zones')" :active="request()->routeIs('theme-park.zones')"
-                icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>'>
-                {{ __('Zones') }}
-            </x-admin.navigation.nav-link>
-
-            <x-admin.navigation.nav-link :href="route('theme-park.settings')" :active="request()->routeIs('theme-park.settings')"
+            <x-admin.navigation.nav-link :href="route('beach.service-settings')" :active="request()->routeIs('beach.service-settings')"
                 icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>'>
-                {{ __('Settings') }}
+                {{ __('Service Settings') }}
             </x-admin.navigation.nav-link>
-        @endif
 
-        {{-- Operations Section --}}
-        <div class="mt-4 px-3">
-            <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {{ __('Operations') }}
-            </h3>
-        </div>
-
-        <x-admin.navigation.nav-link :href="route('theme-park.activities.index')" :active="request()->routeIs('theme-park.activities.*')"
-            icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>'>
-            {{ __('Activities') }}
-        </x-admin.navigation.nav-link>
-
-        @if(auth('staff')->user()->role->value === 'theme_park_staff')
-            <x-admin.navigation.nav-link :href="route('theme-park.schedules')" :active="request()->routeIs('theme-park.schedules')"
-                icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>'>
-                {{ __('Schedules') }}
-            </x-admin.navigation.nav-link>
-        @endif
-
-        {{-- Credit Management Section (Staff Only) --}}
-        @if(auth('staff')->user()->role->value === 'theme_park_staff')
             <div class="mt-4 px-3">
                 <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {{ __('Credit Management') }}
+                    {{ __('Operations') }}
                 </h3>
             </div>
 
-            <x-admin.navigation.nav-link :href="route('theme-park.validate')" :active="request()->routeIs('theme-park.validate')"
-                icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'>
-                {{ __('Validate Redemptions') }}
+            <x-admin.navigation.nav-link :href="route('beach.bookings')" :active="request()->routeIs('beach.bookings')"
+                icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>'>
+                {{ __('Bookings Calendar') }}
             </x-admin.navigation.nav-link>
+
+            <x-admin.navigation.nav-link :href="route('beach.validate')" :active="request()->routeIs('beach.validate')"
+                icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'>
+                {{ __('Validate Bookings') }}
+            </x-admin.navigation.nav-link>
+
+            <x-admin.navigation.nav-link :href="route('beach.history')" :active="request()->routeIs('beach.history')"
+                icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>'>
+                {{ __('Booking History') }}
+            </x-admin.navigation.nav-link>
+        @endif
+
+        {{-- THEME PARK NAVIGATION --}}
+        @if($role === 'theme_park_manager' || $role === 'theme_park_staff')
+            @if($role === 'theme_park_manager')
+                {{-- Manager Only Section --}}
+                <div class="mt-4 px-3">
+                    <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        {{ __('Management') }}
+                    </h3>
+                </div>
+
+                <x-admin.navigation.nav-link :href="route('theme-park.zones')" :active="request()->routeIs('theme-park.zones')"
+                    icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>'>
+                    {{ __('Zones') }}
+                </x-admin.navigation.nav-link>
+
+                <x-admin.navigation.nav-link :href="route('theme-park.settings')" :active="request()->routeIs('theme-park.settings')"
+                    icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>'>
+                    {{ __('Settings') }}
+                </x-admin.navigation.nav-link>
+            @endif
+
+            {{-- Operations Section --}}
+            <div class="mt-4 px-3">
+                <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {{ __('Operations') }}
+                </h3>
+            </div>
+
+            <x-admin.navigation.nav-link :href="route('theme-park.activities.index')" :active="request()->routeIs('theme-park.activities.*')"
+                icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>'>
+                {{ __('Activities') }}
+            </x-admin.navigation.nav-link>
+
+            @if($role === 'theme_park_staff')
+                <x-admin.navigation.nav-link :href="route('theme-park.schedules')" :active="request()->routeIs('theme-park.schedules')"
+                    icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>'>
+                    {{ __('Schedules') }}
+                </x-admin.navigation.nav-link>
+            @endif
+
+            {{-- Credit Management Section (Staff Only) --}}
+            @if($role === 'theme_park_staff')
+                <div class="mt-4 px-3">
+                    <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        {{ __('Credit Management') }}
+                    </h3>
+                </div>
+
+                <x-admin.navigation.nav-link :href="route('theme-park.validate')" :active="request()->routeIs('theme-park.validate')"
+                    icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'>
+                    {{ __('Validate Redemptions') }}
+                </x-admin.navigation.nav-link>
+            @endif
         @endif
 
         {{-- Top Bar --}}

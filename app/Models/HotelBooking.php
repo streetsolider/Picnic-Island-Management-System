@@ -90,6 +90,11 @@ class HotelBooking extends Model
             ->whereIn('status', ['confirmed', 'used']);
     }
 
+    public function beachServiceBookings()
+    {
+        return $this->hasMany(BeachServiceBooking::class);
+    }
+
     // Accessor for number of nights
     public function getNumberOfNightsAttribute(): int
     {

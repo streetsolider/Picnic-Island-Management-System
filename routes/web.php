@@ -19,6 +19,12 @@ Route::get('/booking/room/{room}', \App\Livewire\Visitor\Booking\RoomDetails::cl
 // Public Ferry Tickets Browse (no auth required)
 Route::get('/ferry-tickets/browse', \App\Livewire\Visitor\FerryTickets\Browse::class)->name('ferry-tickets.browse');
 
+// Public Beach Activities Browse (no auth required)
+Route::get('/beach-activities', \App\Livewire\Visitor\BeachActivities\Browse::class)->name('visitor.beach-activities.browse');
+
+// Public Beach Activity Service Details (no auth required)
+Route::get('/beach-activities/service/{service}', \App\Livewire\Visitor\BeachActivities\ServiceDetails::class)->name('visitor.beach-activities.details');
+
 // Guest (Customer) Routes
 Route::middleware(['auth:web', 'verified'])->group(function () {
     // Guest Dashboard
@@ -44,6 +50,13 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
         Route::get('/confirmation/{ticket}', \App\Livewire\Visitor\FerryTickets\Confirmation::class)->name('confirmation');
         Route::get('/my-tickets', \App\Livewire\Visitor\FerryTickets\MyTickets::class)->name('my-tickets');
         Route::get('/tickets/{ticket}', \App\Livewire\Visitor\FerryTickets\Show::class)->name('show');
+    });
+
+    // Beach Activities Routes (Auth Required)
+    Route::prefix('beach-activities')->name('visitor.beach-activities.')->group(function () {
+        Route::get('/create', \App\Livewire\Visitor\BeachActivities\Create::class)->name('create');
+        Route::get('/confirmation/{booking}', \App\Livewire\Visitor\BeachActivities\Confirmation::class)->name('confirmation');
+        Route::get('/my-bookings', \App\Livewire\Visitor\BeachActivities\MyBookings::class)->name('my-bookings');
     });
 
     // Theme Park Visitor Routes (Auth Required + Must be Checked In)
@@ -137,10 +150,14 @@ Route::middleware(['auth:staff'])->group(function () {
         Route::get('/validate', \App\Livewire\ThemePark\Validate::class)->name('validate');
     });
 
-    // Beach Staff Dashboard
-    Route::get('/beach/dashboard', function () {
-        return view('dashboard');
-    })->middleware('role:beach_staff')->name('beach.dashboard');
+    // Beach Staff Routes
+    Route::middleware('role:beach_staff')->prefix('beach')->name('beach.')->group(function () {
+        Route::get('/dashboard', \App\Livewire\Beach\Dashboard::class)->name('dashboard');
+        Route::get('/service-settings', \App\Livewire\Beach\ServiceSettings::class)->name('service-settings');
+        Route::get('/validate', \App\Livewire\Beach\Validate::class)->name('validate');
+        Route::get('/history', \App\Livewire\Beach\BookingHistory::class)->name('history');
+        Route::get('/bookings', \App\Livewire\Beach\BookingsCalendar::class)->name('bookings');
+    });
 
     // Administrator Routes
     Route::middleware('role:administrator')->prefix('admin')->name('admin.')->group(function () {
@@ -148,6 +165,7 @@ Route::middleware(['auth:staff'])->group(function () {
         Route::get('/staff', \App\Livewire\Admin\Staff\Index::class)->name('staff.index');
         Route::get('/hotels', \App\Livewire\Admin\Hotels\Index::class)->name('hotels.index');
 
+        Route::get('/beach/categories', \App\Livewire\Admin\Beach\Categories::class)->name('beach.categories');
         Route::get('/beach/services', \App\Livewire\Admin\Beach\Services::class)->name('beach.services');
 
         // Ferry Management

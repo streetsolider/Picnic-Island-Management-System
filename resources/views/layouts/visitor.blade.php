@@ -86,6 +86,34 @@
                                 </div>
                             </div>
 
+                            {{-- Beach Activities Menu --}}
+                            <div x-data="{ open: false }" @click.away="open = false" class="relative">
+                                <button @click="open = !open"
+                                    class="flex items-center text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">
+                                    Beach Activities
+                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                <div x-show="open"
+                                    x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 scale-95"
+                                    x-transition:enter-end="opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-150"
+                                    x-transition:leave-start="opacity-100 scale-100"
+                                    x-transition:leave-end="opacity-0 scale-95"
+                                    class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                                    <a href="{{ route('visitor.beach-activities.browse') }}" wire:navigate
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Browse Activities
+                                    </a>
+                                    <a href="{{ route('visitor.beach-activities.my-bookings') }}" wire:navigate
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        My Bookings
+                                    </a>
+                                </div>
+                            </div>
+
                             <form method="POST" action="{{ route('logout') }}" class="inline">
                                 @csrf
                                 <button type="submit"
@@ -150,6 +178,19 @@
                                 <a href="{{ route('visitor.theme-park.redemptions') }}" wire:navigate
                                     class="block px-4 py-2 pl-8 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg transition-colors">
                                     My Redemptions
+                                </a>
+                            </div>
+
+                            {{-- Beach Activities Mobile Menu --}}
+                            <div class="space-y-1">
+                                <div class="px-4 py-2 text-sm font-semibold text-gray-500">Beach Activities</div>
+                                <a href="{{ route('visitor.beach-activities.browse') }}" wire:navigate
+                                    class="block px-4 py-2 pl-8 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg transition-colors">
+                                    Browse Activities
+                                </a>
+                                <a href="{{ route('visitor.beach-activities.my-bookings') }}" wire:navigate
+                                    class="block px-4 py-2 pl-8 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg transition-colors">
+                                    My Bookings
                                 </a>
                             </div>
 

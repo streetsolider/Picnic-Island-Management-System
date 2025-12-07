@@ -12,13 +12,28 @@
             <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 min-w-[600px] max-w-[700px] max-h-[90vh] overflow-y-auto" style="z-index: 100000;" @click.stop>
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Create New Beach Service</h3>
                 <form wire:submit="createService">
+                    <!-- Category -->
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Service Name</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category *</label>
+                        <select wire:model="beach_activity_category_id" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            <option value="">Select Category</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->icon }} {{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('beach_activity_category_id') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <!-- Service Name -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Service Name *</label>
                         <input wire:model="name" type="text" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                         @error('name') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
+
+                    <!-- Service Type -->
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Service Type</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Service Type *</label>
                         <select wire:model="service_type" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                             <option value="">Select Service Type</option>
                             @foreach($serviceTypes as $type)
@@ -27,11 +42,86 @@
                         </select>
                         @error('service_type') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
+
+                    <!-- Description -->
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
                         <textarea wire:model="description" rows="3" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"></textarea>
                         @error('description') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
+
+                    <!-- Booking Type -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Booking Type *</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center">
+                                <input wire:model.live="booking_type" type="radio" value="fixed_slot" class="rounded-full border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500">
+                                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Fixed Time Slots</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input wire:model.live="booking_type" type="radio" value="flexible_duration" class="rounded-full border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500">
+                                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Flexible Duration</span>
+                            </label>
+                        </div>
+                        @error('booking_type') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <!-- Fixed Slot Fields -->
+                    @if($booking_type === 'fixed_slot')
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Slot Duration (minutes) *</label>
+                                <input wire:model="slot_duration_minutes" type="number" min="15" step="15" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                                @error('slot_duration_minutes') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Slot Price (MVR) *</label>
+                                <input wire:model="slot_price" type="number" min="0" step="0.01" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                                @error('slot_price') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Flexible Duration Fields -->
+                    @if($booking_type === 'flexible_duration')
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price Per Hour (MVR) *</label>
+                            <input wire:model="price_per_hour" type="number" min="0" step="0.01" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            @error('price_per_hour') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                        </div>
+                    @endif
+
+                    <!-- Capacity Fields -->
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Capacity Limit *</label>
+                            <input wire:model="capacity_limit" type="number" min="1" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            @error('capacity_limit') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Total equipment/slots available</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Concurrent Capacity *</label>
+                            <input wire:model="concurrent_capacity" type="number" min="1" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            @error('concurrent_capacity') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Max simultaneous bookings</p>
+                        </div>
+                    </div>
+
+                    <!-- Operating Hours -->
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Opening Time *</label>
+                            <input wire:model="opening_time" type="time" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            @error('opening_time') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Closing Time *</label>
+                            <input wire:model="closing_time" type="time" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            @error('closing_time') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+
+                    <!-- Assign Staff -->
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assign Beach Staff (Optional)</label>
                         <select wire:model="assigned_staff_id" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
@@ -42,6 +132,8 @@
                         </select>
                         @error('assigned_staff_id') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
+
+                    <!-- Active Status -->
                     <div class="mb-4">
                         <label class="flex items-center">
                             <input wire:model="is_active" type="checkbox" class="rounded border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500">
@@ -62,13 +154,28 @@
             <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 min-w-[600px] max-w-[700px] max-h-[90vh] overflow-y-auto" style="z-index: 100000;" @click.stop>
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Edit Beach Service</h3>
                 <form wire:submit="updateService">
+                    <!-- Category -->
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Service Name</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category *</label>
+                        <select wire:model="beach_activity_category_id" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            <option value="">Select Category</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->icon }} {{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('beach_activity_category_id') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <!-- Service Name -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Service Name *</label>
                         <input wire:model="name" type="text" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                         @error('name') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
+
+                    <!-- Service Type -->
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Service Type</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Service Type *</label>
                         <select wire:model="service_type" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
                             <option value="">Select Service Type</option>
                             @foreach($serviceTypes as $type)
@@ -77,11 +184,86 @@
                         </select>
                         @error('service_type') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
+
+                    <!-- Description -->
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
                         <textarea wire:model="description" rows="3" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm"></textarea>
                         @error('description') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
+
+                    <!-- Booking Type -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Booking Type *</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center">
+                                <input wire:model.live="booking_type" type="radio" value="fixed_slot" class="rounded-full border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500">
+                                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Fixed Time Slots</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input wire:model.live="booking_type" type="radio" value="flexible_duration" class="rounded-full border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500">
+                                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Flexible Duration</span>
+                            </label>
+                        </div>
+                        @error('booking_type') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                    </div>
+
+                    <!-- Fixed Slot Fields -->
+                    @if($booking_type === 'fixed_slot')
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Slot Duration (minutes) *</label>
+                                <input wire:model="slot_duration_minutes" type="number" min="15" step="15" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                                @error('slot_duration_minutes') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Slot Price (MVR) *</label>
+                                <input wire:model="slot_price" type="number" min="0" step="0.01" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                                @error('slot_price') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Flexible Duration Fields -->
+                    @if($booking_type === 'flexible_duration')
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price Per Hour (MVR) *</label>
+                            <input wire:model="price_per_hour" type="number" min="0" step="0.01" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            @error('price_per_hour') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                        </div>
+                    @endif
+
+                    <!-- Capacity Fields -->
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Capacity Limit *</label>
+                            <input wire:model="capacity_limit" type="number" min="1" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            @error('capacity_limit') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Total equipment/slots available</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Concurrent Capacity *</label>
+                            <input wire:model="concurrent_capacity" type="number" min="1" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            @error('concurrent_capacity') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Max simultaneous bookings</p>
+                        </div>
+                    </div>
+
+                    <!-- Operating Hours -->
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Opening Time *</label>
+                            <input wire:model="opening_time" type="time" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            @error('opening_time') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Closing Time *</label>
+                            <input wire:model="closing_time" type="time" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
+                            @error('closing_time') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+
+                    <!-- Assign Staff -->
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assign Beach Staff (Optional)</label>
                         <select wire:model="assigned_staff_id" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
@@ -92,6 +274,8 @@
                         </select>
                         @error('assigned_staff_id') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
+
+                    <!-- Active Status -->
                     <div class="mb-4">
                         <label class="flex items-center">
                             <input wire:model="is_active" type="checkbox" class="rounded border-gray-300 dark:border-gray-700 text-indigo-600 focus:ring-indigo-500">
@@ -159,7 +343,9 @@
                     <thead class="bg-gray-50 dark:bg-gray-900">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Service Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Service Type</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Booking Type</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Pricing</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Assigned Staff</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
@@ -174,7 +360,26 @@
                                         <div class="text-xs text-gray-500 dark:text-gray-400">{{ Str::limit($service->description, 60) }}</div>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ $service->service_type }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if($service->category)
+                                        <div class="text-sm text-gray-900 dark:text-gray-100">{{ $service->category->icon }} {{ $service->category->name }}</div>
+                                    @else
+                                        <span class="text-sm text-gray-400 dark:text-gray-500 italic">No category</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $service->booking_type === 'fixed_slot' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' }}">
+                                        {{ $service->booking_type === 'fixed_slot' ? 'Fixed Slot' : 'Flexible' }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if($service->booking_type === 'fixed_slot')
+                                        <div class="text-sm text-gray-900 dark:text-gray-100">MVR {{ number_format($service->slot_price, 2) }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $service->slot_duration_minutes }} min slot</div>
+                                    @else
+                                        <div class="text-sm text-gray-900 dark:text-gray-100">MVR {{ number_format($service->price_per_hour, 2) }}/hr</div>
+                                    @endif
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if($service->assignedStaff)
                                         <div class="text-sm text-gray-900 dark:text-gray-100">{{ $service->assignedStaff->name }}</div>
@@ -194,7 +399,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No beach services found.</td>
+                                <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">No beach services found.</td>
                             </tr>
                         @endforelse
                     </tbody>
