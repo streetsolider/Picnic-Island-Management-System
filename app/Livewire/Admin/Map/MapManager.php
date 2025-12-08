@@ -8,6 +8,7 @@ use App\Models\MapMarker;
 use App\Models\Hotel;
 use App\Models\ThemeParkActivity;
 use App\Models\BeachService;
+use App\Models\FerryTerminal;
 use App\Models\MapSetting;
 use Illuminate\Support\Facades\Storage;
 
@@ -19,6 +20,7 @@ class MapManager extends Component
     public $hotels = [];
     public $themeParkActivities = [];
     public $beachServices = [];
+    public $ferryTerminals = [];
     public $mapImage;
     public $currentMapPath;
     public $showResetConfirmation = false;
@@ -40,6 +42,9 @@ class MapManager extends Component
             ->whereDoesntHave('mapMarker')->get();
 
         $this->beachServices = BeachService::active()
+            ->whereDoesntHave('mapMarker')->get();
+
+        $this->ferryTerminals = FerryTerminal::active()
             ->whereDoesntHave('mapMarker')->get();
     }
 
@@ -88,6 +93,7 @@ class MapManager extends Component
             'hotel' => Hotel::class,
             'themepark' => ThemeParkActivity::class,
             'beach' => BeachService::class,
+            'ferry' => FerryTerminal::class,
             default => null,
         };
 

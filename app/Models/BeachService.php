@@ -77,14 +77,6 @@ class BeachService extends Model
     }
 
     /**
-     * Get all activities for this beach service (old relationship, kept for backward compatibility)
-     */
-    public function activities(): HasMany
-    {
-        return $this->hasMany(BeachActivity::class, 'beach_service_id');
-    }
-
-    /**
      * Get all bookings for this beach service
      */
     public function bookings(): HasMany

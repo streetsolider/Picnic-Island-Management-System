@@ -137,7 +137,7 @@
                                 class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">Kabohera
                                 Island</span>
                         </h1>
-                        <p class="text-xl text-gray-600">Discover hotels, theme parks, and beach services across the
+                        <p class="text-xl text-gray-600">Discover hotels, theme parks, beach services, and ferry terminal across the
                             island</p>
                     </div>
                 </div>
@@ -236,8 +236,14 @@
                                         </div>
                                     </template>
                                 </template>
-                                
-                                <template x-if="mobileActiveMarker?.type !== 'App\\Models\\Hotel'">
+
+                                <template x-if="mobileActiveMarker?.type === 'App\\Models\\FerryTerminal'">
+                                    <a href="{{ route('ferry-tickets.browse') }}" class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-amber-500 active:bg-amber-600 text-white rounded-xl font-bold text-lg transition-all shadow-lg">
+                                        Book Ferry Ticket
+                                    </a>
+                                </template>
+
+                                <template x-if="mobileActiveMarker?.type !== 'App\\Models\\Hotel' && mobileActiveMarker?.type !== 'App\\Models\\FerryTerminal'">
                                     <div class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold text-lg">
                                         View Details
                                     </div>
@@ -292,6 +298,11 @@
                                     <img src="{{ asset('images/map/beach_pin.png') }}"
                                         class="w-6 h-6 rounded-full border-2 border-green-500 shadow-sm" alt="Beach">
                                     <span class="font-semibold text-brand-dark">Beach Services</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <img src="{{ asset('images/map/ferry_pin.png') }}"
+                                        class="w-6 h-6 rounded-full border-2 border-amber-500 shadow-sm" alt="Ferry">
+                                    <span class="font-semibold text-brand-dark">Ferry Terminal</span>
                                 </div>
                             </div>
                         </div>
@@ -348,6 +359,9 @@
                                             @elseif($marker->mappable_type === 'App\Models\BeachService')
                                                 <img src="{{ asset('images/map/beach_pin.png') }}"
                                                     class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-green-500 rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
+                                            @elseif($marker->mappable_type === 'App\Models\FerryTerminal')
+                                                <img src="{{ asset('images/map/ferry_pin.png') }}"
+                                                    class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-amber-500 rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
                                             @endif
 
                                             <span class="sr-only">{{ $marker->mappable->name ?? 'Marker' }}</span>
@@ -394,6 +408,14 @@
                                                             Currently Unavailable
                                                         </div>
                                                     @endif
+                                                @elseif($marker->mappable_type === 'App\Models\FerryTerminal')
+                                                    <a href="{{ route('ferry-tickets.browse') }}"
+                                                        class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                                        </svg>
+                                                        Book Ferry Ticket
+                                                    </a>
                                                 @else
                                                     <div class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl font-semibold text-sm">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -451,10 +473,10 @@
                             <div class="flex-1">
                                 <h4 class="font-display font-bold text-brand-dark mb-2">How to Use the Map</h4>
                                 <p class="text-gray-600 text-sm leading-relaxed">
-                                    Click on any marker to view details about hotels, theme parks, and beach
-                                    services.
+                                    Click on any marker to view details about hotels, theme parks, beach
+                                    services, and ferry terminal.
                                     You can book directly from the location popup or browse our full selection of
-                                    accommodations and services.
+                                    accommodations, activities, and ferry tickets.
                                 </p>
                             </div>
                         </div>

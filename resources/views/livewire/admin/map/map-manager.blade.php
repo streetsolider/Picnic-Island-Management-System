@@ -69,6 +69,7 @@
         <img x-ref="hotelDragImage" src="{{ asset('images/map/hotel_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-brand-primary shadow-md">
         <img x-ref="themeparkDragImage" src="{{ asset('images/map/themepark_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-brand-secondary shadow-md">
         <img x-ref="beachDragImage" src="{{ asset('images/map/beach_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-green-500 shadow-md">
+        <img x-ref="ferryDragImage" src="{{ asset('images/map/ferry_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-amber-500 shadow-md">
     </div>
 
     {{-- Map Manager --}}
@@ -105,6 +106,8 @@
             dragImage = this.$refs.themeparkDragImage;
         } else if (type === 'beach') {
             dragImage = this.$refs.beachDragImage;
+        } else if (type === 'ferry') {
+            dragImage = this.$refs.ferryDragImage;
         } else if (type === 'existing') {
             // For existing markers, use the marker's own icon image
             const markerImg = event.target.querySelector('img') || event.target.closest('.group').querySelector('img');
@@ -199,6 +202,23 @@
                     @endforelse
                 </div>
             </div>
+
+            {{-- Ferry Terminal --}}
+            <div>
+                <h3 class="text-sm font-medium text-gray-500 mb-2">Ferry Terminal</h3>
+                <div class="space-y-2">
+                    @forelse($ferryTerminals as $terminal)
+                        <div draggable="true" @dragstart="startDrag($event, 'ferry', {{ $terminal->id }})"
+                            class="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition">
+                            <img src="{{ asset('images/map/ferry_pin.png') }}"
+                                class="w-6 h-6 object-cover rounded-full border border-amber-500">
+                            <span class="text-sm text-gray-700 dark:text-gray-300">{{ $terminal->name }}</span>
+                        </div>
+                    @empty
+                        <p class="text-xs text-gray-400">Ferry terminal already placed.</p>
+                    @endforelse
+                </div>
+            </div>
         </div>
 
         {{-- Map Container --}}
@@ -225,6 +245,9 @@
                     @elseif($marker->mappable_type === 'App\Models\BeachService')
                         <img src="{{ asset('images/map/beach_pin.png') }}"
                             class="w-8 h-8 object-cover rounded-full border-2 border-green-500 shadow-md">
+                    @elseif($marker->mappable_type === 'App\Models\FerryTerminal')
+                        <img src="{{ asset('images/map/ferry_pin.png') }}"
+                            class="w-8 h-8 object-cover rounded-full border-2 border-amber-500 shadow-md">
                     @endif
 
                     {{-- Tooltip / Controls --}}
