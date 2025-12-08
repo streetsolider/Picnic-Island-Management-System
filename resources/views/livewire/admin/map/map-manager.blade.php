@@ -211,7 +211,7 @@
 
             {{-- Placed Markers --}}
             @foreach($markers as $marker)
-                <div class="absolute transform -translate-x-1/2 -translate-y-1/2 group cursor-move"
+                <div class="absolute transform -translate-x-1/2 -translate-y-1/2 group cursor-move z-10 hover:z-50 transition-all"
                     style="left: {{ $marker->x_position }}%; top: {{ $marker->y_position }}%;" draggable="true"
                     @dragstart="startDrag($event, 'existing', {{ $marker->id }})">
 
@@ -229,7 +229,7 @@
 
                     {{-- Tooltip / Controls --}}
                     <div
-                        class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:flex flex-col items-center z-10 w-max">
+                        class="absolute bottom-full left-1/2 -translate-x-1/2 pb-2 hidden group-hover:flex flex-col items-center z-10 w-max">
                         <div class="bg-black text-white text-xs rounded px-2 py-1 mb-1">
                             {{ $marker->mappable ? $marker->mappable->name : 'Unknown' }}
                         </div>
