@@ -183,19 +183,19 @@
                 </div>
             </div>
 
-            {{-- Beach --}}
+            {{-- Beach Services --}}
             <div>
-                <h3 class="text-sm font-medium text-gray-500 mb-2">Beach Activities</h3>
+                <h3 class="text-sm font-medium text-gray-500 mb-2">Beach Services</h3>
                 <div class="space-y-2">
-                    @forelse($beachActivities as $activity)
-                        <div draggable="true" @dragstart="startDrag($event, 'beach', {{ $activity->id }})"
+                    @forelse($beachServices as $service)
+                        <div draggable="true" @dragstart="startDrag($event, 'beach', {{ $service->id }})"
                             class="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition">
                             <img src="{{ asset('images/map/beach_pin.png') }}"
                                 class="w-6 h-6 object-cover rounded-full border border-gray-300">
-                            <span class="text-sm text-gray-700 dark:text-gray-300">{{ $activity->name }}</span>
+                            <span class="text-sm text-gray-700 dark:text-gray-300">{{ $service->name }}</span>
                         </div>
                     @empty
-                        <p class="text-xs text-gray-400">No unplaced activities.</p>
+                        <p class="text-xs text-gray-400">No unplaced services.</p>
                     @endforelse
                 </div>
             </div>
@@ -222,7 +222,7 @@
                     @elseif($marker->mappable_type === 'App\Models\ThemeParkActivity')
                         <img src="{{ asset('images/map/themepark_pin.png') }}"
                             class="w-8 h-8 object-cover rounded-full border-2 border-brand-secondary shadow-md">
-                    @elseif($marker->mappable_type === 'App\Models\BeachActivity')
+                    @elseif($marker->mappable_type === 'App\Models\BeachService')
                         <img src="{{ asset('images/map/beach_pin.png') }}"
                             class="w-8 h-8 object-cover rounded-full border-2 border-green-500 shadow-md">
                     @endif

@@ -7,7 +7,7 @@ use Livewire\WithFileUploads;
 use App\Models\MapMarker;
 use App\Models\Hotel;
 use App\Models\ThemeParkActivity;
-use App\Models\BeachActivity;
+use App\Models\BeachService;
 use App\Models\MapSetting;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,7 +18,7 @@ class MapManager extends Component
     public $markers = [];
     public $hotels = [];
     public $themeParkActivities = [];
-    public $beachActivities = [];
+    public $beachServices = [];
     public $mapImage;
     public $currentMapPath;
     public $showResetConfirmation = false;
@@ -39,7 +39,7 @@ class MapManager extends Component
         $this->themeParkActivities = ThemeParkActivity::where('is_active', true)
             ->whereDoesntHave('mapMarker')->get();
 
-        $this->beachActivities = BeachActivity::active()
+        $this->beachServices = BeachService::active()
             ->whereDoesntHave('mapMarker')->get();
     }
 
@@ -87,7 +87,7 @@ class MapManager extends Component
         $modelClass = match ($type) {
             'hotel' => Hotel::class,
             'themepark' => ThemeParkActivity::class,
-            'beach' => BeachActivity::class,
+            'beach' => BeachService::class,
             default => null,
         };
 

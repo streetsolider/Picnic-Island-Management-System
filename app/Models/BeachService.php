@@ -175,4 +175,12 @@ class BeachService extends Model
     {
         return $this->service_type === 'Beach Huts';
     }
+
+    /**
+     * Get the map marker for this service
+     */
+    public function mapMarker(): \Illuminate\Database\Eloquent\Relations\MorphOne
+    {
+        return $this->morphOne(MapMarker::class, 'mappable');
+    }
 }

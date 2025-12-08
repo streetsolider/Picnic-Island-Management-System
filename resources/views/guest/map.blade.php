@@ -137,7 +137,7 @@
                                 class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">Kabohera
                                 Island</span>
                         </h1>
-                        <p class="text-xl text-gray-600">Discover hotels, theme parks, and beach activities across the
+                        <p class="text-xl text-gray-600">Discover hotels, theme parks, and beach services across the
                             island</p>
                     </div>
                 </div>
@@ -291,7 +291,7 @@
                                 <div class="flex items-center gap-2">
                                     <img src="{{ asset('images/map/beach_pin.png') }}"
                                         class="w-6 h-6 rounded-full border-2 border-green-500 shadow-sm" alt="Beach">
-                                    <span class="font-semibold text-brand-dark">Beach Activities</span>
+                                    <span class="font-semibold text-brand-dark">Beach Services</span>
                                 </div>
                             </div>
                         </div>
@@ -345,7 +345,7 @@
                                             @elseif($marker->mappable_type === 'App\Models\ThemeParkActivity')
                                                 <img src="{{ asset('images/map/themepark_pin.png') }}"
                                                     class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-brand-secondary rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
-                                            @elseif($marker->mappable_type === 'App\Models\BeachActivity')
+                                            @elseif($marker->mappable_type === 'App\Models\BeachService')
                                                 <img src="{{ asset('images/map/beach_pin.png') }}"
                                                     class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-green-500 rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
                                             @endif
@@ -452,9 +452,9 @@
                                 <h4 class="font-display font-bold text-brand-dark mb-2">How to Use the Map</h4>
                                 <p class="text-gray-600 text-sm leading-relaxed">
                                     Click on any marker to view details about hotels, theme parks, and beach
-                                    activities.
+                                    services.
                                     You can book directly from the location popup or browse our full selection of
-                                    accommodations and activities.
+                                    accommodations and services.
                                 </p>
                             </div>
                         </div>
