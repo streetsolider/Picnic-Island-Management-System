@@ -23,22 +23,6 @@
                         @error('name') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
 
-                    <!-- Location -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location (Optional)</label>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Latitude</label>
-                                <input wire:model="latitude" type="number" step="0.00000001" placeholder="e.g., 6.5244" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                                @error('latitude') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Longitude</label>
-                                <input wire:model="longitude" type="number" step="0.00000001" placeholder="e.g., 3.3792" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                                @error('longitude') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Description -->
                     <div class="mb-4">
@@ -116,22 +100,6 @@
                         @error('name') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                     </div>
 
-                    <!-- Location -->
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location (Optional)</label>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Latitude</label>
-                                <input wire:model="latitude" type="number" step="0.00000001" placeholder="e.g., 6.5244" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                                @error('latitude') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Longitude</label>
-                                <input wire:model="longitude" type="number" step="0.00000001" placeholder="e.g., 3.3792" class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm">
-                                @error('longitude') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Description -->
                     <div class="mb-4">

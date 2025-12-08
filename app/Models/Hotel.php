@@ -18,7 +18,6 @@ class Hotel extends Model
      */
     protected $fillable = [
         'name',
-        'location',
         'description',
         'star_rating',
         'room_capacity',
@@ -39,7 +38,6 @@ class Hotel extends Model
             'is_active' => 'boolean',
             'star_rating' => 'integer',
             'room_capacity' => 'integer',
-            'location' => 'array',
             'default_checkout_time' => 'datetime:H:i:s',
             'default_checkin_time' => 'datetime:H:i:s',
         ];

@@ -23,10 +23,6 @@ class HotelSeeder extends Seeder
         $hotels = [
             [
                 'name' => 'Paradise Bay Hotel',
-                'location' => [
-                    'latitude' => 6.5244,
-                    'longitude' => 3.3792,
-                ],
                 'description' => 'A luxurious beachfront resort with stunning ocean views and world-class amenities.',
                 'star_rating' => 5,
                 'room_capacity' => 150,
@@ -34,10 +30,6 @@ class HotelSeeder extends Seeder
             ],
             [
                 'name' => 'Island View Hotel',
-                'location' => [
-                    'latitude' => 6.5310,
-                    'longitude' => 3.3850,
-                ],
                 'description' => 'Modern hotel in the heart of the island with easy access to all attractions.',
                 'star_rating' => 4,
                 'room_capacity' => 100,
@@ -45,10 +37,6 @@ class HotelSeeder extends Seeder
             ],
             [
                 'name' => 'Sunset Inn',
-                'location' => [
-                    'latitude' => 6.5180,
-                    'longitude' => 3.3720,
-                ],
                 'description' => 'Cozy boutique hotel perfect for couples and small families.',
                 'star_rating' => 3,
                 'room_capacity' => 50,
@@ -56,10 +44,6 @@ class HotelSeeder extends Seeder
             ],
             [
                 'name' => 'Picnic Grand Hotel',
-                'location' => [
-                    'latitude' => 6.5275,
-                    'longitude' => 3.3815,
-                ],
                 'description' => 'Premium hotel offering luxury accommodations and exceptional service.',
                 'star_rating' => 5,
                 'room_capacity' => 200,
@@ -67,10 +51,6 @@ class HotelSeeder extends Seeder
             ],
             [
                 'name' => 'Budget Stay Lodge',
-                'location' => [
-                    'latitude' => 6.5150,
-                    'longitude' => 3.3690,
-                ],
                 'description' => 'Affordable accommodation for budget-conscious travelers.',
                 'star_rating' => 2,
                 'room_capacity' => 30,

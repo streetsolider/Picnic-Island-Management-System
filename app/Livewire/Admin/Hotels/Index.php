@@ -23,8 +23,6 @@ class Index extends Component
     // Form properties
     public $hotelId;
     public $name;
-    public $latitude;
-    public $longitude;
     public $description;
     public $star_rating = 3;
     public $room_capacity = 0;
@@ -37,8 +35,6 @@ class Index extends Component
     {
         $rules = [
             'name' => 'required|string|max:255',
-            'latitude' => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180',
             'description' => 'nullable|string',
             'star_rating' => 'required|integer|min:1|max:5',
             'room_capacity' => 'required|integer|min:0',
@@ -72,8 +68,6 @@ class Index extends Component
 
         $this->hotelId = $hotel->id;
         $this->name = $hotel->name;
-        $this->latitude = $hotel->location['latitude'] ?? '';
-        $this->longitude = $hotel->location['longitude'] ?? '';
         $this->description = $hotel->description;
         $this->star_rating = $hotel->star_rating;
         $this->room_capacity = $hotel->room_capacity;
@@ -101,8 +95,6 @@ class Index extends Component
     {
         $this->hotelId = null;
         $this->name = '';
-        $this->latitude = '';
-        $this->longitude = '';
         $this->description = '';
         $this->star_rating = 3;
         $this->room_capacity = 0;
@@ -123,16 +115,6 @@ class Index extends Component
             'manager_id' => $this->manager_id,
             'is_active' => $this->is_active,
         ];
-
-        // Only add location if both latitude and longitude are provided
-        if ($this->latitude !== '' && $this->latitude !== null && $this->longitude !== '' && $this->longitude !== null) {
-            $data['location'] = [
-                'latitude' => $this->latitude,
-                'longitude' => $this->longitude,
-            ];
-        } else {
-            $data['location'] = null;
-        }
 
         Hotel::create($data);
 
@@ -155,16 +137,6 @@ class Index extends Component
             'manager_id' => $this->manager_id,
             'is_active' => $this->is_active,
         ];
-
-        // Only add location if both latitude and longitude are provided
-        if ($this->latitude !== '' && $this->latitude !== null && $this->longitude !== '' && $this->longitude !== null) {
-            $data['location'] = [
-                'latitude' => $this->latitude,
-                'longitude' => $this->longitude,
-            ];
-        } else {
-            $data['location'] = null;
-        }
 
         $hotel->update($data);
 
