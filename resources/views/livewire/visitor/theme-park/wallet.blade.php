@@ -113,15 +113,21 @@
                 <div class="bg-gradient-to-r from-brand-primary to-brand-secondary p-6 text-white">
                     <div class="flex items-center justify-between flex-wrap gap-4">
                         <h2 class="text-2xl font-display font-bold">Transaction History</h2>
-                        <div class="flex space-x-2">
+                        <div class="flex flex-wrap gap-2">
                             <button wire:click="$set('filter', 'all')" class="px-4 py-2 text-sm font-medium rounded-lg {{ $filter === 'all' ? 'bg-white text-brand-primary' : 'bg-white/20 text-white hover:bg-white/30' }} transition-all">
                                 All
                             </button>
                             <button wire:click="$set('filter', 'top_up')" class="px-4 py-2 text-sm font-medium rounded-lg {{ $filter === 'top_up' ? 'bg-white text-brand-primary' : 'bg-white/20 text-white hover:bg-white/30' }} transition-all">
-                                Top-ups
+                                💰 Top-ups
                             </button>
                             <button wire:click="$set('filter', 'ticket_purchase')" class="px-4 py-2 text-sm font-medium rounded-lg {{ $filter === 'ticket_purchase' ? 'bg-white text-brand-primary' : 'bg-white/20 text-white hover:bg-white/30' }} transition-all">
-                                Purchases
+                                💳 Buy Credits
+                            </button>
+                            <button wire:click="$set('filter', 'activity_ticket_purchase')" class="px-4 py-2 text-sm font-medium rounded-lg {{ $filter === 'activity_ticket_purchase' ? 'bg-white text-brand-primary' : 'bg-white/20 text-white hover:bg-white/30' }} transition-all">
+                                🎟️ Tickets
+                            </button>
+                            <button wire:click="$set('filter', 'credit_refund')" class="px-4 py-2 text-sm font-medium rounded-lg {{ $filter === 'credit_refund' ? 'bg-white text-brand-primary' : 'bg-white/20 text-white hover:bg-white/30' }} transition-all">
+                                ↩️ Refunds
                             </button>
                         </div>
                     </div>
@@ -155,18 +161,30 @@
                                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
                                                         💰 Top Up
                                                     </span>
-                                                @else
+                                                @elseif($transaction->transaction_type === 'ticket_purchase')
                                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
-                                                        🎟️ Purchase
+                                                        💳 Buy Credits
+                                                    </span>
+                                                @elseif($transaction->transaction_type === 'activity_ticket_purchase')
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
+                                                        🎟️ Ticket Purchase
+                                                    </span>
+                                                @elseif($transaction->transaction_type === 'credit_refund')
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700">
+                                                        ↩️ Refund
                                                     </span>
                                                 @endif
                                             </td>
                                             <td class="px-4 py-4">
                                                 @if($transaction->transaction_type === 'top_up')
                                                     <span class="text-green-600 font-bold">+MVR {{ number_format($transaction->amount_mvr, 2) }}</span>
-                                                @else
-                                                    <span class="text-purple-600 font-bold">{{ $transaction->tickets_amount }} credits</span>
+                                                @elseif($transaction->transaction_type === 'ticket_purchase')
+                                                    <span class="text-purple-600 font-bold">+{{ $transaction->credits_amount }} credits</span>
                                                     <span class="text-sm text-gray-500">(MVR {{ number_format($transaction->amount_mvr, 2) }})</span>
+                                                @elseif($transaction->transaction_type === 'activity_ticket_purchase')
+                                                    <span class="text-red-600 font-bold">-{{ $transaction->credits_amount }} credits</span>
+                                                @elseif($transaction->transaction_type === 'credit_refund')
+                                                    <span class="text-green-600 font-bold">+{{ $transaction->credits_amount }} credits</span>
                                                 @endif
                                             </td>
                                             <td class="px-4 py-4">

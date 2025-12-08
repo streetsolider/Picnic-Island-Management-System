@@ -6,6 +6,7 @@ use App\Models\ThemeParkActivity;
 use App\Models\ThemeParkActivityTicket;
 use App\Models\ThemeParkShowSchedule;
 use App\Models\ThemeParkWallet;
+use App\Models\ThemeParkWalletTransaction;
 use App\Models\ThemeParkZone;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -210,6 +211,19 @@ class Schedules extends Component
             foreach ($affectedTickets as $ticket) {
                 // Refund credits to wallet
                 $wallet = ThemeParkWallet::getOrCreateForUser($ticket->guest_id);
+
+                // Create wallet transaction for refund
+                ThemeParkWalletTransaction::create([
+                    'user_id' => $ticket->guest_id,
+                    'activity_ticket_id' => $ticket->id,
+                    'transaction_type' => 'credit_refund',
+                    'credits_amount' => $ticket->credits_spent,
+                    'balance_before_mvr' => $wallet->balance_mvr,
+                    'balance_after_mvr' => $wallet->balance_mvr,
+                    'balance_before_credits' => $wallet->credit_balance,
+                    'balance_after_credits' => $wallet->credit_balance + $ticket->credits_spent,
+                ]);
+
                 $wallet->credit_balance += $ticket->credits_spent;
                 $wallet->total_credits_redeemed -= $ticket->credits_spent;
                 $wallet->save();
