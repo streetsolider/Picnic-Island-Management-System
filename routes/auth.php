@@ -53,6 +53,16 @@ Route::get('staff-logout', function () {
     return redirect()->route('staff.login');
 });
 
+// Handle GET requests to logout (redirect to login)
+Route::get('logout', function () {
+    if (auth()->check()) {
+        auth()->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+    }
+    return redirect()->route('login');
+});
+
 Route::middleware('auth')->group(function () {
     Volt::route('verify-email', 'pages.auth.verify-email')
         ->name('verification.notice');
