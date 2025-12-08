@@ -18,6 +18,7 @@ class Activities extends Component
     public $selectedActivity = null;
     public $selectedSchedule = null;
     public $numberOfPersons = 1;
+    public $modalError = null; // Error messages for modal
 
     public $hotelBooking;
 
@@ -75,6 +76,7 @@ class Activities extends Component
         }])->find($activityId);
         $this->numberOfPersons = 1; // Reset to 1 when selecting new activity
         $this->selectedSchedule = null; // Reset schedule selection
+        $this->modalError = null; // Clear modal errors
     }
 
     public function cancelRedemption()
@@ -82,6 +84,7 @@ class Activities extends Component
         $this->selectedActivity = null;
         $this->selectedSchedule = null;
         $this->numberOfPersons = 1; // Reset when canceling
+        $this->modalError = null; // Clear modal errors
     }
 
     public function purchaseTicket()
@@ -92,8 +95,11 @@ class Activities extends Component
             'selectedSchedule' => $this->selectedSchedule,
         ]);
 
+        // Clear previous modal errors
+        $this->modalError = null;
+
         if (!$this->selectedActivity) {
-            session()->flash('error', 'Please select an activity first.');
+            $this->modalError = 'Please select an activity first.';
             return;
         }
 
@@ -117,7 +123,7 @@ class Activities extends Component
         } else {
             // Scheduled show - validate schedule selection
             if (!$this->selectedSchedule) {
-                session()->flash('error', 'Please select a show schedule.');
+                $this->modalError = 'Please select a show schedule.';
                 return;
             }
 
@@ -144,13 +150,14 @@ class Activities extends Component
             $this->selectedActivity = null;
             $this->selectedSchedule = null;
             $this->numberOfPersons = 1;
+            $this->modalError = null;
             $this->loadWallet(); // Refresh wallet
 
             // Redirect to refresh the page and show flash message
             return $this->redirect(route('visitor.theme-park.activities'), navigate: true);
         } else {
             \Log::error('Purchase failed', ['error' => $result['message']]);
-            session()->flash('error', $result['message']);
+            $this->modalError = $result['message'];
         }
     }
 

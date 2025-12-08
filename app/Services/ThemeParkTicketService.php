@@ -34,7 +34,7 @@ class ThemeParkTicketService
             return [
                 'valid' => false,
                 'booking' => null,
-                'errors' => ['No valid hotel booking found. You must have a confirmed or checked-in hotel booking to purchase theme park tickets.'],
+                'errors' => ['Valid hotel booking required to purchase tickets.'],
             ];
         }
 
@@ -87,14 +87,14 @@ class ThemeParkTicketService
             if (!$activity->isContinuous()) {
                 return [
                     'success' => false,
-                    'message' => 'This activity is a scheduled show. Use purchaseShowTicket instead.',
+                    'message' => 'This is a scheduled show, not a continuous ride.',
                 ];
             }
 
             if (!$activity->is_active) {
                 return [
                     'success' => false,
-                    'message' => 'This activity is currently inactive.',
+                    'message' => 'Activity is currently inactive.',
                 ];
             }
 
@@ -102,7 +102,7 @@ class ThemeParkTicketService
             if (!$activity->isCurrentlyOpen()) {
                 return [
                     'success' => false,
-                    'message' => "This activity is currently closed. Operating hours: {$activity->getOperatingHoursAttribute()}",
+                    'message' => "Activity is closed. Hours: {$activity->getOperatingHoursAttribute()}",
                 ];
             }
 
@@ -116,7 +116,7 @@ class ThemeParkTicketService
                     if ($rideStartTime->greaterThanOrEqualTo($checkoutTime)) {
                         return [
                             'success' => false,
-                            'message' => "This ride starts at {$rideStartTime->format('g:i A')}, which is at or after your checkout time ({$checkoutTime->format('g:i A')}). You cannot purchase tickets for rides that start at or after checkout time.",
+                            'message' => "Ride starts at {$rideStartTime->format('g:i A')}, after your checkout time ({$checkoutTime->format('g:i A')}).",
                         ];
                     }
                 }
@@ -130,9 +130,10 @@ class ThemeParkTicketService
 
             // Check if user has sufficient credits
             if (!$wallet->hasSufficientCredits($totalCreditsNeeded)) {
+                $needed = $totalCreditsNeeded - $wallet->credit_balance;
                 return [
                     'success' => false,
-                    'message' => "Insufficient credits. You need {$totalCreditsNeeded} credit(s) ({$activity->credit_cost} per person × {$quantity} persons) but have {$wallet->credit_balance}.",
+                    'message' => "Need {$needed} more credits. (Total: {$totalCreditsNeeded}, Balance: {$wallet->credit_balance})",
                 ];
             }
 
@@ -214,14 +215,14 @@ class ThemeParkTicketService
             if (!$activity->isScheduled()) {
                 return [
                     'success' => false,
-                    'message' => 'This activity is a continuous ride. Use purchaseContinuousRideTicket instead.',
+                    'message' => 'This is a continuous ride, not a scheduled show.',
                 ];
             }
 
             if (!$activity->is_active) {
                 return [
                     'success' => false,
-                    'message' => 'This activity is currently inactive.',
+                    'message' => 'Activity is currently inactive.',
                 ];
             }
 
@@ -254,7 +255,7 @@ class ThemeParkTicketService
                 if ($showStartTime->greaterThanOrEqualTo($checkoutTime)) {
                     return [
                         'success' => false,
-                        'message' => "This show starts at {$showStartTime->format('g:i A')} on your checkout day ({$hotelBooking->check_out_date->format('M d, Y')}), which is at or after your checkout time ({$checkoutTime->format('g:i A')}). Shows cannot start at or after checkout time. Please choose an earlier show or a different date.",
+                        'message' => "Show starts at {$showStartTime->format('g:i A')}, after your checkout time ({$checkoutTime->format('g:i A')}).",
                     ];
                 }
             }
@@ -269,7 +270,7 @@ class ThemeParkTicketService
             if (!$showSchedule->isScheduled()) {
                 return [
                     'success' => false,
-                    'message' => 'This show is not scheduled (cancelled or completed).',
+                    'message' => 'Show is cancelled or completed.',
                 ];
             }
 
@@ -278,7 +279,7 @@ class ThemeParkTicketService
             if ($quantity > $availableSeats) {
                 return [
                     'success' => false,
-                    'message' => "Not enough seats available. Requested: {$quantity}, Available: {$availableSeats}",
+                    'message' => "Only {$availableSeats} " . ($availableSeats === 1 ? 'seat' : 'seats') . " available.",
                 ];
             }
 
@@ -290,9 +291,10 @@ class ThemeParkTicketService
 
             // Check if user has sufficient credits
             if (!$wallet->hasSufficientCredits($totalCreditsNeeded)) {
+                $needed = $totalCreditsNeeded - $wallet->credit_balance;
                 return [
                     'success' => false,
-                    'message' => "Insufficient credits. You need {$totalCreditsNeeded} credit(s) but have {$wallet->credit_balance}.",
+                    'message' => "Need {$needed} more credits. (Total: {$totalCreditsNeeded}, Balance: {$wallet->credit_balance})",
                 ];
             }
 
