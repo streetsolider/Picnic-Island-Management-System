@@ -66,9 +66,9 @@
 
     {{-- Hidden Drag Preview Icons --}}
     <div class="hidden">
-        <img x-ref="hotelDragImage" src="{{ asset('images/map/hotel_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-white shadow-md">
-        <img x-ref="themeparkDragImage" src="{{ asset('images/map/themepark_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-white shadow-md">
-        <img x-ref="beachDragImage" src="{{ asset('images/map/beach_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-white shadow-md">
+        <img x-ref="hotelDragImage" src="{{ asset('images/map/hotel_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-brand-primary shadow-md">
+        <img x-ref="themeparkDragImage" src="{{ asset('images/map/themepark_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-brand-secondary shadow-md">
+        <img x-ref="beachDragImage" src="{{ asset('images/map/beach_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-green-500 shadow-md">
     </div>
 
     {{-- Map Manager --}}
@@ -218,13 +218,13 @@
                     {{-- Icon Selection based on type --}}
                     @if($marker->mappable_type === 'App\Models\Hotel')
                         <img src="{{ asset('images/map/hotel_pin.png') }}"
-                            class="w-8 h-8 object-cover rounded-full border-2 border-white shadow-md">
+                            class="w-8 h-8 object-cover rounded-full border-2 border-brand-primary shadow-md">
                     @elseif($marker->mappable_type === 'App\Models\ThemeParkActivity')
                         <img src="{{ asset('images/map/themepark_pin.png') }}"
-                            class="w-8 h-8 object-cover rounded-full border-2 border-white shadow-md">
+                            class="w-8 h-8 object-cover rounded-full border-2 border-brand-secondary shadow-md">
                     @elseif($marker->mappable_type === 'App\Models\BeachActivity')
                         <img src="{{ asset('images/map/beach_pin.png') }}"
-                            class="w-8 h-8 object-cover rounded-full border-2 border-white shadow-md">
+                            class="w-8 h-8 object-cover rounded-full border-2 border-green-500 shadow-md">
                     @endif
 
                     {{-- Tooltip / Controls --}}
