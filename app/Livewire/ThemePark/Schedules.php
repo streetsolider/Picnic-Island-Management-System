@@ -40,6 +40,9 @@ class Schedules extends Component
     #[Validate('required|date_format:H:i')]
     public $show_time = '';
 
+    #[Validate('required|integer|min:5')]
+    public $duration_minutes = '';
+
     #[Validate('required|integer|min:1')]
     public $venue_capacity = 50;
 
@@ -60,6 +63,20 @@ class Schedules extends Component
 
         // Set default date to today
         $this->show_date = now()->format('Y-m-d');
+    }
+
+    /**
+     * Auto-fill duration when activity is selected (only if duration is empty).
+     */
+    public function updatedActivityId($value)
+    {
+        // Only auto-fill if duration field is empty (not set yet)
+        if ($value && ($this->duration_minutes === '' || $this->duration_minutes === null)) {
+            $activity = ThemeParkActivity::find($value);
+            if ($activity && $activity->duration_minutes) {
+                $this->duration_minutes = $activity->duration_minutes;
+            }
+        }
     }
 
     public function openForm()
@@ -85,13 +102,17 @@ class Schedules extends Component
             }
         }
 
+        // Set edit mode FIRST to prevent updatedActivityId() from auto-filling
+        $this->editMode = true;
+
         $this->scheduleId = $schedule->id;
         $this->activity_id = $schedule->activity_id;
         $this->show_date = $schedule->show_date->format('Y-m-d');
         $this->show_time = $schedule->show_time;
+        // Load the exact duration from the schedule, or default to activity duration if not set
+        $this->duration_minutes = $schedule->duration_minutes ?? ($schedule->activity->duration_minutes ?? '');
         $this->venue_capacity = $schedule->venue_capacity;
 
-        $this->editMode = true;
         $this->dispatch('open-modal', 'schedule-form');
     }
 
@@ -134,6 +155,7 @@ class Schedules extends Component
                     'activity_id' => $this->activity_id,
                     'show_date' => $this->show_date,
                     'show_time' => $this->show_time,
+                    'duration_minutes' => $this->duration_minutes,
                     'venue_capacity' => $this->venue_capacity,
                 ]);
 
@@ -154,6 +176,7 @@ class Schedules extends Component
                     'activity_id' => $this->activity_id,
                     'show_date' => $this->show_date,
                     'show_time' => $this->show_time,
+                    'duration_minutes' => $this->duration_minutes,
                     'venue_capacity' => $this->venue_capacity,
                     'tickets_sold' => 0,
                     'status' => 'scheduled',
@@ -308,6 +331,7 @@ class Schedules extends Component
             'activity_id',
             'show_date',
             'show_time',
+            'duration_minutes',
             'venue_capacity',
             'editMode',
         ]);

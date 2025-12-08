@@ -161,8 +161,9 @@
                                                             {{ \Carbon\Carbon::parse($schedule->show_time)->format('g:i A') }}
                                                         </span>
                                                     </div>
-                                                    <div class="text-xs text-gray-600 mt-1">
-                                                        ✓ {{ $schedule->getRemainingSeats() }} seats available
+                                                    <div class="flex items-center justify-between text-xs text-gray-600 mt-1">
+                                                        <span>⏱️ {{ $schedule->getFormattedDuration() }}</span>
+                                                        <span>✓ {{ $schedule->getRemainingSeats() }} seats</span>
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -267,7 +268,7 @@
                                 @foreach($selectedActivity->showSchedules as $schedule)
                                     <option value="{{ $schedule->id }}">
                                         {{ $schedule->show_date->format('M d, Y') }} at {{ \Carbon\Carbon::parse($schedule->show_time)->format('g:i A') }}
-                                        ({{ $schedule->getRemainingSeats() }} seats left)
+                                        - {{ $schedule->getFormattedDuration() }} ({{ $schedule->getRemainingSeats() }} seats left)
                                     </option>
                                 @endforeach
                             </select>

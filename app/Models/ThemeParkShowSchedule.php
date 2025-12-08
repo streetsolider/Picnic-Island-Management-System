@@ -15,6 +15,7 @@ class ThemeParkShowSchedule extends Model
         'activity_id',
         'show_date',
         'show_time',
+        'duration_minutes',
         'venue_capacity',
         'tickets_sold',
         'status',
@@ -22,6 +23,7 @@ class ThemeParkShowSchedule extends Model
 
     protected $casts = [
         'show_date' => 'date',
+        'duration_minutes' => 'integer',
         'venue_capacity' => 'integer',
         'tickets_sold' => 'integer',
     ];
@@ -124,6 +126,39 @@ class ThemeParkShowSchedule extends Model
     public function getShowDateTimeAttribute(): string
     {
         return $this->show_date->format('F j, Y') . ' at ' . $this->show_time;
+    }
+
+    /**
+     * Get the effective duration (schedule duration or activity duration).
+     */
+    public function getEffectiveDuration(): ?int
+    {
+        return $this->duration_minutes ?? $this->activity?->duration_minutes;
+    }
+
+    /**
+     * Get the formatted duration string.
+     */
+    public function getFormattedDuration(): string
+    {
+        $duration = $this->getEffectiveDuration();
+
+        if (!$duration) {
+            return 'Not set';
+        }
+
+        if ($duration < 60) {
+            return $duration . ' mins';
+        }
+
+        $hours = floor($duration / 60);
+        $mins = $duration % 60;
+
+        if ($mins === 0) {
+            return $hours . ($hours === 1 ? ' hour' : ' hours');
+        }
+
+        return $hours . ($hours === 1 ? ' hour ' : ' hours ') . $mins . ' mins';
     }
 
     /**
