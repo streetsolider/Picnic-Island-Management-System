@@ -177,7 +177,7 @@
                     {{-- Markers --}}
                     @foreach($markers as $marker)
                         <button @click="showMarker({{ $marker }})"
-                            class="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-200 focus:outline-none group"
+                            class="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-200 focus:outline-none group z-10 hover:z-50"
                             style="left: {{ $marker->x_position }}%; top: {{ $marker->y_position }}%;">
 
                             @if($marker->mappable_type === 'App\Models\Hotel')
