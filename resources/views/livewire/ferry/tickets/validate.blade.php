@@ -31,7 +31,7 @@
                     @if($ticket)
                         <div class="space-y-2 text-sm">
                             <div><strong>Ticket:</strong> {{ $ticket->ticket_reference }}</div>
-                            <div><strong>Passenger:</strong> {{ $ticket->guest->name }}</div>
+                            <div><strong>Passenger:</strong> {{ $ticket->guest->display_name }}</div>
                             <div><strong>Route:</strong> {{ $ticket->route->origin }} → {{ $ticket->route->destination }}</div>
                             <div><strong>Travel Date:</strong> {{ $ticket->travel_date->format('M d, Y') }}</div>
                             <div><strong>Passengers:</strong> {{ $ticket->number_of_passengers }}</div>

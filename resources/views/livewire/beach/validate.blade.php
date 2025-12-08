@@ -116,7 +116,7 @@
                             </div>
                             <div>
                                 <label class="text-sm text-gray-600 dark:text-gray-400">Guest Name</label>
-                                <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ $booking->guest->name }}</p>
+                                <p class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ $booking->guest->display_name }}</p>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ $booking->guest->email }}</p>
                             </div>
                             <div>

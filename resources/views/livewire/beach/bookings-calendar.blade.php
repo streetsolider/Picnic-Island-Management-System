@@ -187,7 +187,7 @@
                                         <div class="p-2 h-full flex flex-col justify-center">
                                             <div class="flex items-center justify-between gap-2">
                                                 <div class="font-semibold text-sm text-gray-900 dark:text-white truncate">
-                                                    {{ $booking->guest->name }}
+                                                    {{ $booking->guest->display_name }}
                                                 </div>
                                                 <div class="text-xs font-medium text-gray-500 dark:text-gray-400 flex-shrink-0">
                                                     {{ \Carbon\Carbon::parse($booking->start_time)->format('g:i A') }} -
@@ -289,7 +289,7 @@
                     <div>
                         <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Guest</label>
                         <p class="text-lg font-semibold text-gray-900 dark:text-white mt-1">
-                            {{ $selectedBooking->guest->name }}</p>
+                            {{ $selectedBooking->guest->display_name }}</p>
                         <p class="text-sm text-gray-500 dark:text-gray-400">{{ $selectedBooking->guest->email }}</p>
                     </div>
                     <div>

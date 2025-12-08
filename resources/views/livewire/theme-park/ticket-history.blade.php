@@ -143,7 +143,7 @@
                             <x-admin.table.row>
                                 {{-- Guest --}}
                                 <td class="px-6 py-4">
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $ticket->guest->name }}</div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $ticket->guest->display_name }}</div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400">{{ $ticket->guest->email }}</div>
                                 </td>
 

@@ -98,7 +98,7 @@
                                             {{ \Carbon\Carbon::parse($booking->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($booking->end_time)->format('g:i A') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $booking->guest->name }}</div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ $booking->guest->display_name }}</div>
                                             <div class="text-xs text-gray-500 dark:text-gray-400">{{ $booking->guest->email }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900 dark:text-gray-100">

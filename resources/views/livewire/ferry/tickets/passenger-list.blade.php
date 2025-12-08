@@ -105,7 +105,7 @@
                                 {{ $passenger->ticket_reference }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                                {{ $passenger->guest->name }}
+                                {{ $passenger->guest->display_name }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                                 {{ $passenger->guest->email }}

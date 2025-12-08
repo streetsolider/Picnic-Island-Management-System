@@ -179,7 +179,7 @@
                     <div class="space-y-4">
                         <div>
                             <p class="text-sm text-gray-600 dark:text-gray-400">Visitor Name</p>
-                            <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $ticket->guest->name ?? 'N/A' }}</p>
+                            <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $ticket->guest->display_name ?? 'N/A' }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-600 dark:text-gray-400">Visitor Email</p>
