@@ -32,6 +32,11 @@
                 </div>
             @endif
 
+            {{-- Cancellation Notifications --}}
+            <div class="max-w-4xl mx-auto">
+                <livewire:visitor.theme-park.cancellation-notifications />
+            </div>
+
             {{-- Balance Cards --}}
             <div class="max-w-4xl mx-auto grid gap-6 mb-8 md:grid-cols-2">
                 {{-- MVR Balance Card --}}

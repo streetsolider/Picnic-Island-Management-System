@@ -38,27 +38,26 @@
                 </div>
             @endif
 
+            {{-- Cancellation Notifications --}}
+            <div class="max-w-6xl mx-auto">
+                <livewire:visitor.theme-park.cancellation-notifications />
+            </div>
+
             {{-- Zone Filter --}}
             @if($zones->isNotEmpty())
                 <div class="max-w-6xl mx-auto mb-8 bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6">
-                    <label class="block text-sm font-bold text-brand-dark mb-4">
+                    <label for="zone-filter" class="block text-sm font-bold text-brand-dark mb-3">
                         🎯 Filter by Zone
                     </label>
-                    <div class="flex flex-wrap gap-3">
-                        <button wire:click="$set('selectedZone', null)"
-                            class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $selectedZone === null ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
-                            All Zones
-                        </button>
+                    <select id="zone-filter" wire:model.live="selectedZone"
+                        class="w-full md:w-auto px-6 py-3 rounded-xl font-bold text-gray-700 bg-white border-2 border-gray-200 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-all shadow-md hover:shadow-lg">
+                        <option value="">All Zones</option>
                         @foreach($zones as $zone)
-                            <button wire:click="$set('selectedZone', {{ $zone->id }})"
-                                class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $selectedZone == $zone->id ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
-                                {{ $zone->name }}
-                                <span class="ml-2 px-2 py-1 rounded-full text-xs {{ $selectedZone == $zone->id ? 'bg-white/20' : 'bg-gray-100' }}">
-                                    {{ $zone->activities->where('is_active', true)->count() }}
-                                </span>
-                            </button>
+                            <option value="{{ $zone->id }}">
+                                {{ $zone->name }} ({{ $zone->activities->where('is_active', true)->count() }} activities)
+                            </option>
                         @endforeach
-                    </div>
+                    </select>
                 </div>
             @endif
 

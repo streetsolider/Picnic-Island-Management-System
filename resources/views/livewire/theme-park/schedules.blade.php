@@ -152,6 +152,10 @@
                                                         Cancel
                                                     </x-admin.button.warning>
                                                 @endif
+                                            @elseif($schedule->status === 'cancelled')
+                                                <x-admin.button.danger size="sm" wire:click="confirmDelete({{ $schedule->id }})">
+                                                    Delete
+                                                </x-admin.button.danger>
                                             @endif
                                         </div>
                                     </td>

@@ -3,8 +3,11 @@
 namespace App\Livewire\ThemePark;
 
 use App\Models\ThemeParkActivity;
+use App\Models\ThemeParkActivityTicket;
 use App\Models\ThemeParkShowSchedule;
+use App\Models\ThemeParkWallet;
 use App\Models\ThemeParkZone;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -174,21 +177,74 @@ class Schedules extends Component
     public function cancelSchedule()
     {
         try {
-            $schedule = ThemeParkShowSchedule::findOrFail($this->scheduleId);
+            DB::beginTransaction();
+
+            $schedule = ThemeParkShowSchedule::with('activity')->findOrFail($this->scheduleId);
 
             // Verify staff has access
             if (!$this->isManager) {
                 if ($schedule->activity->assigned_staff_id !== auth('staff')->id()) {
                     session()->flash('error', 'Unauthorized to cancel this schedule.');
+                    DB::rollBack();
                     return;
                 }
             }
 
+            // Find all valid tickets for this schedule
+            $affectedTickets = ThemeParkActivityTicket::where('show_schedule_id', $schedule->id)
+                ->where('status', 'valid')
+                ->get();
+
+            $affectedVisitorCount = $affectedTickets->count();
+            $totalCreditsRefunded = 0;
+
+            // Build detailed cancellation message with show details
+            $showDetails = sprintf(
+                '%s on %s at %s',
+                $schedule->activity->name,
+                $schedule->show_date->format('M d, Y'),
+                date('g:i A', strtotime($schedule->show_time))
+            );
+
+            // Cancel tickets and refund credits
+            foreach ($affectedTickets as $ticket) {
+                // Refund credits to wallet
+                $wallet = ThemeParkWallet::getOrCreateForUser($ticket->guest_id);
+                $wallet->credit_balance += $ticket->credits_spent;
+                $wallet->total_credits_redeemed -= $ticket->credits_spent;
+                $wallet->save();
+
+                // Cancel ticket with detailed reason
+                $ticket->status = 'cancelled';
+                $ticket->cancellation_reason = sprintf(
+                    'Show cancelled by staff. Credits refunded: %d. Show: %s',
+                    $ticket->credits_spent,
+                    $showDetails
+                );
+                $ticket->save();
+
+                $totalCreditsRefunded += $ticket->credits_spent;
+            }
+
+            // Update schedule status
             $schedule->status = 'cancelled';
+            $schedule->tickets_sold = 0; // Reset since all tickets are cancelled
             $schedule->save();
 
-            session()->flash('success', 'Show schedule cancelled. Guests with tickets will be notified.');
+            DB::commit();
+
+            if ($affectedVisitorCount > 0) {
+                session()->flash('success', sprintf(
+                    'Show cancelled successfully. %d visitor(s) affected, %d credits refunded. Affected visitors will see notification on their dashboard.',
+                    $affectedVisitorCount,
+                    $totalCreditsRefunded
+                ));
+            } else {
+                session()->flash('success', 'Show cancelled successfully. No tickets were sold for this show.');
+            }
+
         } catch (\Exception $e) {
+            DB::rollBack();
             session()->flash('error', 'Failed to cancel schedule: ' . $e->getMessage());
         }
 
@@ -214,9 +270,11 @@ class Schedules extends Component
                 }
             }
 
-            // Check if there are ticket sales
-            if ($schedule->tickets_sold > 0) {
-                session()->flash('error', 'Cannot delete schedule with existing ticket sales. Cancel the schedule instead.');
+            // Only allow deletion if:
+            // 1. No tickets sold (new schedule), OR
+            // 2. Schedule is cancelled (tickets already refunded)
+            if ($schedule->tickets_sold > 0 && $schedule->status !== 'cancelled') {
+                session()->flash('error', 'Cannot delete schedule with existing ticket sales. Cancel the schedule first.');
                 return;
             }
 

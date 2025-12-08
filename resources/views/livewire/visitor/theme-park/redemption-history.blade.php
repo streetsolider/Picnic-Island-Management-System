@@ -32,29 +32,19 @@
                 </div>
             @endif
 
-            {{-- Filter Buttons --}}
+            {{-- Filter Dropdown --}}
             <div class="mb-8 bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6">
-                <label class="block text-sm font-bold text-brand-dark mb-4">
+                <label for="status-filter" class="block text-sm font-bold text-brand-dark mb-3">
                     📊 Filter by Status
                 </label>
-                <div class="flex flex-wrap gap-3">
-                    <button wire:click="$set('filter', 'all')"
-                        class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $filter === 'all' ? 'bg-gradient-to-r from-brand-primary to-brand-secondary text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
-                        All
-                    </button>
-                    <button wire:click="$set('filter', 'valid')"
-                        class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $filter === 'valid' ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
-                        ⏳ Valid
-                    </button>
-                    <button wire:click="$set('filter', 'redeemed')"
-                        class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $filter === 'redeemed' ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
-                        ✅ Redeemed
-                    </button>
-                    <button wire:click="$set('filter', 'expired')"
-                        class="px-6 py-3 rounded-xl font-bold transition-all transform hover:scale-105 shadow-md {{ $filter === 'expired' ? 'bg-gradient-to-r from-gray-500 to-gray-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50' }}">
-                        ⏰ Expired
-                    </button>
-                </div>
+                <select id="status-filter" wire:model.live="filter"
+                    class="w-full md:w-auto px-6 py-3 rounded-xl font-bold text-gray-700 bg-white border-2 border-gray-200 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-all shadow-md hover:shadow-lg">
+                    <option value="all">All Tickets</option>
+                    <option value="valid">⏳ Valid</option>
+                    <option value="redeemed">✅ Redeemed</option>
+                    <option value="cancelled">❌ Cancelled</option>
+                    <option value="expired">⏰ Expired</option>
+                </select>
             </div>
 
             {{-- Tickets List --}}
