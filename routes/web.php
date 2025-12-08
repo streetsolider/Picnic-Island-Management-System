@@ -163,6 +163,7 @@ Route::middleware(['auth:staff'])->group(function () {
 
         // Staff can validate tickets
         Route::get('/validate', \App\Livewire\ThemePark\Validate::class)->name('validate');
+        Route::get('/ticket-history', \App\Livewire\ThemePark\TicketHistory::class)->name('ticket-history');
     });
 
     // Beach Staff Routes
