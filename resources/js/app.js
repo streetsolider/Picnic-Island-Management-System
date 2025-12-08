@@ -1,10 +1,11 @@
 import './bootstrap';
 import { initTheme, toggleTheme } from './theme';
-import intersect from '@alpinejs/intersect';
+import Alpine from 'alpinejs';
+import Panzoom from '@panzoom/panzoom';
 
-// Register Alpine plugins before Livewire starts Alpine
-document.addEventListener('alpine:init', () => {
-    window.Alpine.plugin(intersect);
-});
+window.Alpine = Alpine;
+window.Panzoom = Panzoom;
+
+Alpine.start();
 
 window.toggleTheme = toggleTheme;
