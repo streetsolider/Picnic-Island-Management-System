@@ -223,4 +223,11 @@ class Hotel extends Model
     {
         return $this->hasMany(PromotionalDiscount::class);
     }
+    /**
+     * Get the map marker for this hotel
+     */
+    public function mapMarker(): \Illuminate\Database\Eloquent\Relations\MorphOne
+    {
+        return $this->morphOne(MapMarker::class, 'mappable');
+    }
 }

@@ -119,4 +119,11 @@ class ThemeParkActivity extends Model
         $end = $this->operating_hours_end->format('H:i');
         return $now >= $start && $now <= $end;
     }
+    /**
+     * Get the map marker for this activity
+     */
+    public function mapMarker(): \Illuminate\Database\Eloquent\Relations\MorphOne
+    {
+        return $this->morphOne(MapMarker::class, 'mappable');
+    }
 }

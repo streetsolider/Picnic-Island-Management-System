@@ -25,6 +25,9 @@ Route::get('/beach-activities', \App\Livewire\Visitor\BeachActivities\Browse::cl
 // Public Beach Activity Service Details (no auth required)
 Route::get('/beach-activities/service/{service}', \App\Livewire\Visitor\BeachActivities\ServiceDetails::class)->name('visitor.beach-activities.details');
 
+// Public Map
+Route::get('/map', [\App\Http\Controllers\MapController::class, 'index'])->name('map');
+
 // Guest (Customer) Routes
 Route::middleware(['auth:web', 'verified'])->group(function () {
     // Guest Dashboard
@@ -186,6 +189,9 @@ Route::middleware(['auth:staff'])->group(function () {
 
         // Ferry Management
         Route::get('ferry', App\Livewire\Admin\Ferry\Index::class)->name('ferry.index');
+
+        // Map Management
+        Route::get('map', \App\Livewire\Admin\Map\MapManager::class)->name('map.manager');
     });
 
     // Component Library Demo - Accessible to all staff

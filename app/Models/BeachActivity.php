@@ -107,4 +107,11 @@ class BeachActivity extends Model
             return "{$minutes}m";
         }
     }
+    /**
+     * Get the map marker for this activity
+     */
+    public function mapMarker(): \Illuminate\Database\Eloquent\Relations\MorphOne
+    {
+        return $this->morphOne(MapMarker::class, 'mappable');
+    }
 }
