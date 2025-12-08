@@ -183,10 +183,10 @@
                 reset() { this.panzoom.reset() }
             }"
             @open-mobile-card.stop="triggerMobileCard($event.detail.data, $event.detail.id)">
-                        {{-- Mobile Bottom Sheet --}}
+                        {{-- Mobile Bottom Sheet & Tablet Modal --}}
                         <div x-show="mobileActiveMarker" 
                             x-cloak
-                            class="fixed inset-0 z-[200] md:hidden"
+                            class="fixed inset-0 z-[200]"
                             aria-labelledby="modal-title" role="dialog" aria-modal="true">
                             
                             {{-- Backdrop --}}
@@ -201,14 +201,14 @@
                                 @click="closeMobileCard()"></div>
 
                             {{-- Panel --}}
-                            <div class="fixed inset-x-0 bottom-0 z-10 w-full overflow-y-auto bg-white rounded-t-3xl shadow-xl p-6 sm:p-8 transform transition-all"
+                            <div class="fixed inset-x-0 bottom-0 md:inset-auto md:bottom-8 md:left-1/2 md:-translate-x-1/2 md:w-[28rem] md:rounded-2xl z-10 w-full overflow-y-auto bg-white rounded-t-3xl shadow-xl p-6 sm:p-8 transform transition-all"
                                 x-show="mobileActiveMarker"
                                 x-transition:enter="ease-out duration-300"
-                                x-transition:enter-start="translate-y-full"
-                                x-transition:enter-end="translate-y-0"
+                                x-transition:enter-start="translate-y-full md:opacity-0 md:scale-95"
+                                x-transition:enter-end="translate-y-0 md:opacity-100 md:scale-100"
                                 x-transition:leave="ease-in duration-200"
-                                x-transition:leave-start="translate-y-0"
-                                x-transition:leave-end="translate-y-full">
+                                x-transition:leave-start="translate-y-0 md:opacity-100 md:scale-100"
+                                x-transition:leave-end="translate-y-full md:opacity-0 md:scale-95">
                                 
                                 <div class="flex items-start justify-between mb-4">
                                     <div class="flex items-center gap-3">
@@ -280,17 +280,17 @@
                             <div class="flex flex-wrap justify-center gap-6 text-sm">
                                 <div class="flex items-center gap-2">
                                     <img src="{{ asset('images/map/hotel_pin.png') }}"
-                                        class="w-6 h-6 rounded-full border-2 border-white shadow-sm" alt="Hotel">
+                                        class="w-6 h-6 rounded-full border-2 border-brand-primary shadow-sm" alt="Hotel">
                                     <span class="font-semibold text-brand-dark">Hotels</span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <img src="{{ asset('images/map/themepark_pin.png') }}"
-                                        class="w-6 h-6 rounded-full border-2 border-white shadow-sm" alt="Theme Park">
+                                        class="w-6 h-6 rounded-full border-2 border-brand-secondary shadow-sm" alt="Theme Park">
                                     <span class="font-semibold text-brand-dark">Theme Parks</span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <img src="{{ asset('images/map/beach_pin.png') }}"
-                                        class="w-6 h-6 rounded-full border-2 border-white shadow-sm" alt="Beach">
+                                        class="w-6 h-6 rounded-full border-2 border-green-500 shadow-sm" alt="Beach">
                                     <span class="font-semibold text-brand-dark">Beach Activities</span>
                                 </div>
                             </div>
@@ -322,12 +322,12 @@
                                                 image: '{{ $marker->mappable_type === 'App\Models\Hotel' ? asset('images/map/hotel_pin.png') : ($marker->mappable_type === 'App\Models\ThemeParkActivity' ? asset('images/map/themepark_pin.png') : asset('images/map/beach_pin.png')) }}'
                                             },
                                             toggle() {
-                                                if (window.matchMedia('(hover: none)').matches) {
+                                                if (window.matchMedia('(hover: none), (pointer: coarse)').matches) {
                                                     $dispatch('open-mobile-card', { data: this.markerData, id: this.markerId });
                                                 }
                                             },
-                                            hoverOn() { if (window.matchMedia('(hover: hover)').matches) this.showTooltip = true },
-                                            hoverOff() { if (window.matchMedia('(hover: hover)').matches) this.showTooltip = false },
+                                            hoverOn() { if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) this.showTooltip = true },
+                                            hoverOff() { if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) this.showTooltip = false },
                                             handleActiveChange(e) {
                                                 this.isActive = (e.detail === this.markerId);
                                             }
@@ -341,13 +341,13 @@
 
                                             @if($marker->mappable_type === 'App\Models\Hotel')
                                                 <img src="{{ asset('images/map/hotel_pin.png') }}"
-                                                    class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-3 border-white rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
+                                                    class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-brand-primary rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
                                             @elseif($marker->mappable_type === 'App\Models\ThemeParkActivity')
                                                 <img src="{{ asset('images/map/themepark_pin.png') }}"
-                                                    class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-3 border-white rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
+                                                    class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-brand-secondary rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
                                             @elseif($marker->mappable_type === 'App\Models\BeachActivity')
                                                 <img src="{{ asset('images/map/beach_pin.png') }}"
-                                                    class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-3 border-white rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
+                                                    class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-green-500 rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
                                             @endif
 
                                             <span class="sr-only">{{ $marker->mappable->name ?? 'Marker' }}</span>

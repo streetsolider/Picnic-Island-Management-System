@@ -63,7 +63,7 @@ new #[Layout('layouts.guest')] class extends Component {
         </div>
 
         <div class="flex flex-col items-center justify-end mt-4 space-y-3">
-            <x-admin.button.primary type="submit" class="w-full justify-center" type="submit">
+            <x-admin.button.primary type="submit" class="w-full justify-center">
                 {{ __('Log in') }}
             </x-admin.button.primary>
 
