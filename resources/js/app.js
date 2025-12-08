@@ -1,9 +1,10 @@
 import './bootstrap';
 import { initTheme, toggleTheme } from './theme';
-import Alpine from 'alpinejs';
+import intersect from '@alpinejs/intersect';
 
-window.Alpine = Alpine;
-
-Alpine.start();
+// Register Alpine plugins before Livewire starts Alpine
+document.addEventListener('alpine:init', () => {
+    window.Alpine.plugin(intersect);
+});
 
 window.toggleTheme = toggleTheme;
