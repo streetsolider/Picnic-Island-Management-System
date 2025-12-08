@@ -182,12 +182,17 @@
 
                             {{-- Markers --}}
                             @foreach($markers as $marker)
-                                <div class="absolute transform -translate-x-1/2 -translate-y-1/2 z-10 hover:z-50"
-                                    style="left: {{ $marker->x_position }}%; top: {{ $marker->y_position }}%;"
-                                    x-data="{ showTooltip: false }" @mouseenter="showTooltip = true"
-                                    @mouseleave="showTooltip = false">
+                                <div class="absolute transform -translate-x-1/2 -translate-y-1/2 hover:z-50"
+                                    :class="{ 'z-50': showTooltip, 'z-10': !showTooltip }"
+                                    style="left: {{ $marker->x_position }}%; top: {{ $marker->y_position }}%;" x-data="{
+                                        showTooltip: false,
+                                        toggle() { this.showTooltip = !this.showTooltip },
+                                        hoverOn() { if (window.matchMedia('(hover: hover)').matches) this.showTooltip = true },
+                                        hoverOff() { if (window.matchMedia('(hover: hover)').matches) this.showTooltip = false }
+                                    }" @mouseenter="hoverOn" @mouseleave="hoverOff" @click.outside="showTooltip = false">
 
-                                    <button class="transition-all duration-200 focus:outline-none group relative">
+                                    <button @click="toggle"
+                                        class="transition-all duration-200 focus:outline-none group relative">
 
                                         @if($marker->mappable_type === 'App\Models\Hotel')
                                             <img src="{{ asset('images/map/hotel_pin.png') }}"
