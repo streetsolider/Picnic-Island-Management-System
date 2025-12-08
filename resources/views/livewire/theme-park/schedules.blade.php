@@ -27,7 +27,7 @@
     @endif
 
     {{-- Check if staff has assigned activities --}}
-    @if($myActivities->isEmpty())
+    @if(!$hasAssignedActivities)
         <x-admin.card.empty-state
             icon="🎢"
             title="No Activities Assigned"

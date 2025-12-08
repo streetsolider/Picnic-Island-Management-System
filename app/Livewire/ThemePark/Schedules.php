@@ -425,10 +425,20 @@ class Schedules extends Component
                 ->get();
         }
 
+        // Check if staff has any assigned activities (scheduled OR continuous)
+        $hasAssignedActivities = false;
+        if ($this->isManager) {
+            $hasAssignedActivities = true; // Managers see everything
+        } else {
+            $hasAssignedActivities = ThemeParkActivity::where('assigned_staff_id', auth('staff')->id())
+                ->where('is_active', true)
+                ->exists();
+        }
+
         return view('livewire.theme-park.schedules', [
             'schedules' => $schedules,
             'activities' => $activities,
-            'myActivities' => $activities, // For staff empty state check
+            'hasAssignedActivities' => $hasAssignedActivities,
             'continuousActivities' => $continuousActivities,
         ]);
     }
