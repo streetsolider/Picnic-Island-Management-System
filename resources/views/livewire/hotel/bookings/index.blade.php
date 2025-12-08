@@ -223,7 +223,7 @@
                                 </a>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="text-sm text-gray-900 dark:text-white">{{ $booking->guest->name }}</div>
+                                <div class="text-sm text-gray-900 dark:text-white">{{ $booking->guest->display_name }}</div>
                                 <div class="text-sm text-gray-500 dark:text-gray-400">{{ $booking->guest->email }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -240,7 +240,14 @@
                                 {{ $booking->number_of_nights }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                {{ $booking->number_of_guests }}
+                                @if($booking->status === 'checked_in' && $booking->actual_guests_checked_in)
+                                    <span class="font-medium text-indigo-600 dark:text-indigo-400">{{ $booking->actual_guests_checked_in }}</span>
+                                    @if($booking->actual_guests_checked_in !== $booking->number_of_guests)
+                                        <span class="text-xs">(of {{ $booking->number_of_guests }})</span>
+                                    @endif
+                                @else
+                                    {{ $booking->number_of_guests }}
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">
                                 MVR {{ number_format($booking->total_price, 2) }}
@@ -299,7 +306,7 @@
                 </p>
                 <div class="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
                     <p><strong>Booking Reference:</strong> {{ $cancellingBooking->booking_reference }}</p>
-                    <p><strong>Guest:</strong> {{ $cancellingBooking->guest->name }}</p>
+                    <p><strong>Guest:</strong> {{ $cancellingBooking->guest->display_name }}</p>
                     <p><strong>Room:</strong> {{ $cancellingBooking->room->room_number }} - {{ ucfirst($cancellingBooking->room->room_type) }}</p>
                     <p><strong>Check-in:</strong> {{ $cancellingBooking->check_in_date->format('M d, Y') }}</p>
                     <p><strong>Check-out:</strong> {{ $cancellingBooking->check_out_date->format('M d, Y') }}</p>

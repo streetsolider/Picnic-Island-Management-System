@@ -17,7 +17,7 @@ class Show extends Component
     public $showCancelModal = false;
     public $cancellationReason = '';
 
-    public function mount($id)
+    public function mount(HotelBooking $booking)
     {
         // Get the hotel managed by the current user
         $this->hotel = Hotel::where('manager_id', auth('staff')->user()->id)->first();
@@ -26,10 +26,15 @@ class Show extends Component
             abort(403, 'You are not assigned to manage any hotel.');
         }
 
-        // Get the booking
-        $this->booking = HotelBooking::where('hotel_id', $this->hotel->id)
-            ->with(['guest', 'room.amenities'])
-            ->findOrFail($id);
+        // Verify the booking belongs to the manager's hotel
+        if ($booking->hotel_id !== $this->hotel->id) {
+            abort(403, 'This booking does not belong to your hotel.');
+        }
+
+        // Load relationships
+        $booking->load(['guest', 'room.amenities']);
+
+        $this->booking = $booking;
     }
 
     public function openCancelModal()

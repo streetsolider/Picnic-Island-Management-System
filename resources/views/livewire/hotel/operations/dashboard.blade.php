@@ -85,7 +85,7 @@
                                 {{ $request->booking->booking_reference }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
-                                {{ $request->booking->guest->name }}
+                                {{ $request->booking->guest->display_name }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                                 Room {{ $request->booking->room->room_number }}
@@ -175,7 +175,7 @@
                                 {{ $booking->booking_reference }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
-                                {{ $booking->guest->name }}
+                                {{ $booking->guest->display_name }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                                 Room {{ $booking->room->room_number }}
@@ -238,7 +238,10 @@
                                 {{ $booking->booking_reference }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
-                                {{ $booking->guest->name }}
+                                {{ $booking->guest->display_name }}
+                                @if($booking->actual_guests_checked_in)
+                                    <span class="block text-xs text-indigo-600 dark:text-indigo-400">{{ $booking->actual_guests_checked_in }} guest(s)</span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                                 Room {{ $booking->room->room_number }}
@@ -298,7 +301,10 @@
                                 {{ $booking->booking_reference }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
-                                {{ $booking->guest->name }}
+                                {{ $booking->guest->display_name }}
+                                @if($booking->actual_guests_checked_in)
+                                    <span class="block text-xs text-indigo-600 dark:text-indigo-400">{{ $booking->actual_guests_checked_in }} guest(s)</span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                                 Room {{ $booking->room->room_number }}
@@ -391,7 +397,7 @@
                                 {{ $booking->booking_reference }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-900 dark:text-white">
-                                {{ $booking->guest->name }}
+                                {{ $booking->guest->display_name }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                                 Room {{ $booking->room->room_number }}
@@ -422,27 +428,315 @@
             <div class="px-6 py-4">
         @if($selectedBooking)
             <div class="space-y-4">
-                {{-- Guest Information --}}
+                {{-- Guest Information & ID Verification --}}
                 <div class="rounded-lg bg-gray-50 dark:bg-gray-800 p-4">
-                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Guest Information</h4>
-                    <div class="grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                            <span class="text-gray-500 dark:text-gray-400">Name:</span>
+                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Primary Guest Information</h4>
+                    <div class="grid grid-cols-2 gap-3 text-sm mb-3">
+                        <div class="col-span-2">
+                            <span class="text-gray-500 dark:text-gray-400">Registered Name:</span>
                             <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedBooking->guest->name }}</span>
                         </div>
+                        <div class="col-span-2">
+                            <span class="text-gray-500 dark:text-gray-400">Email:</span>
+                            <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedBooking->guest->email }}</span>
+                        </div>
+                    </div>
+
+                    {{-- Phone Number Field (Editable) --}}
+                    <div class="pt-2">
+                        <label for="guestPhone" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Phone Number <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="tel"
+                            id="guestPhone"
+                            wire:model="guestPhone"
+                            class="w-full text-sm rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            placeholder="Enter guest's phone number"
+                        >
+                        @error('guestPhone')
+                            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                        @if(!$selectedBooking->guest->phone)
+                            <p class="mt-1 text-xs text-amber-600 dark:text-amber-400">⚠️ No phone number on file. Please add one.</p>
+                        @endif
+                    </div>
+
+                    @if($selectedBooking->guest->id_type)
+                        {{-- Display Existing ID Information --}}
+                        <div class="pt-3 border-t border-gray-200 dark:border-gray-700">
+                            <h5 class="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">ID Verification on File</h5>
+                            <div class="grid grid-cols-2 gap-3 text-sm">
+                                @if($selectedBooking->guest->official_name)
+                                <div class="col-span-2">
+                                    <span class="text-gray-500 dark:text-gray-400">Official Name:</span>
+                                    <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedBooking->guest->official_name }}</span>
+                                </div>
+                                @endif
+                                <div>
+                                    <span class="text-gray-500 dark:text-gray-400">ID Type:</span>
+                                    <span class="ml-2 font-medium text-gray-900 dark:text-white">
+                                        {{ $selectedBooking->guest->id_type === 'national_id' ? 'National ID' : 'Passport' }}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500 dark:text-gray-400">ID Number:</span>
+                                    <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedBooking->guest->id_number }}</span>
+                                </div>
+                                <div>
+                                    <span class="text-gray-500 dark:text-gray-400">Nationality:</span>
+                                    <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedBooking->guest->nationality ?? 'N/A' }}</span>
+                                </div>
+                                @if($selectedBooking->guest->date_of_birth)
+                                <div>
+                                    <span class="text-gray-500 dark:text-gray-400">Date of Birth:</span>
+                                    <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedBooking->guest->date_of_birth->format('M d, Y') }}</span>
+                                </div>
+                                @endif
+                                @if($selectedBooking->guest->address)
+                                <div class="col-span-2">
+                                    <span class="text-gray-500 dark:text-gray-400">Address:</span>
+                                    <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedBooking->guest->address }}</span>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                    @else
+                        {{-- ID Verification Form (No ID on file) --}}
+                        <div class="pt-3 border-t border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-amber-600 dark:text-amber-400">⚠️</span>
+                                <h5 class="text-xs font-semibold text-amber-700 dark:text-amber-300">ID Verification Required</h5>
+                            </div>
+
+                            <div class="space-y-3">
+                                {{-- Official Full Name --}}
+                                <div>
+                                    <label for="officialFullName" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Official Full Name (as per ID) <span class="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="officialFullName"
+                                        wire:model="officialFullName"
+                                        class="w-full text-sm rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        placeholder="Enter full name as shown on ID"
+                                    >
+                                    @error('officialFullName')
+                                        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                {{-- ID Type --}}
+                                <div>
+                                    <label for="idType" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        ID Type <span class="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        id="idType"
+                                        wire:model.live="idType"
+                                        class="w-full text-sm rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    >
+                                        <option value="national_id">National ID Card</option>
+                                        <option value="passport">Passport</option>
+                                    </select>
+                                    @error('idType')
+                                        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                {{-- ID Number --}}
+                                <div>
+                                    <label for="idNumber" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        ID Number <span class="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="idNumber"
+                                        wire:model="idNumber"
+                                        class="w-full text-sm rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        placeholder="Enter ID or Passport number"
+                                    >
+                                    @error('idNumber')
+                                        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                {{-- Nationality and Date of Birth (2 columns) --}}
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label for="nationality" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Nationality <span class="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="nationality"
+                                            wire:model="nationality"
+                                            class="w-full text-sm rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                            placeholder="Nationality"
+                                        >
+                                        @error('nationality')
+                                            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <div>
+                                        <label for="dateOfBirth" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Date of Birth <span class="text-red-500">*</span>
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="dateOfBirth"
+                                            wire:model="dateOfBirth"
+                                            class="w-full text-sm rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        >
+                                        @error('dateOfBirth')
+                                            <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                {{-- Address --}}
+                                <div>
+                                    <label for="address" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Address <span class="text-red-500">*</span>
+                                    </label>
+                                    <textarea
+                                        id="address"
+                                        wire:model="address"
+                                        rows="2"
+                                        class="w-full text-sm rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        placeholder="Enter full address"
+                                    ></textarea>
+                                    @error('address')
+                                        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- Booking Details --}}
+                <div class="rounded-lg bg-gray-50 dark:bg-gray-800 p-4">
+                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Booking Details</h4>
+                    <div class="grid grid-cols-2 gap-3 text-sm">
                         <div>
                             <span class="text-gray-500 dark:text-gray-400">Booking Ref:</span>
                             <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedBooking->booking_reference }}</span>
                         </div>
                         <div>
-                            <span class="text-gray-500 dark:text-gray-400">Room:</span>
+                            <span class="text-gray-500 dark:text-gray-400">Current Room:</span>
                             <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedBooking->room->room_number }}</span>
                         </div>
                         <div>
-                            <span class="text-gray-500 dark:text-gray-400">Guests:</span>
+                            <span class="text-gray-500 dark:text-gray-400">Room Type:</span>
+                            <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ ucfirst($selectedBooking->room->room_type) }}</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 dark:text-gray-400">Booked Guests:</span>
                             <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedBooking->number_of_guests }}</span>
                         </div>
                     </div>
+                </div>
+
+                {{-- Room Reassignment --}}
+                @if($availableRooms && $availableRooms->count() > 0)
+                    <div class="rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4">
+                        <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Room Assignment</h4>
+                        <p class="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                            If guest requests a room change, select from available rooms of the same type below:
+                        </p>
+
+                        <div class="space-y-3">
+                            {{-- Room Selection --}}
+                            <div>
+                                <label for="selectedNewRoomId" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Room Assignment
+                                </label>
+                                <select
+                                    id="selectedNewRoomId"
+                                    wire:model="selectedNewRoomId"
+                                    class="w-full text-sm rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                >
+                                    {{-- Default: Keep current room --}}
+                                    <option value="{{ $selectedBooking->room_id }}" selected>
+                                        ✓ Keep Current Room ({{ $selectedBooking->room->room_number }})
+                                    </option>
+
+                                    {{-- Separator --}}
+                                    <option disabled>──────────────────────</option>
+
+                                    {{-- Other available rooms --}}
+                                    @foreach($availableRooms as $room)
+                                        @if($room->id != $selectedBooking->room_id)
+                                            <option value="{{ $room->id }}">
+                                                Reassign to Room {{ $room->room_number }}
+                                            </option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                    @if($availableRooms->count() > 1)
+                                        {{ $availableRooms->count() - 1 }} alternative room(s) available
+                                    @else
+                                        No alternative rooms available
+                                    @endif
+                                </p>
+                            </div>
+
+                            {{-- Room Change Reason (shown only if different room selected) --}}
+                            @if($selectedNewRoomId != $selectedBooking->room_id)
+                                <div>
+                                    <label for="roomChangeReason" class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Reason for Room Change <span class="text-red-500">*</span>
+                                    </label>
+                                    <textarea
+                                        id="roomChangeReason"
+                                        wire:model="roomChangeReason"
+                                        rows="2"
+                                        class="w-full text-sm rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                        placeholder="e.g., Guest requested different floor, maintenance issue, etc."
+                                    ></textarea>
+                                    @error('roomChangeReason')
+                                        <p class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <x-admin.alert.info>
+                                    <p class="text-xs">Room will be reassigned from <strong>{{ $selectedBooking->room->room_number }}</strong> to <strong>{{ $availableRooms->firstWhere('id', $selectedNewRoomId)?->room_number }}</strong></p>
+                                </x-admin.alert.info>
+                            @endif
+                        </div>
+                    </div>
+                @else
+                    <div class="rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3">
+                        <p class="text-xs text-gray-600 dark:text-gray-400">
+                            ℹ️ No alternative rooms available with the same configuration. Guest will be checked into Room {{ $selectedBooking->room->room_number }}.
+                        </p>
+                    </div>
+                @endif
+
+                {{-- Actual Guests Checking In --}}
+                <div>
+                    <label for="actualGuestsCount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        How many guests are checking in? <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="number"
+                        id="actualGuestsCount"
+                        wire:model="actualGuestsCount"
+                        min="1"
+                        max="{{ $selectedBooking->number_of_guests }}"
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        placeholder="Enter number of guests"
+                    >
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        Maximum: {{ $selectedBooking->number_of_guests }} guest(s) (as per booking)
+                    </p>
+                    @error('actualGuestsCount')
+                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- Check-in Notes --}}
@@ -492,7 +786,7 @@
                     <div class="grid grid-cols-2 gap-3 text-sm">
                         <div>
                             <span class="text-gray-500 dark:text-gray-400">Name:</span>
-                            <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedBooking->guest->name }}</span>
+                            <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedBooking->guest->display_name }}</span>
                         </div>
                         <div>
                             <span class="text-gray-500 dark:text-gray-400">Booking Ref:</span>
@@ -556,7 +850,7 @@
                     <div class="grid grid-cols-2 gap-3 text-sm">
                         <div>
                             <span class="text-gray-600 dark:text-gray-400">Guest:</span>
-                            <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedLateCheckoutRequest->booking->guest->name }}</span>
+                            <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedLateCheckoutRequest->booking->guest->display_name }}</span>
                         </div>
                         <div>
                             <span class="text-gray-600 dark:text-gray-400">Room:</span>
@@ -642,7 +936,7 @@
                     <div class="grid grid-cols-2 gap-3 text-sm">
                         <div>
                             <span class="text-gray-600 dark:text-gray-400">Guest:</span>
-                            <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedLateCheckoutRequest->booking->guest->name }}</span>
+                            <span class="ml-2 font-medium text-gray-900 dark:text-white">{{ $selectedLateCheckoutRequest->booking->guest->display_name }}</span>
                         </div>
                         <div>
                             <span class="text-gray-600 dark:text-gray-400">Room:</span>

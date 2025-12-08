@@ -96,7 +96,16 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Number of Guests</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $booking->number_of_guests }}</p>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white">
+                            @if($booking->status === 'checked_in' && $booking->actual_guests_checked_in)
+                                <span class="font-semibold text-indigo-600 dark:text-indigo-400">{{ $booking->actual_guests_checked_in }} checked in</span>
+                                @if($booking->actual_guests_checked_in !== $booking->number_of_guests)
+                                    <span class="text-gray-500"> ({{ $booking->number_of_guests }} booked)</span>
+                                @endif
+                            @else
+                                {{ $booking->number_of_guests }}
+                            @endif
+                        </p>
                     </div>
 
                     @if($booking->special_requests)
@@ -114,8 +123,17 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
-                        <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $booking->guest->name }}</p>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            @if($booking->guest->official_name)
+                                Official Name
+                            @else
+                                Name
+                            @endif
+                        </label>
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white font-medium">{{ $booking->guest->display_name }}</p>
+                        @if($booking->guest->official_name && $booking->guest->official_name !== $booking->guest->name)
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Registered as: {{ $booking->guest->name }}</p>
+                        @endif
                     </div>
 
                     <div>
@@ -127,6 +145,46 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone</label>
                             <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $booking->guest->phone }}</p>
+                        </div>
+                    @endif
+
+                    {{-- ID Verification Details (if available) --}}
+                    @if($booking->guest->id_type)
+                        <div class="md:col-span-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">ID Verification Details</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-400">ID Type</label>
+                                    <p class="mt-1 text-sm text-gray-900 dark:text-white">
+                                        {{ $booking->guest->id_type === 'national_id' ? 'National ID' : 'Passport' }}
+                                    </p>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-400">ID Number</label>
+                                    <p class="mt-1 text-sm text-gray-900 dark:text-white font-mono">{{ $booking->guest->id_number }}</p>
+                                </div>
+                                @if($booking->guest->nationality)
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400">Nationality</label>
+                                        <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $booking->guest->nationality }}</p>
+                                    </div>
+                                @endif
+                                @if($booking->guest->date_of_birth)
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400">Date of Birth</label>
+                                        <p class="mt-1 text-sm text-gray-900 dark:text-white">
+                                            {{ $booking->guest->date_of_birth->format('F d, Y') }}
+                                            <span class="text-xs text-gray-500">({{ $booking->guest->age }} years old)</span>
+                                        </p>
+                                    </div>
+                                @endif
+                                @if($booking->guest->address)
+                                    <div class="md:col-span-2">
+                                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400">Address</label>
+                                        <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ $booking->guest->address }}</p>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     @endif
                 </div>
@@ -264,17 +322,31 @@
                     </div>
 
                     <div class="flex items-center justify-between text-sm">
-                        <span class="text-gray-600 dark:text-gray-400">Days Until Check-in:</span>
-                        <span class="font-medium text-gray-900 dark:text-white">
-                            @php
-                                $daysUntil = now()->diffInDays($booking->check_in_date, false);
-                            @endphp
-                            @if($daysUntil > 0)
-                                {{ $daysUntil }} days
-                            @elseif($daysUntil === 0)
-                                Today
+                        <span class="text-gray-600 dark:text-gray-400">
+                            @if($booking->status === 'checked_in')
+                                Checked In:
+                            @elseif($booking->status === 'completed' || $booking->status === 'checked_out')
+                                Check-in Date:
                             @else
-                                {{ abs($daysUntil) }} days ago
+                                Days Until Check-in:
+                            @endif
+                        </span>
+                        <span class="font-medium text-gray-900 dark:text-white">
+                            @if($booking->status === 'checked_in')
+                                {{ $booking->checked_in_at->format('M d, g:i A') }}
+                            @elseif($booking->status === 'completed' || $booking->status === 'checked_out')
+                                {{ $booking->check_in_date->format('M d, Y') }}
+                            @else
+                                @php
+                                    $daysUntil = now()->startOfDay()->diffInDays($booking->check_in_date->startOfDay(), false);
+                                @endphp
+                                @if($daysUntil > 0)
+                                    {{ $daysUntil }} {{ $daysUntil == 1 ? 'day' : 'days' }}
+                                @elseif($daysUntil === 0)
+                                    Today
+                                @else
+                                    {{ abs($daysUntil) }} {{ abs($daysUntil) == 1 ? 'day' : 'days' }} ago
+                                @endif
                             @endif
                         </span>
                     </div>

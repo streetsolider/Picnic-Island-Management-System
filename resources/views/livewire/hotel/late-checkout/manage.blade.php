@@ -104,7 +104,7 @@
                                     <!-- Guest -->
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                            {{ $request->booking->guest->name }}
+                                            {{ $request->booking->guest->display_name }}
                                         </div>
                                         <div class="text-sm text-gray-500 dark:text-gray-400">
                                             {{ $request->booking->booking_reference }}
@@ -214,7 +214,7 @@
                     <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">Guest Information</h4>
                     <dl class="grid grid-cols-2 gap-2 text-sm">
                         <dt class="text-gray-600 dark:text-gray-400">Name:</dt>
-                        <dd class="text-gray-900 dark:text-gray-100 font-medium">{{ $selectedRequest->booking->guest->name }}</dd>
+                        <dd class="text-gray-900 dark:text-gray-100 font-medium">{{ $selectedRequest->booking->guest->display_name }}</dd>
 
                         <dt class="text-gray-600 dark:text-gray-400">Room:</dt>
                         <dd class="text-gray-900 dark:text-gray-100 font-medium">{{ $selectedRequest->booking->room->room_number }} ({{ ucfirst($selectedRequest->booking->room->room_type) }})</dd>
@@ -299,7 +299,7 @@
                     <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">Guest Information</h4>
                     <dl class="grid grid-cols-2 gap-2 text-sm">
                         <dt class="text-gray-600 dark:text-gray-400">Name:</dt>
-                        <dd class="text-gray-900 dark:text-gray-100 font-medium">{{ $selectedRequest->booking->guest->name }}</dd>
+                        <dd class="text-gray-900 dark:text-gray-100 font-medium">{{ $selectedRequest->booking->guest->display_name }}</dd>
 
                         <dt class="text-gray-600 dark:text-gray-400">Room:</dt>
                         <dd class="text-gray-900 dark:text-gray-100 font-medium">{{ $selectedRequest->booking->room->room_number }}</dd>

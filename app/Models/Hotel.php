@@ -25,6 +25,7 @@ class Hotel extends Model
         'manager_id',
         'is_active',
         'default_checkout_time',
+        'default_checkin_time',
     ];
 
     /**
@@ -40,6 +41,7 @@ class Hotel extends Model
             'room_capacity' => 'integer',
             'location' => 'array',
             'default_checkout_time' => 'datetime:H:i:s',
+            'default_checkin_time' => 'datetime:H:i:s',
         ];
     }
 
@@ -70,6 +72,14 @@ class Hotel extends Model
     public function getStarRatingDisplayAttribute(): string
     {
         return str_repeat('⭐', $this->star_rating);
+    }
+
+    /**
+     * Get the formatted check-in time (e.g., "2:00 PM")
+     */
+    public function getFormattedCheckinTimeAttribute(): string
+    {
+        return \Carbon\Carbon::parse($this->default_checkin_time)->format('g:i A');
     }
 
     /**

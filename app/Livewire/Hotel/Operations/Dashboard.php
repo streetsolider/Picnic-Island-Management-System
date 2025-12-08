@@ -15,6 +15,21 @@ class Dashboard extends Component
 
     // Check-in form
     public $checkInNotes = '';
+    public $actualGuestsCount = null;
+    public $guestPhone = '';
+
+    // ID Verification form (if guest doesn't have ID on file)
+    public $idType = null;
+    public $idNumber = '';
+    public $officialFullName = '';
+    public $nationality = 'Maldivian';
+    public $dateOfBirth = '';
+    public $address = '';
+
+    // Room reassignment
+    public $availableRooms = [];
+    public $selectedNewRoomId = null;
+    public $roomChangeReason = '';
 
     // Check-out form
     public $checkOutNotes = '';
@@ -107,24 +122,173 @@ class Dashboard extends Component
     {
         $this->selectedBooking = HotelBooking::with(['guest', 'room'])->findOrFail($bookingId);
         $this->checkInNotes = '';
+        $this->actualGuestsCount = $this->selectedBooking->number_of_guests; // Default to booked amount
+
+        // Initialize ID verification fields
+        $guest = $this->selectedBooking->guest;
+
+        // Initialize phone number
+        $this->guestPhone = $guest->phone ?? '';
+
+        if ($guest->id_type) {
+            // Guest has ID on file - pre-fill for display
+            $this->idType = $guest->id_type;
+            $this->idNumber = $guest->id_number;
+            $this->officialFullName = $guest->name; // Using their registered name
+            $this->nationality = $guest->nationality;
+            $this->dateOfBirth = $guest->date_of_birth ? $guest->date_of_birth->format('Y-m-d') : '';
+            $this->address = $guest->address ?? '';
+        } else {
+            // No ID on file - prepare empty form with defaults
+            $this->idType = 'passport'; // Default to passport for international guests
+            $this->idNumber = '';
+            $this->officialFullName = $guest->name; // Pre-fill with registered name
+            $this->nationality = 'Maldivian';
+            $this->dateOfBirth = '';
+            $this->address = '';
+        }
+
+        // Load available rooms of the same type
+        $this->loadAvailableRooms();
+        $this->selectedNewRoomId = $this->selectedBooking->room_id; // Default to current room
+        $this->roomChangeReason = '';
+
         $this->dispatch('open-modal', 'check-in');
+    }
+
+    public function loadAvailableRooms()
+    {
+        $currentRoom = $this->selectedBooking->room;
+        $checkIn = $this->selectedBooking->check_in_date;
+        $checkOut = $this->selectedBooking->check_out_date;
+
+        // Find rooms with same attributes
+        $this->availableRooms = \App\Models\Room::where('hotel_id', $this->hotel->id)
+            ->where('is_active', true)
+            ->where('room_type', $currentRoom->room_type)
+            ->where('bed_size', $currentRoom->bed_size)
+            ->where('bed_count', $currentRoom->bed_count)
+            ->where('view', $currentRoom->view)
+            ->whereDoesntHave('bookings', function ($query) use ($checkIn, $checkOut) {
+                $query->whereIn('status', ['confirmed', 'checked_in'])
+                    ->where(function ($q) use ($checkIn, $checkOut) {
+                        $q->whereBetween('check_in_date', [$checkIn, $checkOut])
+                          ->orWhereBetween('check_out_date', [$checkIn, $checkOut])
+                          ->orWhere(function ($q2) use ($checkIn, $checkOut) {
+                              $q2->where('check_in_date', '<=', $checkIn)
+                                 ->where('check_out_date', '>=', $checkOut);
+                          });
+                    });
+            })
+            ->orderBy('room_number')
+            ->get();
     }
 
     public function confirmCheckIn()
     {
-        $this->validate([
+        $validationRules = [
             'checkInNotes' => 'nullable|string|max:1000',
-        ]);
+            'actualGuestsCount' => 'required|integer|min:1|max:' . $this->selectedBooking->number_of_guests,
+            'guestPhone' => 'required|string|max:20',
+        ];
 
+        $validationMessages = [
+            'actualGuestsCount.required' => 'Please enter the number of guests checking in.',
+            'actualGuestsCount.max' => 'Cannot exceed the booked number of guests (' . $this->selectedBooking->number_of_guests . ').',
+            'guestPhone.required' => 'Please enter the guest\'s phone number.',
+            'guestPhone.max' => 'Phone number is too long.',
+        ];
+
+        // If guest doesn't have ID on file, validate ID verification fields
+        if (!$this->selectedBooking->guest->id_type) {
+            $validationRules['idType'] = 'required|in:national_id,passport';
+            $validationRules['idNumber'] = 'required|string|max:50';
+            $validationRules['officialFullName'] = 'required|string|max:255';
+            $validationRules['nationality'] = 'required|string|max:100';
+            $validationRules['dateOfBirth'] = 'required|date|before:today';
+            $validationRules['address'] = 'required|string|max:500';
+
+            $validationMessages['idType.required'] = 'Please select an ID type.';
+            $validationMessages['idNumber.required'] = 'Please enter the ID number.';
+            $validationMessages['officialFullName.required'] = 'Please enter the guest\'s official full name.';
+            $validationMessages['nationality.required'] = 'Please enter the nationality.';
+            $validationMessages['dateOfBirth.required'] = 'Please enter the date of birth.';
+            $validationMessages['dateOfBirth.before'] = 'Date of birth must be in the past.';
+            $validationMessages['address.required'] = 'Please enter the address.';
+        }
+
+        // If room is being changed, validate reason
+        if ($this->selectedNewRoomId != $this->selectedBooking->room_id) {
+            $validationRules['roomChangeReason'] = 'required|string|max:500';
+            $validationMessages['roomChangeReason.required'] = 'Please provide a reason for the room change.';
+        }
+
+        $this->validate($validationRules, $validationMessages);
+
+        // Save ID verification details if guest doesn't have ID on file
+        if (!$this->selectedBooking->guest->id_type) {
+            $this->selectedBooking->guest->update([
+                'official_name' => $this->officialFullName,
+                'id_type' => $this->idType,
+                'id_number' => $this->idNumber,
+                'nationality' => $this->nationality,
+                'date_of_birth' => $this->dateOfBirth,
+                'address' => $this->address,
+                'phone' => $this->guestPhone,
+            ]);
+        } else {
+            // Update phone number if it was changed
+            if ($this->selectedBooking->guest->phone !== $this->guestPhone) {
+                $this->selectedBooking->guest->update([
+                    'phone' => $this->guestPhone,
+                ]);
+            }
+        }
+
+        // Handle room reassignment if room was changed
+        if ($this->selectedNewRoomId != $this->selectedBooking->room_id) {
+            $this->selectedBooking->reassignRoom(
+                $this->selectedNewRoomId,
+                auth('staff')->id(),
+                $this->roomChangeReason
+            );
+        }
+
+        // Update actual guests count
+        $this->selectedBooking->actual_guests_checked_in = $this->actualGuestsCount;
+        $this->selectedBooking->save();
+
+        // Perform check-in
         $this->selectedBooking->checkIn(
             auth('staff')->id(),
             $this->checkInNotes
         );
 
-        session()->flash('success', 'Guest checked in successfully!');
+        $successMessage = 'Guest checked in successfully! ' . $this->actualGuestsCount . ' guest(s) checked in.';
+        if ($this->selectedNewRoomId != $this->selectedBooking->room_id) {
+            $successMessage .= ' Room reassigned.';
+        }
+
+        session()->flash('success', $successMessage);
         $this->dispatch('close-modal', 'check-in');
+        $this->resetCheckInForm();
+    }
+
+    private function resetCheckInForm()
+    {
         $this->selectedBooking = null;
         $this->checkInNotes = '';
+        $this->actualGuestsCount = null;
+        $this->guestPhone = '';
+        $this->idType = null;
+        $this->idNumber = '';
+        $this->officialFullName = '';
+        $this->nationality = 'Maldivian';
+        $this->dateOfBirth = '';
+        $this->address = '';
+        $this->availableRooms = [];
+        $this->selectedNewRoomId = null;
+        $this->roomChangeReason = '';
     }
 
     // Check-out operations

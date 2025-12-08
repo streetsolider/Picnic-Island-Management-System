@@ -15,6 +15,7 @@ class HotelBooking extends Model
         'check_in_date',
         'check_out_date',
         'number_of_guests',
+        'actual_guests_checked_in',
         'number_of_rooms',
         'status',
         'total_price',
@@ -103,6 +104,28 @@ class HotelBooking extends Model
     public function payment()
     {
         return $this->morphOne(Payment::class, 'payable');
+    }
+
+    public function bookingGuests()
+    {
+        return $this->hasMany(BookingGuest::class);
+    }
+
+    public function additionalGuests()
+    {
+        return $this->hasMany(BookingGuest::class)
+                    ->where('guest_type', 'additional');
+    }
+
+    public function primaryGuest()
+    {
+        return $this->hasOne(BookingGuest::class)
+                    ->where('guest_type', 'primary');
+    }
+
+    public function roomReassignments()
+    {
+        return $this->hasMany(RoomReassignment::class);
     }
 
     // Accessor for number of nights
@@ -368,6 +391,47 @@ class HotelBooking extends Model
         $this->checked_out_by = $staffId;
         $this->check_out_notes = $notes;
         $this->status = 'checked_out';
+        return $this->save();
+    }
+
+    // Guest tracking methods
+    public function hasAllGuestDetailsRecorded(): bool
+    {
+        $recordedCount = $this->bookingGuests()->count();
+        return $recordedCount >= $this->number_of_guests;
+    }
+
+    public function getMissingGuestCount(): int
+    {
+        $recordedCount = $this->bookingGuests()->count();
+        return max(0, $this->number_of_guests - $recordedCount);
+    }
+
+    // Room reassignment methods
+    public function canReassignRoom(): bool
+    {
+        return in_array($this->status, ['confirmed', 'checked_in']) &&
+               !$this->isCheckedOut();
+    }
+
+    public function reassignRoom(int $newRoomId, int $staffId, string $reason): bool
+    {
+        if (!$this->canReassignRoom()) {
+            return false;
+        }
+
+        // Create reassignment record
+        RoomReassignment::create([
+            'booking_id' => $this->id,
+            'old_room_id' => $this->room_id,
+            'new_room_id' => $newRoomId,
+            'reassigned_by' => $staffId,
+            'reason' => $reason,
+            'reassigned_at' => now(),
+        ]);
+
+        // Update booking
+        $this->room_id = $newRoomId;
         return $this->save();
     }
 

@@ -17,12 +17,18 @@ class Guest extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'official_name',
         'email',
         'password',
         'guest_id',
         'google_id',
         'email_verified_at',
         'phone',
+        'id_type',
+        'id_number',
+        'nationality',
+        'date_of_birth',
+        'address',
     ];
 
     /**
@@ -45,6 +51,7 @@ class Guest extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'date_of_birth' => 'date',
         ];
     }
 
@@ -102,6 +109,49 @@ class Guest extends Authenticatable
     public function defaultPaymentMethod()
     {
         return $this->hasOne(SavedPaymentMethod::class)->where('is_default', true);
+    }
+
+    /**
+     * Check if guest has national ID
+     */
+    public function hasNationalId(): bool
+    {
+        return $this->id_type === 'national_id';
+    }
+
+    /**
+     * Check if guest has passport
+     */
+    public function hasPassport(): bool
+    {
+        return $this->id_type === 'passport';
+    }
+
+    /**
+     * Get the guest's age
+     */
+    public function getAgeAttribute(): ?int
+    {
+        if (!$this->date_of_birth) {
+            return null;
+        }
+        return $this->date_of_birth->age;
+    }
+
+    /**
+     * Check if guest is Maldivian
+     */
+    public function isMaldivian(): bool
+    {
+        return $this->nationality === 'Maldivian';
+    }
+
+    /**
+     * Get the display name (official name if available, otherwise registered name)
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->official_name ?: $this->name;
     }
 
     /**
