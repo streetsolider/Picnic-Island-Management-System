@@ -161,7 +161,7 @@
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <img src="{{ asset('images/map/themepark_pin.png') }}"
-                                        class="w-6 h-6 rounded-full border-2 border-brand-secondary shadow-sm" alt="Theme Park">
+                                        class="w-6 h-6 rounded-full border-2 border-yellow-400 shadow-sm" alt="Theme Park">
                                     <span class="font-semibold text-brand-dark">Theme Parks</span>
                                 </div>
                                 <div class="flex items-center gap-2">
@@ -171,7 +171,7 @@
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <img src="{{ asset('images/map/ferry_pin.png') }}"
-                                        class="w-6 h-6 rounded-full border-2 border-amber-500 shadow-sm" alt="Ferry">
+                                        class="w-6 h-6 rounded-full border-2 border-red-500 shadow-sm" alt="Ferry">
                                     <span class="font-semibold text-brand-dark">Ferry Terminal</span>
                                 </div>
                             </div>
@@ -225,13 +225,13 @@
                                                     class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-brand-primary rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
                                             @elseif($marker->mappable_type === 'App\Models\ThemeParkActivity')
                                                 <img src="{{ asset('images/map/themepark_pin.png') }}"
-                                                    class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-brand-secondary rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
+                                                    class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-yellow-400 rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
                                             @elseif($marker->mappable_type === 'App\Models\BeachService')
                                                 <img src="{{ asset('images/map/beach_pin.png') }}"
                                                     class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-green-500 rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
                                             @elseif($marker->mappable_type === 'App\Models\FerryTerminal')
                                                 <img src="{{ asset('images/map/ferry_pin.png') }}"
-                                                    class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-amber-500 rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
+                                                    class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-red-500 rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
                                             @endif
 
                                             <span class="sr-only">{{ $marker->mappable->name ?? 'Marker' }}</span>

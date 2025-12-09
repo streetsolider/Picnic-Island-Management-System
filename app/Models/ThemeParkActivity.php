@@ -126,4 +126,17 @@ class ThemeParkActivity extends Model
     {
         return $this->morphOne(MapMarker::class, 'mappable');
     }
+
+    /**
+     * Boot method to handle model events
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Automatically delete map marker when activity is deleted
+        static::deleting(function ($activity) {
+            $activity->mapMarker()->delete();
+        });
+    }
 }

@@ -67,9 +67,9 @@
     {{-- Hidden Drag Preview Icons --}}
     <div class="hidden">
         <img x-ref="hotelDragImage" src="{{ asset('images/map/hotel_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-brand-primary shadow-md">
-        <img x-ref="themeparkDragImage" src="{{ asset('images/map/themepark_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-brand-secondary shadow-md">
+        <img x-ref="themeparkDragImage" src="{{ asset('images/map/themepark_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-yellow-400 shadow-md">
         <img x-ref="beachDragImage" src="{{ asset('images/map/beach_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-green-500 shadow-md">
-        <img x-ref="ferryDragImage" src="{{ asset('images/map/ferry_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-amber-500 shadow-md">
+        <img x-ref="ferryDragImage" src="{{ asset('images/map/ferry_pin.png') }}" class="w-8 h-8 object-cover rounded-full border-2 border-red-500 shadow-md">
     </div>
 
     {{-- Map Manager --}}
@@ -211,7 +211,7 @@
                         <div draggable="true" @dragstart="startDrag($event, 'ferry', {{ $terminal->id }})"
                             class="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition">
                             <img src="{{ asset('images/map/ferry_pin.png') }}"
-                                class="w-6 h-6 object-cover rounded-full border border-amber-500">
+                                class="w-6 h-6 object-cover rounded-full border border-red-500">
                             <span class="text-sm text-gray-700 dark:text-gray-300">{{ $terminal->name }}</span>
                         </div>
                     @empty
@@ -241,13 +241,13 @@
                             class="w-8 h-8 object-cover rounded-full border-2 border-brand-primary shadow-md">
                     @elseif($marker->mappable_type === 'App\Models\ThemeParkActivity')
                         <img src="{{ asset('images/map/themepark_pin.png') }}"
-                            class="w-8 h-8 object-cover rounded-full border-2 border-brand-secondary shadow-md">
+                            class="w-8 h-8 object-cover rounded-full border-2 border-yellow-400 shadow-md">
                     @elseif($marker->mappable_type === 'App\Models\BeachService')
                         <img src="{{ asset('images/map/beach_pin.png') }}"
                             class="w-8 h-8 object-cover rounded-full border-2 border-green-500 shadow-md">
                     @elseif($marker->mappable_type === 'App\Models\FerryTerminal')
                         <img src="{{ asset('images/map/ferry_pin.png') }}"
-                            class="w-8 h-8 object-cover rounded-full border-2 border-amber-500 shadow-md">
+                            class="w-8 h-8 object-cover rounded-full border-2 border-red-500 shadow-md">
                     @endif
 
                     {{-- Tooltip / Controls --}}

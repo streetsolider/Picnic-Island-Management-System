@@ -230,4 +230,17 @@ class Hotel extends Model
     {
         return $this->morphOne(MapMarker::class, 'mappable');
     }
+
+    /**
+     * Boot method to handle model events
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Automatically delete map marker when hotel is deleted
+        static::deleting(function ($hotel) {
+            $hotel->mapMarker()->delete();
+        });
+    }
 }

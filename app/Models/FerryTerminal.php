@@ -37,4 +37,17 @@ class FerryTerminal extends Model
     {
         return $this->morphOne(MapMarker::class, 'mappable');
     }
+
+    /**
+     * Boot method to handle model events
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Automatically delete map marker when ferry terminal is deleted
+        static::deleting(function ($terminal) {
+            $terminal->mapMarker()->delete();
+        });
+    }
 }

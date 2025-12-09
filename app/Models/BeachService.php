@@ -175,4 +175,17 @@ class BeachService extends Model
     {
         return $this->morphOne(MapMarker::class, 'mappable');
     }
+
+    /**
+     * Boot method to handle model events
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Automatically delete map marker when beach service is deleted
+        static::deleting(function ($service) {
+            $service->mapMarker()->delete();
+        });
+    }
 }
