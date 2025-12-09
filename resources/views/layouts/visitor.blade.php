@@ -33,17 +33,33 @@
 
         .roomGallerySwiper .swiper-button-next,
         .roomGallerySwiper .swiper-button-prev {
-            color: white;
-            background: rgba(0, 0, 0, 0.4);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            transition: opacity 0.3s ease;
+            background: rgba(0, 0, 0, 0.5);
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
         }
 
+        .roomGallerySwiper .swiper-button-next:hover,
+        .roomGallerySwiper .swiper-button-prev:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Override Swiper's default font-based arrows with Unicode arrows */
         .roomGallerySwiper .swiper-button-next:after,
         .roomGallerySwiper .swiper-button-prev:after {
-            font-size: 16px;
+            font-size: 24px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.8);
+            font-family: Arial, sans-serif;
+        }
+
+        .roomGallerySwiper .swiper-button-next:after {
+            content: '›';
+        }
+
+        .roomGallerySwiper .swiper-button-prev:after {
+            content: '‹';
         }
 
         .roomGallerySwiper .swiper-pagination-bullet-active {

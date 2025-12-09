@@ -103,18 +103,20 @@ class RoomDetails extends Component
                 'guests' => $this->guests,
             ]);
 
+            // Use Laravel's session put for url.intended
             session()->put('url.intended', $intendedUrl);
+            session()->save(); // Ensure session is saved before redirect
 
-            return redirect()->route('login');
+            return $this->redirect(route('login'), navigate: true);
         }
 
         // Redirect to booking form
-        return redirect()->route('booking.create', [
+        return $this->redirect(route('booking.create', [
             'room' => $this->room->id,
             'checkIn' => $this->checkIn,
             'checkOut' => $this->checkOut,
             'guests' => $this->guests,
-        ]);
+        ]), navigate: true);
     }
 
     public function render()

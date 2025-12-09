@@ -19,7 +19,10 @@ new #[Layout('layouts.visitor')] class extends Component {
 
         Session::regenerate();
 
-        $this->redirectIntended(default: route('home', absolute: false), navigate: true);
+        // Get the intended URL from session (if exists)
+        $intendedUrl = session()->pull('url.intended', route('home', absolute: false));
+
+        $this->redirect($intendedUrl, navigate: true);
     }
 }; ?>
 

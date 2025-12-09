@@ -94,24 +94,31 @@
 
                     @if ($images->isNotEmpty())
                         {{-- MOBILE/TABLET: Full-width image carousel (replaces big image) --}}
-                        <div class="block lg:hidden">
+                        <div class="block lg:hidden relative">
                             <div class="swiper roomGallerySwiper"
                                 x-data="{
                                     swiper: null,
+                                    currentSlide: 0,
+                                    totalSlides: {{ $images->count() }},
                                     init() {
+                                        const self = this;
                                         this.swiper = new Swiper(this.$el, {
                                             slidesPerView: 1,
                                             spaceBetween: 0,
                                             grabCursor: true,
                                             observer: true,
                                             observeParents: true,
-                                            pagination: {
-                                                el: this.$el.querySelector('.swiper-pagination'),
-                                                clickable: true,
-                                            },
+                                            on: {
+                                                slideChange: function() {
+                                                    self.currentSlide = this.activeIndex;
+                                                }
+                                            }
                                         });
                                     }
-                                }">
+                                }"
+                                x-cloak
+                                style="display: none;"
+                                x-init="$el.style.display = 'block'">
                                 <div class="swiper-wrapper">
                                     @foreach ($images as $image)
                                         <div class="swiper-slide !h-auto">
@@ -123,7 +130,18 @@
                                         </div>
                                     @endforeach
                                 </div>
-                                <div class="swiper-pagination !bottom-4"></div>
+                            </div>
+
+                            {{-- Custom Pagination Dots --}}
+                            <div class="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-2 z-10">
+                                @foreach ($images as $index => $image)
+                                    <button
+                                        type="button"
+                                        @click="swiper.slideTo({{ $index }})"
+                                        class="h-2.5 rounded-full transition-all duration-300"
+                                        :class="currentSlide === {{ $index }} ? 'w-8 bg-white border-2 border-white shadow-lg' : 'w-2.5 bg-white bg-opacity-50 border-2 border-white border-opacity-70'">
+                                    </button>
+                                @endforeach
                             </div>
                         </div>
 

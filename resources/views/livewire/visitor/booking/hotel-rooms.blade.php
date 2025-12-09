@@ -91,19 +91,6 @@
                                         class="w-full h-full object-cover">
                                 </div>
                             @endforeach
-
-                            {{-- Slide Indicators --}}
-                            @if ($hotel->hotelGallery->images->count() > 1)
-                                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                                    @foreach ($hotel->hotelGallery->images as $index => $image)
-                                        <button
-                                            @click="currentSlide = {{ $index }}"
-                                            class="w-2 h-2 rounded-full transition-all duration-300"
-                                            :class="currentSlide === {{ $index }} ? 'bg-white w-6' : 'bg-white/50'">
-                                        </button>
-                                    @endforeach
-                                </div>
-                            @endif
                         </div>
                     @else
                         <div class="w-full h-48 sm:h-56 md:h-full bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20 flex items-center justify-center">

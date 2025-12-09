@@ -17,6 +17,12 @@ class GoogleAuthController extends Controller
      */
     public function redirect(): RedirectResponse
     {
+        // Preserve the intended URL if it exists
+        // This will be retrieved after Google OAuth callback
+        if (session()->has('url.intended')) {
+            // Session is already set, no need to do anything
+        }
+
         return Socialite::driver('google')->redirect();
     }
 
@@ -52,7 +58,15 @@ class GoogleAuthController extends Controller
             // Log the guest in
             Auth::login($guest);
 
-            // Always redirect guests to home page (never to staff routes)
+            // Get the intended URL from session (if exists)
+            $intendedUrl = session()->pull('url.intended');
+
+            // If there's an intended URL and it's not a staff route, redirect there
+            if ($intendedUrl && !str_contains($intendedUrl, '/staff') && !str_contains($intendedUrl, '/admin')) {
+                return redirect($intendedUrl);
+            }
+
+            // Otherwise, redirect guests to home page
             return redirect()->route('home');
 
         } catch (\Exception $e) {
