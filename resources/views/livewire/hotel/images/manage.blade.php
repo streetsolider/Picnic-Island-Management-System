@@ -27,9 +27,6 @@
             </x-admin.card.base>
         @endif
 
-        {{-- Hotel Gallery Section --}}
-        @include('livewire.hotel.images.partials.hotel-gallery')
-
         {{-- Room Galleries Section --}}
         @include('livewire.hotel.images.partials.galleries')
     </div>

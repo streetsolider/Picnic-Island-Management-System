@@ -30,7 +30,7 @@
                             <button wire:click="moveHotelGalleryImageUp({{ $image->id }})"
                                 class="bg-white dark:bg-gray-800 rounded p-1 shadow-md hover:bg-gray-100 dark:hover:bg-gray-700">
                                 <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                                 </svg>
                             </button>
                         @endif
@@ -38,7 +38,7 @@
                             <button wire:click="moveHotelGalleryImageDown({{ $image->id }})"
                                 class="bg-white dark:bg-gray-800 rounded p-1 shadow-md hover:bg-gray-100 dark:hover:bg-gray-700">
                                 <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                 </svg>
                             </button>
                         @endif
@@ -46,7 +46,7 @@
 
                     {{-- Primary Badge --}}
                     @if($image->is_primary)
-                        <span class="absolute top-3 left-3 z-20 mt-1 ml-1 px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                        <span class="absolute top-2 left-3 z-20 px-2 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                             Primary
                         </span>
                     @endif
@@ -58,7 +58,7 @@
 
                     {{-- Action Buttons at Bottom --}}
                     <div class="p-2 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-                        <div class="flex items-center gap-1">
+                        <div class="flex items-center justify-between gap-2">
                             @if(!$image->is_primary)
                                 <x-admin.button.secondary
                                     wire:click="setHotelGalleryPrimaryImage({{ $image->id }})"
@@ -66,6 +66,8 @@
                                     class="flex-1">
                                     Set Primary
                                 </x-admin.button.secondary>
+                            @else
+                                <span class="flex-1 text-xs text-gray-500 dark:text-gray-400 px-2">Primary Image</span>
                             @endif
                             <button
                                 wire:click="deleteHotelGalleryImage({{ $image->id }})"
