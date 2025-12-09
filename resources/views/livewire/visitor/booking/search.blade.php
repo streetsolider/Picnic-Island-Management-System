@@ -16,7 +16,7 @@
                     Find Your Perfect <span
                         class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">Stay</span>
                 </h1>
-                <p class="text-xl text-brand-dark/70">Discover luxury accommodations on Kabohera Fun Island</p>
+                <p class="text-xl text-brand-dark/70">Your island adventure starts with the perfect room!</p>
             </div>
 
             {{-- Search Form Card --}}

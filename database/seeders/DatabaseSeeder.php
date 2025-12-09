@@ -98,6 +98,9 @@ class DatabaseSeeder extends Seeder
         // Seed rooms and pricing for all hotels
         $this->call(\Database\Seeders\Hotel\RoomSeeder::class);
 
+        // Assign amenities to rooms based on star rating and room type
+        $this->call(\Database\Seeders\Hotel\RoomAmenityAssignmentSeeder::class);
+
         // Seed promotional discounts
         $this->call(\Database\Seeders\Hotel\PromotionalDiscountSeeder::class);
 
