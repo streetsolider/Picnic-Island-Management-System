@@ -12,6 +12,11 @@ class MapController extends Controller
     {
         $markers = MapMarker::with('mappable')->get();
         $mapImagePath = MapSetting::getMapImagePath();
-        return view('guest.map', compact('markers', 'mapImagePath'));
+
+        return response()
+            ->view('guest.map', compact('markers', 'mapImagePath'))
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 }

@@ -26,7 +26,7 @@ Route::get('/beach-activities', \App\Livewire\Visitor\BeachActivities\Browse::cl
 Route::get('/beach-activities/service/{service}', \App\Livewire\Visitor\BeachActivities\ServiceDetails::class)->name('visitor.beach-activities.details');
 
 // Public Map
-Route::get('/map', [\App\Http\Controllers\MapController::class, 'index'])->name('map');
+Route::get('/map', \App\Livewire\Visitor\Map::class)->name('map');
 
 // Guest (Customer) Routes
 Route::middleware(['auth:web', 'verified'])->group(function () {
