@@ -185,10 +185,11 @@
                     <div class="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group">
                         <div class="grid md:grid-cols-3 gap-6">
                             {{-- Room Image --}}
-                            <div class="relative h-64 md:h-auto overflow-hidden bg-gray-200">
-                                @if ($roomImage)
-                                    <img src="{{ Storage::url($roomImage->image_path) }}" alt="{{ $room->full_description }}"
-                                        class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                            <div class="md:col-span-1">
+                                <div class="relative h-64 md:h-full overflow-hidden bg-gray-200">
+                                    @if ($roomImage)
+                                        <img src="{{ Storage::url($roomImage->image_path) }}" alt="{{ $room->full_description }}"
+                                            class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
                                 @else
                                     <div class="w-full h-full bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20 flex items-center justify-center">
                                         <svg class="w-16 h-16 text-brand-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,6 +203,7 @@
                                 {{-- Availability Badge --}}
                                 <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full">
                                     <span class="text-sm font-semibold text-brand-primary">{{ $availableCount }} available</span>
+                                </div>
                                 </div>
                             </div>
 
