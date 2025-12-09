@@ -74,6 +74,9 @@ class HotelRooms extends Component
             $this->maxPrice ? floatval($this->maxPrice) : null
         );
 
+        // Eager load amenities and gallery to avoid N+1 queries
+        $availableRooms->load(['amenities', 'gallery.images']);
+
         // Group rooms by their unique configuration
         $groupedRooms = $availableRooms->groupBy(function ($room) {
             return $room->room_type . '|' . $room->bed_size . '|' . $room->bed_count . '|' . $room->view;
@@ -120,6 +123,52 @@ class HotelRooms extends Component
     public function updatedSortBy()
     {
         $this->applySorting();
+    }
+
+    // Reload room types when filters change
+    public function updatedRoomType()
+    {
+        $this->loadRoomTypes();
+    }
+
+    public function updatedView()
+    {
+        $this->loadRoomTypes();
+    }
+
+    public function updatedBedSize()
+    {
+        $this->loadRoomTypes();
+    }
+
+    public function updatedBedCount()
+    {
+        $this->loadRoomTypes();
+    }
+
+    public function updatedMinPrice()
+    {
+        $this->loadRoomTypes();
+    }
+
+    public function updatedMaxPrice()
+    {
+        $this->loadRoomTypes();
+    }
+
+    public function updatedCheckIn()
+    {
+        $this->loadRoomTypes();
+    }
+
+    public function updatedCheckOut()
+    {
+        $this->loadRoomTypes();
+    }
+
+    public function updatedGuests()
+    {
+        $this->loadRoomTypes();
     }
 
     public function render()
