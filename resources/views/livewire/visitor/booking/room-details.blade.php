@@ -123,7 +123,7 @@
                             @else
                                 {{-- Carousel for more than 4 images --}}
                                 <div class="relative p-4">
-                                    <div class="swiper roomGallerySwiper">
+                                    <div class="swiper roomGallerySwiper overflow-hidden">
                                         <div class="swiper-wrapper">
                                             @foreach ($images as $image)
                                                 <div class="swiper-slide">
@@ -138,8 +138,8 @@
                                             @endforeach
                                         </div>
                                         {{-- Navigation buttons --}}
-                                        <div class="swiper-button-next"></div>
-                                        <div class="swiper-button-prev"></div>
+                                        <div class="swiper-button-next !hidden sm:!flex"></div>
+                                        <div class="swiper-button-prev !hidden sm:!flex"></div>
                                     </div>
                                 </div>
                             @endif

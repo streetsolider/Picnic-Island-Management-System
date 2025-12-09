@@ -300,30 +300,38 @@
     <!-- Swiper.js -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const swiper = new Swiper('.roomGallerySwiper', {
-                slidesPerView: 4,
-                spaceBetween: 10,
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                breakpoints: {
-                    320: {
-                        slidesPerView: 2,
-                        spaceBetween: 8
+        function initSwiper() {
+            if (document.querySelector('.roomGallerySwiper')) {
+                const swiper = new Swiper('.roomGallerySwiper', {
+                    slidesPerView: 2,
+                    spaceBetween: 8,
+                    loop: false,
+                    grabCursor: true,
+                    touchRatio: 1,
+                    slideToClickedSlide: true,
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
                     },
-                    640: {
-                        slidesPerView: 3,
-                        spaceBetween: 10
-                    },
-                    1024: {
-                        slidesPerView: 4,
-                        spaceBetween: 10
+                    breakpoints: {
+                        640: {
+                            slidesPerView: 3,
+                            spaceBetween: 10
+                        },
+                        1024: {
+                            slidesPerView: 4,
+                            spaceBetween: 10
+                        }
                     }
-                }
-            });
-        });
+                });
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initSwiper);
+
+        // Re-initialize on Livewire navigation
+        document.addEventListener('livewire:navigated', initSwiper);
     </script>
 </body>
 
