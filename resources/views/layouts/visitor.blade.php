@@ -27,6 +27,14 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <style>
+        /* CSS Grid/Flexbox bug fix for Swiper */
+        .roomGallerySwiper {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            min-height: 0;
+        }
+
         .roomGallerySwiper .swiper-button-next,
         .roomGallerySwiper .swiper-button-prev {
             color: white;
@@ -43,7 +51,7 @@
         }
 
         .roomGallerySwiper .swiper-pagination-bullet-active {
-            background: #3b82f6;
+            background: white;
         }
     </style>
 

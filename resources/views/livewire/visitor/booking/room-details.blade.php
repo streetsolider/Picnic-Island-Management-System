@@ -75,9 +75,9 @@
             </div>
         @endif
 
-        <div class="grid lg:grid-cols-3 gap-8">
+        <div class="grid lg:grid-cols-3 gap-8 min-w-0">
             {{-- Left Column: Room Details --}}
-            <div class="lg:col-span-2 space-y-6">
+            <div class="lg:col-span-2 space-y-6 min-w-0">
                 {{-- Room Images Gallery --}}
                 <div class="bg-white rounded-3xl overflow-hidden shadow-lg"
                     x-data="{
@@ -93,109 +93,119 @@
                     @endphp
 
                     @if ($images->isNotEmpty())
-                        <div class="relative h-96 bg-gray-200">
-                            <img :src="currentImage"
-                                alt="{{ $room->full_description }}"
-                                class="w-full h-full object-cover">
-
-                            @if ($images->count() > 1)
-                                <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold">
-                                    {{ $images->count() }} Photos
-                                </div>
-                            @endif
-                        </div>
-
-                        {{-- Thumbnail Grid or Carousel --}}
-                        @if ($images->count() > 1)
-                            @if ($images->count() <= 4)
-                                {{-- Grid for 4 or fewer images --}}
-                                <div class="grid grid-cols-4 gap-2 p-4">
+                        {{-- MOBILE/TABLET: Full-width image carousel (replaces big image) --}}
+                        <div class="block lg:hidden">
+                            <div class="swiper roomGallerySwiper"
+                                x-data="{
+                                    swiper: null,
+                                    init() {
+                                        this.swiper = new Swiper(this.$el, {
+                                            slidesPerView: 1,
+                                            spaceBetween: 0,
+                                            grabCursor: true,
+                                            observer: true,
+                                            observeParents: true,
+                                            pagination: {
+                                                el: this.$el.querySelector('.swiper-pagination'),
+                                                clickable: true,
+                                            },
+                                        });
+                                    }
+                                }">
+                                <div class="swiper-wrapper">
                                     @foreach ($images as $image)
-                                        <div class="aspect-square rounded-lg overflow-hidden cursor-pointer"
-                                            @click="setImage('{{ Storage::url($image->image_path) }}')">
-                                            <img src="{{ Storage::url($image->image_path) }}"
-                                                alt="Room view"
-                                                class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                                                :class="currentImage === '{{ Storage::url($image->image_path) }}' ? 'ring-4 ring-brand-primary' : ''">
+                                        <div class="swiper-slide !h-auto">
+                                            <div class="h-72 sm:h-80 md:h-96 overflow-hidden">
+                                                <img src="{{ Storage::url($image->image_path) }}"
+                                                    alt="Room view"
+                                                    class="w-full h-full object-cover">
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
-                            @else
-                                {{-- Mobile: Single image slider with dots --}}
-                                <div class="block sm:hidden p-4">
-                                    <div class="swiper roomGallerySwiper"
-                                        x-data="{
-                                            swiper: null,
-                                            init() {
-                                                this.swiper = new Swiper(this.$el, {
-                                                    slidesPerView: 1,
-                                                    spaceBetween: 10,
-                                                    grabCursor: true,
-                                                    pagination: {
-                                                        el: this.$el.querySelector('.swiper-pagination'),
-                                                        clickable: true,
-                                                    },
-                                                });
-                                            }
-                                        }">
-                                        <div class="swiper-wrapper">
-                                            @foreach ($images as $image)
-                                                <div class="swiper-slide">
-                                                    <div class="aspect-square rounded-lg overflow-hidden">
-                                                        <img src="{{ Storage::url($image->image_path) }}"
-                                                            alt="Room view"
-                                                            class="w-full h-full object-cover">
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                        <div class="swiper-pagination mt-3"></div>
-                                    </div>
-                                </div>
+                                <div class="swiper-pagination !bottom-4"></div>
+                            </div>
+                        </div>
 
-                                {{-- Desktop: 4-column carousel --}}
-                                <div class="hidden sm:block p-4">
-                                    <div class="swiper roomGallerySwiper"
-                                        x-data="{
-                                            swiper: null,
-                                            isBeginning: true,
-                                            isEnd: false,
-                                            init() {
-                                                this.swiper = new Swiper(this.$el, {
-                                                    slidesPerView: 4,
-                                                    spaceBetween: 10,
-                                                    grabCursor: true,
-                                                    navigation: {
-                                                        nextEl: this.$el.querySelector('.swiper-button-next'),
-                                                        prevEl: this.$el.querySelector('.swiper-button-prev'),
-                                                    },
-                                                });
-                                                this.swiper.on('slideChange', () => {
-                                                    this.isBeginning = this.swiper.isBeginning;
-                                                    this.isEnd = this.swiper.isEnd;
-                                                });
-                                            }
-                                        }">
-                                        <div class="swiper-wrapper">
+                        {{-- DESKTOP: Big image + thumbnail carousel --}}
+                        <div class="hidden lg:block">
+                            {{-- Main big image --}}
+                            <div class="relative h-96 bg-gray-200">
+                                <img :src="currentImage"
+                                    alt="{{ $room->full_description }}"
+                                    class="w-full h-full object-cover">
+
+                                @if ($images->count() > 1)
+                                    <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-semibold">
+                                        {{ $images->count() }} Photos
+                                    </div>
+                                @endif
+                            </div>
+
+                            {{-- Thumbnail carousel --}}
+                            @if ($images->count() > 1)
+                                <div class="p-4">
+                                    @if ($images->count() <= 4)
+                                        {{-- Grid for 4 or fewer images --}}
+                                        <div class="grid grid-cols-4 gap-2">
                                             @foreach ($images as $image)
-                                                <div class="swiper-slide">
-                                                    <div class="aspect-square rounded-lg overflow-hidden cursor-pointer"
-                                                        @click="setImage('{{ Storage::url($image->image_path) }}')">
-                                                        <img src="{{ Storage::url($image->image_path) }}"
-                                                            alt="Room view"
-                                                            class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                                                            :class="currentImage === '{{ Storage::url($image->image_path) }}' ? 'ring-4 ring-brand-primary' : ''">
-                                                    </div>
+                                                <div class="aspect-square rounded-lg overflow-hidden cursor-pointer"
+                                                    @click="setImage('{{ Storage::url($image->image_path) }}')">
+                                                    <img src="{{ Storage::url($image->image_path) }}"
+                                                        alt="Room view"
+                                                        class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                                                        :class="currentImage === '{{ Storage::url($image->image_path) }}' ? 'ring-4 ring-brand-primary' : ''">
                                                 </div>
                                             @endforeach
                                         </div>
-                                        {{-- Arrow indicators --}}
-                                        <div class="swiper-button-next transition-opacity duration-300" :class="isEnd ? '!opacity-0 !pointer-events-none' : 'opacity-100'"></div>
-                                        <div class="swiper-button-prev transition-opacity duration-300" :class="isBeginning ? '!opacity-0 !pointer-events-none' : 'opacity-100'"></div>
-                                    </div>
+                                    @else
+                                        {{-- Carousel for more than 4 images --}}
+                                        <div class="swiper roomGallerySwiper overflow-hidden"
+                                            x-data="{
+                                                swiper: null,
+                                                isBeginning: true,
+                                                isEnd: false,
+                                                init() {
+                                                    this.swiper = new Swiper(this.$el, {
+                                                        slidesPerView: 4,
+                                                        spaceBetween: 10,
+                                                        grabCursor: true,
+                                                        watchOverflow: true,
+                                                        observer: true,
+                                                        observeParents: true,
+                                                        navigation: {
+                                                            nextEl: this.$el.querySelector('.swiper-button-next'),
+                                                            prevEl: this.$el.querySelector('.swiper-button-prev'),
+                                                        },
+                                                    });
+                                                    this.isEnd = this.swiper.isEnd;
+                                                    this.swiper.on('slideChange', () => {
+                                                        this.isBeginning = this.swiper.isBeginning;
+                                                        this.isEnd = this.swiper.isEnd;
+                                                    });
+                                                }
+                                            }">
+                                            <div class="swiper-wrapper">
+                                                @foreach ($images as $image)
+                                                    <div class="swiper-slide">
+                                                        <div class="aspect-square rounded-lg overflow-hidden cursor-pointer"
+                                                            @click="setImage('{{ Storage::url($image->image_path) }}')">
+                                                            <img src="{{ Storage::url($image->image_path) }}"
+                                                                alt="Room view"
+                                                                class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                                                                :class="currentImage === '{{ Storage::url($image->image_path) }}' ? 'ring-4 ring-brand-primary' : ''">
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                            {{-- Arrow indicators --}}
+                                            <div class="swiper-button-next transition-opacity duration-300" :class="isEnd ? '!opacity-0 !pointer-events-none' : 'opacity-100'"></div>
+                                            <div class="swiper-button-prev transition-opacity duration-300" :class="isBeginning ? '!opacity-0 !pointer-events-none' : 'opacity-100'"></div>
+                                        </div>
+                                    @endif
                                 </div>
                             @endif
-                        @endif
+                        </div>
                     @else
                         <div class="h-96 bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20 flex items-center justify-center">
                             <svg class="w-32 h-32 text-brand-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
