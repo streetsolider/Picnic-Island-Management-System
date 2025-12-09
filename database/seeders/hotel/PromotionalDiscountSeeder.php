@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\Hotel;
 
 use App\Models\Hotel;
 use App\Models\PromotionalDiscount;

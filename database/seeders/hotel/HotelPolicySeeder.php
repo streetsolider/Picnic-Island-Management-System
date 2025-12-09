@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\Hotel;
 
 use App\Models\Hotel;
 use App\Models\HotelPolicy;
@@ -14,22 +14,34 @@ class HotelPolicySeeder extends Seeder
      */
     public function run(): void
     {
-        // Find Paradise Bay Hotel
-        $hotel = Hotel::where('name', 'Paradise Bay Hotel')->first();
+        // Get all hotels
+        $hotels = Hotel::all();
 
-        if (!$hotel) {
-            $this->command->error('Paradise Bay Hotel not found!');
+        if ($hotels->isEmpty()) {
+            $this->command->error('No hotels found! Please run HotelSeeder first.');
             return;
         }
 
-        $this->command->info('Seeding policies for Paradise Bay Hotel...');
+        // Clear all existing policies
+        HotelPolicy::query()->delete();
 
-        // Delete existing policies to avoid duplicates
-        HotelPolicy::where('hotel_id', $hotel->id)->delete();
+        foreach ($hotels as $hotel) {
+            $this->command->info("Seeding policies for {$hotel->name}...");
+            $this->createPoliciesForHotel($hotel->id);
+        }
+
+        $this->command->info("\n✓ All hotels seeded with policies successfully!");
+    }
+
+    /**
+     * Create all policies for a specific hotel
+     */
+    private function createPoliciesForHotel(int $hotelId): void
+    {
 
         // Cancellation Policy
         HotelPolicy::create([
-            'hotel_id' => $hotel->id,
+            'hotel_id' => $hotelId,
             'policy_type' => 'cancellation',
             'title' => 'Flexible Cancellation Policy',
             'description' => "Free Cancellation: Cancel up to 48 hours before your check-in date for a full refund.
@@ -48,7 +60,7 @@ Refund Processing: All approved refunds will be processed within 7-10 business d
 
         // Check-in/Check-out Policy
         HotelPolicy::create([
-            'hotel_id' => $hotel->id,
+            'hotel_id' => $hotelId,
             'policy_type' => 'check_in_out',
             'title' => 'Check-in & Check-out Times',
             'description' => "Check-in Time: 10:00 AM (Early check-in subject to availability)
@@ -67,7 +79,7 @@ Luggage Storage: Complimentary luggage storage is available both before check-in
 
         // Payment Policy
         HotelPolicy::create([
-            'hotel_id' => $hotel->id,
+            'hotel_id' => $hotelId,
             'policy_type' => 'payment',
             'title' => 'Payment Terms & Conditions',
             'description' => "Accepted Payment Methods:
@@ -92,10 +104,10 @@ Service Charge & Tax: All rates are subject to applicable government taxes and a
 
         // House Rules
         HotelPolicy::create([
-            'hotel_id' => $hotel->id,
+            'hotel_id' => $hotelId,
             'policy_type' => 'house_rules',
             'title' => 'Hotel House Rules',
-            'description' => "Smoking Policy: Paradise Bay is a smoke-free property. Smoking is only permitted in designated outdoor areas. Violation will result in a cleaning fee of MVR 2,500.
+            'description' => "Smoking Policy: This is a smoke-free property. Smoking is only permitted in designated outdoor areas. Violation will result in a cleaning fee of MVR 2,500.
 
 Noise Policy: Quiet hours are from 10:00 PM to 7:00 AM. Please be considerate of other guests during these hours.
 
@@ -115,7 +127,7 @@ Lost and Found: Items left behind will be kept for 30 days. Please contact us to
 
         // Age Restriction (Soft policy)
         HotelPolicy::create([
-            'hotel_id' => $hotel->id,
+            'hotel_id' => $hotelId,
             'policy_type' => 'age_restriction',
             'title' => 'Age Policy & Child Guidelines',
             'description' => "Minimum Check-in Age: The primary guest must be at least 18 years of age to check in.
@@ -138,7 +150,7 @@ Safety: For safety reasons, children must be supervised by adults in the pool, b
 
         // Damage & Deposit Policy
         HotelPolicy::create([
-            'hotel_id' => $hotel->id,
+            'hotel_id' => $hotelId,
             'policy_type' => 'damage_deposit',
             'title' => 'Security Deposit & Damage Policy',
             'description' => "Security Deposit: A refundable security deposit of MVR 1,000 is required upon check-in. This can be paid by credit card authorization or cash.
@@ -165,7 +177,7 @@ Disputes: Any disputes regarding damage charges should be raised with management
 
         // Special Requests Policy
         HotelPolicy::create([
-            'hotel_id' => $hotel->id,
+            'hotel_id' => $hotelId,
             'policy_type' => 'special_requests',
             'title' => 'Special Requests & Services',
             'description' => "Special Requests: We will do our best to accommodate all special requests such as specific room locations, floor preferences, or bedding configurations. Please note that special requests cannot be guaranteed and are subject to availability at check-in.
@@ -200,6 +212,5 @@ Additional Services Available:
             'is_active' => true,
         ]);
 
-        $this->command->info('Successfully seeded ' . HotelPolicy::where('hotel_id', $hotel->id)->count() . ' policies for Paradise Bay Hotel!');
     }
 }

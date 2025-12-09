@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\Hotel;
 
 use App\Models\Hotel;
 use App\Models\Staff;
@@ -25,36 +25,29 @@ class HotelSeeder extends Seeder
                 'name' => 'Paradise Bay Hotel',
                 'description' => 'A luxurious beachfront resort with stunning ocean views and world-class amenities.',
                 'star_rating' => 5,
-                'room_capacity' => 150,
+                'room_capacity' => 50,
                 'is_active' => true,
             ],
             [
                 'name' => 'Island View Hotel',
                 'description' => 'Modern hotel in the heart of the island with easy access to all attractions.',
                 'star_rating' => 4,
-                'room_capacity' => 100,
+                'room_capacity' => 40,
                 'is_active' => true,
             ],
             [
                 'name' => 'Sunset Inn',
                 'description' => 'Cozy boutique hotel perfect for couples and small families.',
                 'star_rating' => 3,
-                'room_capacity' => 50,
-                'is_active' => true,
-            ],
-            [
-                'name' => 'Picnic Grand Hotel',
-                'description' => 'Premium hotel offering luxury accommodations and exceptional service.',
-                'star_rating' => 5,
-                'room_capacity' => 200,
-                'is_active' => true,
-            ],
-            [
-                'name' => 'Budget Stay Lodge',
-                'description' => 'Affordable accommodation for budget-conscious travelers.',
-                'star_rating' => 2,
                 'room_capacity' => 30,
-                'is_active' => false,
+                'is_active' => true,
+            ],
+            [
+                'name' => 'Coastal Retreat',
+                'description' => 'Charming seaside hotel offering comfortable stays and warm hospitality.',
+                'star_rating' => 2,
+                'room_capacity' => 20,
+                'is_active' => true,
             ],
         ];
 

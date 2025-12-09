@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\Hotel;
 
 use App\Models\Amenity;
 use App\Models\AmenityCategory;

@@ -50,6 +50,12 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role' => StaffRole::THEME_PARK_STAFF,
             ],
+            [
+                'name' => 'Beach Staff',
+                'email' => 'beach-staff@picnicisland.com',
+                'password' => Hash::make('password'),
+                'role' => StaffRole::BEACH_STAFF,
+            ],
         ];
 
         foreach ($staffMembers as $staffData) {
@@ -81,19 +87,19 @@ class DatabaseSeeder extends Seeder
         }
 
         // Seed hotels
-        $this->call(HotelSeeder::class);
+        $this->call(\Database\Seeders\Hotel\HotelSeeder::class);
 
         // Seed hotel policies
-        $this->call(HotelPolicySeeder::class);
+        $this->call(\Database\Seeders\Hotel\HotelPolicySeeder::class);
 
         // Seed hotel amenities
-        $this->call(AmenitySeeder::class);
+        $this->call(\Database\Seeders\Hotel\AmenitySeeder::class);
 
-        // Seed rooms for Paradise Bay Hotel
-        $this->call(ParadiseBayRoomSeeder::class);
+        // Seed rooms and pricing for all hotels
+        $this->call(\Database\Seeders\Hotel\RoomSeeder::class);
 
         // Seed promotional discounts
-        $this->call(PromotionalDiscountSeeder::class);
+        $this->call(\Database\Seeders\Hotel\PromotionalDiscountSeeder::class);
 
         // Seed ferry vessels
         $this->call(FerryVesselSeeder::class);
@@ -101,11 +107,12 @@ class DatabaseSeeder extends Seeder
         // Seed theme park zones
         $this->call(ThemeParkZoneSeeder::class);
 
-        // Seed beach services
-        $this->call(BeachServiceSeeder::class);
+        // Seed beach services and categories
+        $this->call(BeachActivityCategorySeeder::class);
 
         // Seed test data (bookings, activities, schedules)
-        $this->call(TestDataSeeder::class);
+        // TODO: Fix TestDataSeeder - currently creates unwanted test bookings and has errors
+        // $this->call(TestDataSeeder::class);
 
         $this->command->info('Sample data created successfully!');
         $this->command->info('');
@@ -115,6 +122,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info('Email: ferry@picnicisland.com | Password: password | Role: Ferry Operator');
         $this->command->info('Email: themepark-manager@picnicisland.com | Password: password | Role: Theme Park Manager');
         $this->command->info('Email: themepark-staff@picnicisland.com | Password: password | Role: Theme Park Staff');
+        $this->command->info('Email: beach-staff@picnicisland.com | Password: password | Role: Beach Staff');
         $this->command->info('');
         $this->command->info('GUEST ACCOUNTS:');
         $this->command->info('Email: guest@example.com | Password: password');
