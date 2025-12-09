@@ -11,13 +11,12 @@ use Livewire\Component;
 class MyBookings extends Component
 {
     public $bookingType = 'hotel'; // hotel, ferry
-    public $activeTab = 'current'; // current, upcoming, past, cancelled
+    public $activeTab = 'upcoming'; // checked_in, upcoming, past, cancelled
 
     public function updatedBookingType($value)
     {
-        // When switching to hotel, default to 'current' tab
-        // When switching to ferry, default to 'upcoming' tab
-        $this->activeTab = $value === 'hotel' ? 'current' : 'upcoming';
+        // Always default to 'upcoming' tab for both hotel and ferry
+        $this->activeTab = 'upcoming';
     }
 
     public function cancelBooking($bookingId)
@@ -89,12 +88,17 @@ class MyBookings extends Component
                 ->orderBy('check_in_date', 'desc');
 
             $bookings = match($this->activeTab) {
-                'current' => (clone $query)->current()->get(),
+                'checked_in' => (clone $query)->current()->get(),
                 'upcoming' => (clone $query)->upcoming()->get(),
                 'past' => (clone $query)->past()->get(),
                 'cancelled' => (clone $query)->where('status', 'cancelled')->get(),
-                default => (clone $query)->current()->get(),
+                default => (clone $query)->upcoming()->get(),
             };
+
+            // Check if user has any checked-in bookings (for notification banner)
+            $hasCheckedInBookings = HotelBooking::where('guest_id', auth()->id())
+                ->current()
+                ->exists();
         } else {
             // Ferry tickets
             $query = FerryTicket::where('guest_id', auth()->id())
@@ -110,10 +114,13 @@ class MyBookings extends Component
                 'cancelled' => (clone $query)->where('status', 'cancelled')->get(),
                 default => $query->get(),
             };
+
+            $hasCheckedInBookings = false;
         }
 
         return view('livewire.visitor.booking.my-bookings', [
-            'bookings' => $bookings
+            'bookings' => $bookings,
+            'hasCheckedInBookings' => $hasCheckedInBookings ?? false
         ])->layout('layouts.visitor');
     }
 }

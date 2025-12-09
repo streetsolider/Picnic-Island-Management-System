@@ -43,6 +43,24 @@
             </div>
         @endif
 
+        {{-- Late Checkout Notification Banner --}}
+        @if ($hasCheckedInBookings && $activeTab !== 'checked_in' && $bookingType === 'hotel')
+            <div class="mb-6 bg-gradient-to-r from-brand-primary/10 to-brand-secondary/10 border-2 border-brand-primary/20 px-6 py-4 rounded-2xl flex items-start gap-4">
+                <div class="flex-shrink-0 w-12 h-12 bg-brand-primary/20 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h4 class="font-semibold text-brand-dark mb-1">You're Currently Checked In!</h4>
+                    <p class="text-sm text-gray-700">
+                        Need more time? You can request a <strong>late checkout</strong> for your active stay.
+                        Switch to the <button wire:click="$set('activeTab', 'checked_in')" class="text-brand-primary hover:text-brand-primary/80 font-semibold underline">🏨 Checked In</button> filter to manage your current booking and request late checkout.
+                    </p>
+                </div>
+            </div>
+        @endif
+
         {{-- Booking Type Tabs & Status Filter Dropdown --}}
         <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
             {{-- Booking Type Tabs (Left) --}}
@@ -61,7 +79,7 @@
             <div class="relative w-full md:w-auto" x-data="{ open: false }">
                 <button @click="open = !open" type="button"
                     class="w-full md:w-auto bg-white rounded-xl shadow-sm px-5 py-2.5 font-semibold text-gray-700 hover:bg-gray-50 transition-all flex items-center gap-2 md:min-w-[180px] justify-between">
-                    <span class="capitalize">{{ $activeTab === 'current' ? '📍 Current' : '' }}{{ $activeTab === 'upcoming' ? '📅 Upcoming' : '' }}{{ $activeTab === 'past' ? '📜 Past' : '' }}{{ $activeTab === 'cancelled' ? '❌ Cancelled' : '' }}</span>
+                    <span class="capitalize">{{ $activeTab === 'checked_in' ? '🏨 Checked In' : '' }}{{ $activeTab === 'upcoming' ? '📅 Upcoming' : '' }}{{ $activeTab === 'past' ? '📜 Past' : '' }}{{ $activeTab === 'cancelled' ? '❌ Cancelled' : '' }}</span>
                     <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
@@ -77,11 +95,11 @@
                     x-transition:leave-end="transform opacity-0 scale-95"
                     class="absolute right-0 mt-2 w-full bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden z-10">
                     @if($bookingType === 'hotel')
-                        <button wire:click="$set('activeTab', 'current')" @click="open = false"
-                            class="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center gap-3 {{ $activeTab === 'current' ? 'bg-brand-primary/10 text-brand-primary font-semibold' : 'text-gray-700' }}">
-                            <span>📍</span>
-                            <span>Current</span>
-                            @if($activeTab === 'current')
+                        <button wire:click="$set('activeTab', 'checked_in')" @click="open = false"
+                            class="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center gap-3 {{ $activeTab === 'checked_in' ? 'bg-brand-primary/10 text-brand-primary font-semibold' : 'text-gray-700' }}">
+                            <span>🏨</span>
+                            <span>Checked In</span>
+                            @if($activeTab === 'checked_in')
                                 <svg class="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
@@ -130,9 +148,15 @@
                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
                 <h3 class="text-2xl font-display font-bold text-brand-dark mb-2">
-                    No {{ ucfirst($activeTab) }} {{ $bookingType === 'hotel' ? 'Bookings' : 'Tickets' }}
+                    No {{ $activeTab === 'checked_in' ? 'Active Check-Ins' : ucfirst(str_replace('_', ' ', $activeTab)) }} {{ $bookingType === 'hotel' ? 'Bookings' : 'Tickets' }}
                 </h3>
-                <p class="text-gray-600 mb-6">You don't have any {{ $activeTab }} {{ $bookingType === 'hotel' ? 'hotel bookings' : 'ferry tickets' }} at the moment.</p>
+                <p class="text-gray-600 mb-6">
+                    @if($activeTab === 'checked_in')
+                        You are not currently checked in to any hotel. Check-in bookings appear here when you've arrived and checked in at the hotel.
+                    @else
+                        You don't have any {{ str_replace('_', ' ', $activeTab) }} {{ $bookingType === 'hotel' ? 'hotel bookings' : 'ferry tickets' }} at the moment.
+                    @endif
+                </p>
                 <a href="{{ $bookingType === 'hotel' ? route('booking.search') : route('ferry-tickets.browse') }}" wire:navigate
                     class="inline-block bg-brand-primary hover:bg-brand-primary/90 text-white px-8 py-3 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg shadow-brand-primary/30">
                     {{ $bookingType === 'hotel' ? 'Book a Room' : 'Book Ferry Ticket' }}
