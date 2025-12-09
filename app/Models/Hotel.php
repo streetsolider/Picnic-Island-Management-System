@@ -209,6 +209,43 @@ class Hotel extends Model
     }
 
     /**
+     * Get the hotel's main gallery (for hotel images)
+     */
+    public function hotelGallery(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Gallery::class)->where('type', Gallery::TYPE_HOTEL);
+    }
+
+    /**
+     * Get only room galleries for this hotel
+     */
+    public function roomGalleries(): HasMany
+    {
+        return $this->hasMany(Gallery::class)->where('type', Gallery::TYPE_ROOM);
+    }
+
+    /**
+     * Get the primary image for the hotel
+     */
+    public function getPrimaryImage(): ?object
+    {
+        if ($this->hotelGallery && $this->hotelGallery->images()->exists()) {
+            return $this->hotelGallery->images()->where('is_primary', true)->first()
+                   ?? $this->hotelGallery->images()->first();
+        }
+
+        return null;
+    }
+
+    /**
+     * Check if hotel has images
+     */
+    public function hasImages(): bool
+    {
+        return $this->hotelGallery && $this->hotelGallery->images()->exists();
+    }
+
+    /**
      * Get the bookings for this hotel
      */
     public function bookings(): HasMany

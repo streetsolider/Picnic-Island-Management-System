@@ -38,8 +38,8 @@
             {{ __('Dashboard') }}
         </x-admin.navigation.nav-link>
 
-        {{-- Hotel Management Navigation (shown when managing a specific hotel) --}}
-        @if(request()->routeIs('hotel.manage') || request()->routeIs('hotel.rooms.*') || request()->routeIs('hotel.views.*') || request()->routeIs('hotel.amenities.*') || request()->routeIs('hotel.pricing.*') || request()->routeIs('hotel.policies.*') || request()->routeIs('hotel.images.*') || request()->routeIs('hotel.bookings.*') || request()->routeIs('hotel.operations.*') || request()->routeIs('hotel.availability.*') || request()->routeIs('hotel.reports.*'))
+        {{-- Hotel Management Navigation --}}
+        @if(request()->routeIs('hotel.dashboard') || request()->routeIs('hotel.rooms.*') || request()->routeIs('hotel.views.*') || request()->routeIs('hotel.amenities.*') || request()->routeIs('hotel.pricing.*') || request()->routeIs('hotel.policies.*') || request()->routeIs('hotel.images.*') || request()->routeIs('hotel.bookings.*') || request()->routeIs('hotel.operations.*') || request()->routeIs('hotel.availability.*') || request()->routeIs('hotel.reports.*'))
 
             {{-- Operations Section --}}
             <div class="mt-4 px-3">
@@ -47,11 +47,6 @@
                     {{ __('Operations') }}
                 </h3>
             </div>
-
-            <x-admin.navigation.nav-link :href="route('hotel.operations.dashboard')" :active="request()->routeIs('hotel.operations.*')"
-                icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>'>
-                {{ __('Daily Operations') }}
-            </x-admin.navigation.nav-link>
 
             <x-admin.navigation.nav-link :href="route('hotel.bookings.index')" :active="request()->routeIs('hotel.bookings.*')"
                 icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>'>
@@ -82,7 +77,7 @@
 
             <x-admin.navigation.nav-link :href="route('hotel.images.manage')" :active="request()->routeIs('hotel.images.*')"
                 icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>'>
-                {{ __('Room Gallery') }}
+                {{ __('Gallery') }}
             </x-admin.navigation.nav-link>
 
             {{-- Pricing & Policies Section --}}

@@ -231,13 +231,20 @@
                             class="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
                             {{-- Hotel Image --}}
                             <div class="relative h-64 overflow-hidden bg-gray-200">
-                                <div class="w-full h-full bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20 flex items-center justify-center">
-                                    <svg class="w-20 h-20 text-brand-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
-                                        </path>
-                                    </svg>
-                                </div>
+                                @if($result['hotel']->hasImages())
+                                    <img
+                                        src="{{ $result['hotel']->getPrimaryImage()->image_url }}"
+                                        alt="{{ $result['hotel']->name }}"
+                                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                @else
+                                    <div class="w-full h-full bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20 flex items-center justify-center">
+                                        <svg class="w-20 h-20 text-brand-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                @endif
 
                                 {{-- Hotel Rating Badge --}}
                                 <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1">

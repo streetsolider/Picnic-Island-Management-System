@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Hotel\Bookings;
 
+use App\Livewire\Hotel\Traits\HasHotelSelection;
 use App\Models\Hotel;
 use App\Models\HotelBooking;
 use App\Services\BookingService;
@@ -12,9 +13,7 @@ use Livewire\WithPagination;
 
 class Index extends Component
 {
-    use WithPagination;
-
-    public $hotel;
+    use WithPagination, HasHotelSelection;
 
     // Filters
     public $search = '';
@@ -33,14 +32,14 @@ class Index extends Component
 
     public function mount()
     {
-        // Get the hotel managed by the current user
-        $this->hotel = Hotel::where('manager_id', auth('staff')->user()->id)->first();
-
-        if (!$this->hotel) {
-            abort(403, 'You are not assigned to manage any hotel.');
-        }
-
+        $this->initializeHotelSelection();
         $this->calculateStats();
+    }
+
+    public function onHotelChanged()
+    {
+        $this->calculateStats();
+        $this->resetPage();
     }
 
     public function calculateStats()
@@ -222,6 +221,7 @@ class Index extends Component
             ->paginate(15);
 
         return view('livewire.hotel.bookings.index', [
+            'assignedHotels' => $this->assignedHotels,
             'bookings' => $bookings,
             'statuses' => ['confirmed', 'cancelled', 'completed', 'no-show'],
             'roomTypes' => ['standard', 'superior', 'deluxe', 'suite', 'family'],

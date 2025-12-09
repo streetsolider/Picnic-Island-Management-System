@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Hotel\Amenities;
 
+use App\Livewire\Hotel\Traits\HasHotelSelection;
 use App\Models\Amenity;
 use App\Models\AmenityCategory;
 use App\Models\Hotel;
@@ -10,6 +11,8 @@ use Livewire\Component;
 
 class Manage extends Component
 {
+    use HasHotelSelection;
+
     public $hotel;
     public $categories;
 
@@ -32,13 +35,12 @@ class Manage extends Component
 
     public function mount()
     {
-        // Get the hotel managed by the current user
-        $this->hotel = Hotel::where('manager_id', auth('staff')->user()->id)->first();
+        $this->initializeHotelSelection();
+        $this->loadCategories();
+    }
 
-        if (!$this->hotel) {
-            abort(403, 'You are not assigned to manage any hotel.');
-        }
-
+    public function onHotelChanged()
+    {
         $this->loadCategories();
     }
 
@@ -248,6 +250,8 @@ class Manage extends Component
     #[Layout('layouts.hotel')]
     public function render()
     {
-        return view('livewire.hotel.amenities.manage');
+        return view('livewire.hotel.amenities.manage', [
+            'assignedHotels' => $this->assignedHotels,
+        ]);
     }
 }

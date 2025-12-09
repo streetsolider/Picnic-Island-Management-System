@@ -6,6 +6,27 @@
     </x-slot>
 
     <div class="space-y-6">
+        {{-- Hotel Selector (if multiple hotels) --}}
+        @if($assignedHotels->count() > 1)
+            <x-admin.card.base>
+                <div class="max-w-md">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Select Hotel to Manage
+                    </label>
+                    <select
+                        wire:model.live="selectedHotelId"
+                        wire:change="selectHotel($event.target.value)"
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                        @foreach($assignedHotels as $assignedHotel)
+                            <option value="{{ $assignedHotel->id }}">
+                                {{ $assignedHotel->name }} ({{ $assignedHotel->star_rating_display }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </x-admin.card.base>
+        @endif
+
         {{-- Capacity Information Card --}}
         <x-admin.card.base>
             <div class="flex items-center justify-between">

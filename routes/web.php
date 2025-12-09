@@ -88,10 +88,10 @@ Route::middleware(['auth:staff'])->group(function () {
 
     // Hotel Manager Routes
     Route::middleware('role:hotel_manager')->prefix('hotel')->name('hotel.')->group(function () {
-        Route::get('/dashboard', \App\Livewire\Hotel\Dashboard::class)->name('dashboard');
+        Route::get('/dashboard', \App\Livewire\Hotel\Operations\Dashboard::class)->name('dashboard');
 
-        // Hotel Management (Specific Hotel)
-        Route::get('/{hotel}/manage', \App\Livewire\Hotel\Manage::class)->name('manage');
+        // Old routes - deprecated (kept for reference, will be removed later)
+        // Route::get('/{hotel}/manage', \App\Livewire\Hotel\Manage::class)->name('manage');
 
         // Room Management
         Route::get('/rooms', \App\Livewire\Hotel\Rooms\Index::class)->name('rooms.index');
@@ -115,8 +115,8 @@ Route::middleware(['auth:staff'])->group(function () {
         // Room Images Management
         Route::get('/images', \App\Livewire\Hotel\Images\Manage::class)->name('images.manage');
 
-        // Daily Operations
-        Route::get('/operations', \App\Livewire\Hotel\Operations\Dashboard::class)->name('operations.dashboard');
+        // Old operations route - now handled by dashboard
+        // Route::get('/operations', \App\Livewire\Hotel\Operations\Dashboard::class)->name('operations.dashboard');
 
         // Booking Management
         Route::get('/bookings', \App\Livewire\Hotel\Bookings\Index::class)->name('bookings.index');

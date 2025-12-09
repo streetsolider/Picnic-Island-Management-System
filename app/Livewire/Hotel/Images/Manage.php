@@ -15,10 +15,15 @@ class Manage extends Component
 {
     use WithFileUploads;
 
+    public $selectedHotelId;
     public $hotel;
     public $refreshKey = 0;
 
-    // Galleries
+    // Hotel Gallery (separate from room galleries)
+    public $hotelGalleryImages = [];
+    public $uploadingHotelGalleryImages = [];
+
+    // Room Galleries
     public $selectedGalleryId = null;
     public $galleryImages = [];
     public $uploadingGalleryImages = [];
@@ -55,14 +60,61 @@ class Manage extends Component
 
     public function mount()
     {
-        // Get the hotel managed by the current user
-        $this->hotel = Hotel::where('manager_id', auth('staff')->user()->id)->first();
+        $staffId = auth('staff')->id();
 
-        if (!$this->hotel) {
+        // Get all hotels assigned to this staff member
+        $assignedHotels = Hotel::where('manager_id', $staffId)->get();
+
+        if ($assignedHotels->isEmpty()) {
             abort(403, 'You are not assigned to manage any hotel.');
         }
 
+        // Check if there's a selected hotel in session
+        $sessionHotelId = session('hotel_selected_hotel_id');
+
+        // Validate that the session hotel is still assigned to this staff
+        if ($sessionHotelId && $assignedHotels->contains('id', $sessionHotelId)) {
+            $this->selectedHotelId = $sessionHotelId;
+        } else {
+            // Default to first assigned hotel
+            $this->selectedHotelId = $assignedHotels->first()->id;
+            session(['hotel_selected_hotel_id' => $this->selectedHotelId]);
+        }
+
+        $this->hotel = Hotel::find($this->selectedHotelId);
         $this->loadRooms();
+        $this->loadHotelGalleryImages();
+    }
+
+    public function selectHotel($hotelId)
+    {
+        $staffId = auth('staff')->id();
+
+        // Verify this hotel is assigned to this staff member
+        $hotel = Hotel::where('id', $hotelId)
+            ->where('manager_id', $staffId)
+            ->first();
+
+        if ($hotel) {
+            $this->selectedHotelId = $hotelId;
+            $this->hotel = $hotel;
+            session(['hotel_selected_hotel_id' => $hotelId]);
+
+            // Reload data for the new hotel
+            $this->loadRooms();
+            $this->loadHotelGalleryImages();
+
+            // Reset gallery selection
+            $this->selectedGalleryId = null;
+            $this->galleryImages = [];
+
+            // Show success toast
+            $this->showToast = now()->timestamp;
+            $this->toastType = 'success';
+            $this->toastMessage = 'Switched to ' . $hotel->name;
+
+            $this->refreshKey++;
+        }
     }
 
     public function loadRooms()
@@ -72,15 +124,184 @@ class Manage extends Component
             ->get();
     }
 
-    // ==================== GALLERIES ====================
+    public function loadHotelGalleryImages()
+    {
+        if ($this->hotel->hotelGallery) {
+            $this->hotelGalleryImages = GalleryImage::where('gallery_id', $this->hotel->hotelGallery->id)
+                ->orderBy('sort_order')
+                ->get();
+        }
+    }
+
+    // ==================== HOTEL GALLERY IMAGES ====================
+
+    public function openHotelGalleryUploadModal()
+    {
+        if (!$this->hotel->hotelGallery) {
+            return;
+        }
+
+        $this->uploadingHotelGalleryImages = [];
+        $this->dispatch('open-modal', 'upload-hotel-gallery-images');
+    }
+
+    public function uploadHotelGalleryImages()
+    {
+        if (!$this->hotel->hotelGallery) {
+            return;
+        }
+
+        // Check if any images were selected
+        if (empty($this->uploadingHotelGalleryImages)) {
+            $this->showToast = now()->timestamp;
+            $this->toastType = 'warning';
+            $this->toastMessage = 'Please select at least one image to upload.';
+            return;
+        }
+
+        $this->validate([
+            'uploadingHotelGalleryImages.*' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ]);
+
+        $sortOrder = GalleryImage::where('gallery_id', $this->hotel->hotelGallery->id)->count();
+
+        // Check if there's already a primary image
+        $hasPrimary = GalleryImage::where('gallery_id', $this->hotel->hotelGallery->id)
+            ->where('is_primary', true)
+            ->exists();
+
+        $isFirstImage = true;
+        foreach ($this->uploadingHotelGalleryImages as $image) {
+            $path = $image->store(
+                "hotel-{$this->hotel->id}/hotel-gallery",
+                'public'
+            );
+
+            GalleryImage::create([
+                'gallery_id' => $this->hotel->hotelGallery->id,
+                'image_path' => $path,
+                'is_primary' => !$hasPrimary && $isFirstImage,
+                'sort_order' => $sortOrder++,
+            ]);
+
+            $isFirstImage = false;
+        }
+
+        $this->uploadingHotelGalleryImages = [];
+        $this->loadHotelGalleryImages();
+        $this->dispatch('close-modal', 'upload-hotel-gallery-images');
+
+        // Show success toast
+        $this->showToast = now()->timestamp;
+        $this->toastType = 'success';
+        $this->toastMessage = 'Hotel images uploaded successfully!';
+
+        $this->refreshKey++;
+    }
+
+    public function setHotelGalleryPrimaryImage($imageId)
+    {
+        if (!$this->hotel->hotelGallery) {
+            return;
+        }
+
+        // Reset all to non-primary
+        GalleryImage::where('gallery_id', $this->hotel->hotelGallery->id)
+            ->update(['is_primary' => false]);
+
+        // Set selected as primary
+        GalleryImage::find($imageId)->update(['is_primary' => true]);
+        $this->loadHotelGalleryImages();
+
+        // Show success toast
+        $this->showToast = now()->timestamp;
+        $this->toastType = 'success';
+        $this->toastMessage = 'Primary hotel image updated!';
+
+        $this->refreshKey++;
+    }
+
+    public function moveHotelGalleryImageUp($imageId)
+    {
+        if (!$this->hotel->hotelGallery) {
+            return;
+        }
+
+        $image = GalleryImage::find($imageId);
+        $prevImage = GalleryImage::where('gallery_id', $this->hotel->hotelGallery->id)
+            ->where('sort_order', '<', $image->sort_order)
+            ->orderBy('sort_order', 'desc')
+            ->first();
+
+        if ($prevImage) {
+            $temp = $image->sort_order;
+            $image->update(['sort_order' => $prevImage->sort_order]);
+            $prevImage->update(['sort_order' => $temp]);
+        }
+
+        $this->loadHotelGalleryImages();
+
+        // Show success toast
+        $this->showToast = now()->timestamp;
+        $this->toastType = 'success';
+        $this->toastMessage = 'Image order updated!';
+
+        $this->refreshKey++;
+    }
+
+    public function moveHotelGalleryImageDown($imageId)
+    {
+        if (!$this->hotel->hotelGallery) {
+            return;
+        }
+
+        $image = GalleryImage::find($imageId);
+        $nextImage = GalleryImage::where('gallery_id', $this->hotel->hotelGallery->id)
+            ->where('sort_order', '>', $image->sort_order)
+            ->orderBy('sort_order', 'asc')
+            ->first();
+
+        if ($nextImage) {
+            $temp = $image->sort_order;
+            $image->update(['sort_order' => $nextImage->sort_order]);
+            $nextImage->update(['sort_order' => $temp]);
+        }
+
+        $this->loadHotelGalleryImages();
+
+        // Show success toast
+        $this->showToast = now()->timestamp;
+        $this->toastType = 'success';
+        $this->toastMessage = 'Image order updated!';
+
+        $this->refreshKey++;
+    }
+
+    public function deleteHotelGalleryImage($imageId)
+    {
+        $image = GalleryImage::findOrFail($imageId);
+        Storage::disk('public')->delete($image->image_path);
+        $image->delete();
+        $this->loadHotelGalleryImages();
+
+        // Show success toast
+        $this->showToast = now()->timestamp;
+        $this->toastType = 'success';
+        $this->toastMessage = 'Hotel image deleted successfully!';
+
+        $this->refreshKey++;
+    }
+
+    // ==================== ROOM GALLERIES ====================
 
     /**
-     * Computed property for galleries with counts
+     * Computed property for room galleries with counts
      * This ensures counts are always fresh on every render
      */
     public function getGalleriesProperty()
     {
         return Gallery::where('hotel_id', $this->hotel->id)
+            ->where('type', Gallery::TYPE_ROOM)
             ->withCount('images')
             ->withCount('rooms')
             ->get();
@@ -128,11 +349,12 @@ class Manage extends Component
 
             $message = 'Gallery updated successfully!';
         } else {
-            // Create new gallery
+            // Create new room gallery
             Gallery::create([
                 'hotel_id' => $this->hotel->id,
                 'name' => $this->galleryName,
                 'description' => $this->galleryDescription,
+                'type' => Gallery::TYPE_ROOM,
             ]);
 
             $message = 'Gallery created successfully!';
@@ -353,6 +575,14 @@ class Manage extends Component
 
     public function uploadGalleryImages()
     {
+        // Check if any images were selected
+        if (empty($this->uploadingGalleryImages)) {
+            $this->showToast = now()->timestamp;
+            $this->toastType = 'warning';
+            $this->toastMessage = 'Please select at least one image to upload.';
+            return;
+        }
+
         $this->validate([
             'uploadingGalleryImages.*' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
@@ -488,6 +718,13 @@ class Manage extends Component
     #[Layout('layouts.hotel')]
     public function render()
     {
-        return view('livewire.hotel.images.manage');
+        $staffId = auth('staff')->id();
+
+        // Get all hotels assigned to this staff member
+        $assignedHotels = Hotel::where('manager_id', $staffId)->get();
+
+        return view('livewire.hotel.images.manage', [
+            'assignedHotels' => $assignedHotels,
+        ]);
     }
 }

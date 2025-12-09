@@ -41,7 +41,8 @@ class HotelRooms extends Component
 
     public function mount(Hotel $hotel)
     {
-        $this->hotel = $hotel;
+        // Eager load hotel gallery with images
+        $this->hotel = $hotel->load(['hotelGallery.images']);
 
         // Set default dates if not provided
         if (!$this->checkIn) {

@@ -1,12 +1,36 @@
 <div>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Room Gallery') }}
+            {{ __('Image Gallery Management') }}
         </h2>
     </x-slot>
 
     <div class="space-y-6" key="{{ $refreshKey }}">
-        {{-- Gallery Management Content --}}
+        {{-- Hotel Selector (if multiple hotels) --}}
+        @if($assignedHotels->count() > 1)
+            <x-admin.card.base>
+                <div class="max-w-md">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Select Hotel to Manage
+                    </label>
+                    <select
+                        wire:model.live="selectedHotelId"
+                        wire:change="selectHotel($event.target.value)"
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                        @foreach($assignedHotels as $assignedHotel)
+                            <option value="{{ $assignedHotel->id }}">
+                                {{ $assignedHotel->name }} ({{ $assignedHotel->star_rating_display }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </x-admin.card.base>
+        @endif
+
+        {{-- Hotel Gallery Section --}}
+        @include('livewire.hotel.images.partials.hotel-gallery')
+
+        {{-- Room Galleries Section --}}
         @include('livewire.hotel.images.partials.galleries')
     </div>
 

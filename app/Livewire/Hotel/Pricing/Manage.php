@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Hotel\Pricing;
 
+use App\Livewire\Hotel\Traits\HasHotelSelection;
 use App\Models\DayTypePricing;
 use App\Models\PromotionalDiscount;
 use App\Models\Hotel;
@@ -13,7 +14,7 @@ use Livewire\Component;
 
 class Manage extends Component
 {
-    public $hotel;
+    use HasHotelSelection;
     public $activeTab = 'room_types'; // room_types, views, seasonal, day_types, promotions
     public $refreshKey = 0;
 
@@ -107,12 +108,12 @@ class Manage extends Component
 
     public function mount()
     {
-        // Get the hotel managed by the current user
-        $this->hotel = Hotel::where('manager_id', auth('staff')->user()->id)->first();
+        $this->initializeHotelSelection();
+    }
 
-        if (!$this->hotel) {
-            abort(403, 'You are not assigned to manage any hotel.');
-        }
+    public function onHotelChanged()
+    {
+        $this->refreshKey++;
     }
 
     public function setActiveTab($tab)
@@ -726,6 +727,8 @@ class Manage extends Component
     #[Layout('layouts.hotel')]
     public function render()
     {
-        return view('livewire.hotel.pricing.manage');
+        return view('livewire.hotel.pricing.manage', [
+            'assignedHotels' => $this->assignedHotels,
+        ]);
     }
 }

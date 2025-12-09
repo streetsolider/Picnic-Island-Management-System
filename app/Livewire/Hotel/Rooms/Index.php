@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Hotel\Rooms;
 
+use App\Livewire\Hotel\Traits\HasHotelSelection;
 use App\Models\Amenity;
 use App\Models\AmenityCategory;
 use App\Models\Hotel;
@@ -12,9 +13,7 @@ use Livewire\WithPagination;
 
 class Index extends Component
 {
-    use WithPagination;
-
-    public $hotel;
+    use WithPagination, HasHotelSelection;
     public $currentRoomCount = 0;
     public $remainingCapacity = 0;
 
@@ -50,15 +49,14 @@ class Index extends Component
 
     public function mount()
     {
-        // Get the hotel managed by the current user
-        $this->hotel = Hotel::where('manager_id', auth('staff')->user()->id)->first();
-
-        if (!$this->hotel) {
-            abort(403, 'You are not assigned to manage any hotel.');
-        }
-
-        // Calculate current room count and remaining capacity
+        $this->initializeHotelSelection();
         $this->updateCapacity();
+    }
+
+    public function onHotelChanged()
+    {
+        $this->updateCapacity();
+        $this->resetPage();
     }
 
     public function updateCapacity()
@@ -298,6 +296,7 @@ class Index extends Component
             ->toArray();
 
         return view('livewire.hotel.rooms.index', [
+            'assignedHotels' => $this->assignedHotels,
             'rooms' => $rooms,
             'roomTypes' => ['Standard', 'Superior', 'Deluxe', 'Suite', 'Family'],
             'bedSizes' => ['King', 'Queen', 'Twin'],

@@ -8,10 +8,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Gallery extends Model
 {
+    // Gallery type constants
+    public const TYPE_HOTEL = 'hotel';
+    public const TYPE_ROOM = 'room';
+
     protected $fillable = [
         'hotel_id',
         'name',
         'description',
+        'type',
     ];
 
     /**
@@ -52,5 +57,37 @@ class Gallery extends Model
     public function getImageCountAttribute(): int
     {
         return $this->images()->count();
+    }
+
+    /**
+     * Scope to filter hotel galleries.
+     */
+    public function scopeHotelType($query)
+    {
+        return $query->where('type', self::TYPE_HOTEL);
+    }
+
+    /**
+     * Scope to filter room galleries.
+     */
+    public function scopeRoomType($query)
+    {
+        return $query->where('type', self::TYPE_ROOM);
+    }
+
+    /**
+     * Check if this is a hotel gallery.
+     */
+    public function isHotelGallery(): bool
+    {
+        return $this->type === self::TYPE_HOTEL;
+    }
+
+    /**
+     * Check if this is a room gallery.
+     */
+    public function isRoomGallery(): bool
+    {
+        return $this->type === self::TYPE_ROOM;
     }
 }

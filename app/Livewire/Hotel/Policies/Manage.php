@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Hotel\Policies;
 
+use App\Livewire\Hotel\Traits\HasHotelSelection;
 use App\Models\Hotel;
 use App\Models\HotelPolicy;
 use App\Models\RoomTypePolicyOverride;
@@ -10,6 +11,8 @@ use Livewire\Component;
 
 class Manage extends Component
 {
+    use HasHotelSelection;
+
     public $hotel;
     public $policyTypes;
     public $roomTypes;
@@ -38,15 +41,14 @@ class Manage extends Component
 
     public function mount()
     {
-        // Get the hotel managed by the current user
-        $this->hotel = Hotel::where('manager_id', auth('staff')->user()->id)->first();
-
-        if (!$this->hotel) {
-            abort(403, 'You are not assigned to manage any hotel.');
-        }
-
+        $this->initializeHotelSelection();
         $this->policyTypes = HotelPolicy::getPolicyTypes();
         $this->roomTypes = RoomTypePolicyOverride::getRoomTypes();
+    }
+
+    public function onHotelChanged()
+    {
+        $this->refreshKey++;
     }
 
     public function getPolicies()
@@ -296,6 +298,8 @@ class Manage extends Component
     #[Layout('layouts.hotel')]
     public function render()
     {
-        return view('livewire.hotel.policies.manage');
+        return view('livewire.hotel.policies.manage', [
+            'assignedHotels' => $this->assignedHotels,
+        ]);
     }
 }

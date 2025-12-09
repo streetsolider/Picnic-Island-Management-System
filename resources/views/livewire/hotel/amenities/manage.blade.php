@@ -16,6 +16,27 @@
         </button>
     </div>
 
+    {{-- Hotel Selector (if multiple hotels) --}}
+    @if($assignedHotels->count() > 1)
+        <x-admin.card.base class="mb-6">
+            <div class="max-w-md">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Select Hotel to Manage
+                </label>
+                <select
+                    wire:model.live="selectedHotelId"
+                    wire:change="selectHotel($event.target.value)"
+                    class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                    @foreach($assignedHotels as $assignedHotel)
+                        <option value="{{ $assignedHotel->id }}">
+                            {{ $assignedHotel->name }} ({{ $assignedHotel->star_rating_display }})
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </x-admin.card.base>
+    @endif
+
     {{-- Category Form Modal --}}
     @if ($showCategoryForm)
         <div x-data="{ isOpen: true }"

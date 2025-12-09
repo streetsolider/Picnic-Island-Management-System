@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Hotel\Operations;
 
+use App\Livewire\Hotel\Traits\HasHotelSelection;
 use App\Models\Hotel;
 use App\Models\HotelBooking;
 use App\Models\LateCheckoutRequest;
@@ -10,7 +11,8 @@ use Livewire\Component;
 
 class Dashboard extends Component
 {
-    public $hotel;
+    use HasHotelSelection;
+
     public $selectedBooking = null;
 
     // Check-in form
@@ -40,8 +42,7 @@ class Dashboard extends Component
 
     public function mount()
     {
-        // Get the hotel for the logged-in manager
-        $this->hotel = Hotel::where('manager_id', auth('staff')->user()->id)->firstOrFail();
+        $this->initializeHotelSelection();
     }
 
     public function getTodayArrivalsProperty()
@@ -372,6 +373,7 @@ class Dashboard extends Component
     public function render()
     {
         return view('livewire.hotel.operations.dashboard', [
+            'assignedHotels' => $this->assignedHotels,
             'todayArrivals' => $this->todayArrivals,
             'todayDepartures' => $this->todayDepartures,
             'inHouseGuests' => $this->inHouseGuests,

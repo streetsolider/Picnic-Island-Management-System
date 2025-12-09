@@ -26,15 +26,94 @@
         {{-- Hotel Header --}}
         <div class="bg-white rounded-3xl shadow-xl overflow-hidden mb-8">
             <div class="grid md:grid-cols-3 gap-6">
-                {{-- Hotel Image (Placeholder for now) --}}
+                {{-- Hotel Image Carousel --}}
                 <div class="md:col-span-1">
-                    <div class="w-full h-full min-h-64 bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20 flex items-center justify-center">
-                        <svg class="w-24 h-24 text-brand-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
-                            </path>
-                        </svg>
-                    </div>
+                    @if ($hotel->hotelGallery && $hotel->hotelGallery->images->isNotEmpty())
+                        <div
+                            x-data="{
+                                currentSlide: 0,
+                                totalSlides: {{ $hotel->hotelGallery->images->count() }},
+                                startX: 0,
+                                currentX: 0,
+                                isDragging: false,
+                                nextSlide() {
+                                    this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+                                },
+                                prevSlide() {
+                                    this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+                                },
+                                handleStart(e) {
+                                    this.startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                                    this.isDragging = true;
+                                },
+                                handleMove(e) {
+                                    if (!this.isDragging) return;
+                                    this.currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                                },
+                                handleEnd() {
+                                    if (!this.isDragging) return;
+                                    const diff = this.startX - this.currentX;
+                                    if (Math.abs(diff) > 50) {
+                                        if (diff > 0) {
+                                            this.nextSlide();
+                                        } else {
+                                            this.prevSlide();
+                                        }
+                                    }
+                                    this.isDragging = false;
+                                    this.startX = 0;
+                                    this.currentX = 0;
+                                }
+                            }"
+                            class="relative w-full h-64 md:h-full overflow-hidden bg-gray-900 cursor-grab active:cursor-grabbing select-none"
+                            @touchstart="handleStart"
+                            @touchmove="handleMove"
+                            @touchend="handleEnd"
+                            @mousedown="handleStart"
+                            @mousemove="handleMove"
+                            @mouseup="handleEnd"
+                            @mouseleave="handleEnd">
+
+                            {{-- Image Slides --}}
+                            @foreach ($hotel->hotelGallery->images as $index => $image)
+                                <div
+                                    x-show="currentSlide === {{ $index }}"
+                                    x-transition:enter="transition ease-out duration-300"
+                                    x-transition:enter-start="opacity-0"
+                                    x-transition:enter-end="opacity-100"
+                                    x-transition:leave="transition ease-in duration-300"
+                                    x-transition:leave-start="opacity-100"
+                                    x-transition:leave-end="opacity-0"
+                                    class="absolute inset-0 w-full h-full">
+                                    <img
+                                        src="{{ Storage::url($image->image_path) }}"
+                                        alt="{{ $hotel->name }} - Image {{ $index + 1 }}"
+                                        class="w-full h-full object-cover">
+                                </div>
+                            @endforeach
+
+                            {{-- Slide Indicators --}}
+                            @if ($hotel->hotelGallery->images->count() > 1)
+                                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                                    @foreach ($hotel->hotelGallery->images as $index => $image)
+                                        <button
+                                            @click="currentSlide = {{ $index }}"
+                                            class="w-2 h-2 rounded-full transition-all duration-300"
+                                            :class="currentSlide === {{ $index }} ? 'bg-white w-6' : 'bg-white/50'">
+                                        </button>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+                    @else
+                        <div class="w-full h-64 bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20 flex items-center justify-center">
+                            <svg class="w-24 h-24 text-brand-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                                </path>
+                            </svg>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Hotel Info --}}
