@@ -126,6 +126,7 @@ Route::middleware(['auth:staff'])->group(function () {
         Route::get('/late-checkout', \App\Livewire\Hotel\LateCheckout\Manage::class)->name('late-checkout.manage');
 
         // Settings
+        Route::get('/settings', \App\Livewire\Hotel\Settings\HotelSettings::class)->name('settings.index');
         Route::get('/settings/checkout-time', \App\Livewire\Hotel\Settings\CheckoutTime::class)->name('settings.checkout-time');
 
         // Room Availability Management (Coming Soon)

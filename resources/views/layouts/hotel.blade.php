@@ -39,7 +39,7 @@
         </x-admin.navigation.nav-link>
 
         {{-- Hotel Management Navigation --}}
-        @if(request()->routeIs('hotel.dashboard') || request()->routeIs('hotel.rooms.*') || request()->routeIs('hotel.views.*') || request()->routeIs('hotel.amenities.*') || request()->routeIs('hotel.pricing.*') || request()->routeIs('hotel.policies.*') || request()->routeIs('hotel.images.*') || request()->routeIs('hotel.bookings.*') || request()->routeIs('hotel.operations.*') || request()->routeIs('hotel.availability.*') || request()->routeIs('hotel.reports.*'))
+        @if(request()->routeIs('hotel.dashboard') || request()->routeIs('hotel.rooms.*') || request()->routeIs('hotel.views.*') || request()->routeIs('hotel.amenities.*') || request()->routeIs('hotel.pricing.*') || request()->routeIs('hotel.policies.*') || request()->routeIs('hotel.images.*') || request()->routeIs('hotel.bookings.*') || request()->routeIs('hotel.operations.*') || request()->routeIs('hotel.availability.*') || request()->routeIs('hotel.reports.*') || request()->routeIs('hotel.settings.*'))
 
             {{-- Operations Section --}}
             <div class="mt-4 px-3">
@@ -119,6 +119,18 @@
                 icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>'>
                 {{ __('Booking History') }}
             </x-admin.navigation.nav-link> --}}
+
+            {{-- Hotel Settings Section --}}
+            <div class="mt-4 px-3">
+                <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    {{ __('Hotel Settings') }}
+                </h3>
+            </div>
+
+            <x-admin.navigation.nav-link :href="route('hotel.settings.index')" :active="request()->routeIs('hotel.settings.*')"
+                icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>'>
+                {{ __('Settings') }}
+            </x-admin.navigation.nav-link>
         @endif
 
         {{-- Top Bar --}}
