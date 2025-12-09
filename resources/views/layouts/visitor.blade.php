@@ -21,6 +21,31 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+
+    <!-- Swiper.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <style>
+        .roomGallerySwiper .swiper-button-next,
+        .roomGallerySwiper .swiper-button-prev {
+            color: white !important;
+            background: rgba(0, 0, 0, 0.5);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .roomGallerySwiper .swiper-button-next:after,
+        .roomGallerySwiper .swiper-button-prev:after {
+            font-size: 20px;
+        }
+
+        .roomGallerySwiper .swiper-button-next:hover,
+        .roomGallerySwiper .swiper-button-prev:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
+    </style>
+
     <script>
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark')
@@ -271,6 +296,35 @@
     </div>
 
     @livewireScripts
+
+    <!-- Swiper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const swiper = new Swiper('.roomGallerySwiper', {
+                slidesPerView: 4,
+                spaceBetween: 10,
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                breakpoints: {
+                    320: {
+                        slidesPerView: 2,
+                        spaceBetween: 8
+                    },
+                    640: {
+                        slidesPerView: 3,
+                        spaceBetween: 10
+                    },
+                    1024: {
+                        slidesPerView: 4,
+                        spaceBetween: 10
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

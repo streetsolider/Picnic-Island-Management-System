@@ -79,7 +79,14 @@
             {{-- Left Column: Room Details --}}
             <div class="lg:col-span-2 space-y-6">
                 {{-- Room Images Gallery --}}
-                <div class="bg-white rounded-3xl overflow-hidden shadow-lg">
+                <div class="bg-white rounded-3xl overflow-hidden shadow-lg"
+                    x-data="{
+                        currentImage: '{{ Storage::url($room->getPrimaryImage()?->image_path ?? $room->getAllImages()->first()?->image_path ?? '') }}',
+                        images: {{ $room->getAllImages()->map(fn($img) => Storage::url($img->image_path))->toJson() }},
+                        setImage(path) {
+                            this.currentImage = path;
+                        }
+                    }">
                     @php
                         $images = $room->getAllImages();
                         $primaryImage = $room->getPrimaryImage();
@@ -87,7 +94,7 @@
 
                     @if ($images->isNotEmpty())
                         <div class="relative h-96 bg-gray-200">
-                            <img src="{{ Storage::url($primaryImage->image_path ?? $images->first()->image_path) }}"
+                            <img :src="currentImage"
                                 alt="{{ $room->full_description }}"
                                 class="w-full h-full object-cover">
 
@@ -98,17 +105,44 @@
                             @endif
                         </div>
 
-                        {{-- Thumbnail Grid --}}
+                        {{-- Thumbnail Grid or Carousel --}}
                         @if ($images->count() > 1)
-                            <div class="grid grid-cols-4 gap-2 p-4">
-                                @foreach ($images->take(4) as $image)
-                                    <div class="aspect-square rounded-lg overflow-hidden">
-                                        <img src="{{ Storage::url($image->image_path) }}"
-                                            alt="Room view"
-                                            class="w-full h-full object-cover hover:scale-110 transition-transform duration-300 cursor-pointer">
+                            @if ($images->count() <= 4)
+                                {{-- Grid for 4 or fewer images --}}
+                                <div class="grid grid-cols-4 gap-2 p-4">
+                                    @foreach ($images as $image)
+                                        <div class="aspect-square rounded-lg overflow-hidden cursor-pointer"
+                                            @click="setImage('{{ Storage::url($image->image_path) }}')">
+                                            <img src="{{ Storage::url($image->image_path) }}"
+                                                alt="Room view"
+                                                class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                                                :class="currentImage === '{{ Storage::url($image->image_path) }}' ? 'ring-4 ring-brand-primary' : ''">
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                {{-- Carousel for more than 4 images --}}
+                                <div class="relative p-4">
+                                    <div class="swiper roomGallerySwiper">
+                                        <div class="swiper-wrapper">
+                                            @foreach ($images as $image)
+                                                <div class="swiper-slide">
+                                                    <div class="aspect-square rounded-lg overflow-hidden cursor-pointer"
+                                                        @click="setImage('{{ Storage::url($image->image_path) }}')">
+                                                        <img src="{{ Storage::url($image->image_path) }}"
+                                                            alt="Room view"
+                                                            class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                                                            :class="currentImage === '{{ Storage::url($image->image_path) }}' ? 'ring-4 ring-brand-primary' : ''">
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        {{-- Navigation buttons --}}
+                                        <div class="swiper-button-next"></div>
+                                        <div class="swiper-button-prev"></div>
                                     </div>
-                                @endforeach
-                            </div>
+                                </div>
+                            @endif
                         @endif
                     @else
                         <div class="h-96 bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20 flex items-center justify-center">
