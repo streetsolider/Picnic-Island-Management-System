@@ -24,25 +24,26 @@
 
     <!-- Swiper.js CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <style>
         .roomGallerySwiper .swiper-button-next,
         .roomGallerySwiper .swiper-button-prev {
-            color: white !important;
-            background: rgba(0, 0, 0, 0.5);
-            width: 40px;
-            height: 40px;
+            color: white;
+            background: rgba(0, 0, 0, 0.4);
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
+            transition: opacity 0.3s ease;
         }
 
         .roomGallerySwiper .swiper-button-next:after,
         .roomGallerySwiper .swiper-button-prev:after {
-            font-size: 20px;
+            font-size: 16px;
         }
 
-        .roomGallerySwiper .swiper-button-next:hover,
-        .roomGallerySwiper .swiper-button-prev:hover {
-            background: rgba(0, 0, 0, 0.7);
+        .roomGallerySwiper .swiper-pagination-bullet-active {
+            background: #3b82f6;
         }
     </style>
 
@@ -296,43 +297,6 @@
     </div>
 
     @livewireScripts
-
-    <!-- Swiper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-        function initSwiper() {
-            if (document.querySelector('.roomGallerySwiper')) {
-                const swiper = new Swiper('.roomGallerySwiper', {
-                    slidesPerView: 2,
-                    spaceBetween: 8,
-                    loop: false,
-                    grabCursor: true,
-                    touchRatio: 1,
-                    slideToClickedSlide: true,
-                    navigation: {
-                        nextEl: '.swiper-button-next',
-                        prevEl: '.swiper-button-prev',
-                    },
-                    breakpoints: {
-                        640: {
-                            slidesPerView: 3,
-                            spaceBetween: 10
-                        },
-                        1024: {
-                            slidesPerView: 4,
-                            spaceBetween: 10
-                        }
-                    }
-                });
-            }
-        }
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', initSwiper);
-
-        // Re-initialize on Livewire navigation
-        document.addEventListener('livewire:navigated', initSwiper);
-    </script>
 </body>
 
 </html>

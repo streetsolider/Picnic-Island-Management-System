@@ -121,9 +121,61 @@
                                     @endforeach
                                 </div>
                             @else
-                                {{-- Carousel for more than 4 images --}}
-                                <div class="relative p-4">
-                                    <div class="swiper roomGallerySwiper overflow-hidden">
+                                {{-- Mobile: Single image slider with dots --}}
+                                <div class="block sm:hidden p-4">
+                                    <div class="swiper roomGallerySwiper"
+                                        x-data="{
+                                            swiper: null,
+                                            init() {
+                                                this.swiper = new Swiper(this.$el, {
+                                                    slidesPerView: 1,
+                                                    spaceBetween: 10,
+                                                    grabCursor: true,
+                                                    pagination: {
+                                                        el: this.$el.querySelector('.swiper-pagination'),
+                                                        clickable: true,
+                                                    },
+                                                });
+                                            }
+                                        }">
+                                        <div class="swiper-wrapper">
+                                            @foreach ($images as $image)
+                                                <div class="swiper-slide">
+                                                    <div class="aspect-square rounded-lg overflow-hidden">
+                                                        <img src="{{ Storage::url($image->image_path) }}"
+                                                            alt="Room view"
+                                                            class="w-full h-full object-cover">
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        <div class="swiper-pagination mt-3"></div>
+                                    </div>
+                                </div>
+
+                                {{-- Desktop: 4-column carousel --}}
+                                <div class="hidden sm:block p-4">
+                                    <div class="swiper roomGallerySwiper"
+                                        x-data="{
+                                            swiper: null,
+                                            isBeginning: true,
+                                            isEnd: false,
+                                            init() {
+                                                this.swiper = new Swiper(this.$el, {
+                                                    slidesPerView: 4,
+                                                    spaceBetween: 10,
+                                                    grabCursor: true,
+                                                    navigation: {
+                                                        nextEl: this.$el.querySelector('.swiper-button-next'),
+                                                        prevEl: this.$el.querySelector('.swiper-button-prev'),
+                                                    },
+                                                });
+                                                this.swiper.on('slideChange', () => {
+                                                    this.isBeginning = this.swiper.isBeginning;
+                                                    this.isEnd = this.swiper.isEnd;
+                                                });
+                                            }
+                                        }">
                                         <div class="swiper-wrapper">
                                             @foreach ($images as $image)
                                                 <div class="swiper-slide">
@@ -137,9 +189,9 @@
                                                 </div>
                                             @endforeach
                                         </div>
-                                        {{-- Navigation buttons --}}
-                                        <div class="swiper-button-next !hidden sm:!flex"></div>
-                                        <div class="swiper-button-prev !hidden sm:!flex"></div>
+                                        {{-- Arrow indicators --}}
+                                        <div class="swiper-button-next transition-opacity duration-300" :class="isEnd ? '!opacity-0 !pointer-events-none' : 'opacity-100'"></div>
+                                        <div class="swiper-button-prev transition-opacity duration-300" :class="isBeginning ? '!opacity-0 !pointer-events-none' : 'opacity-100'"></div>
                                     </div>
                                 </div>
                             @endif
