@@ -24,126 +24,118 @@
         </div>
 
         {{-- Hotel Header --}}
-        <div class="bg-white rounded-3xl shadow-xl overflow-hidden mb-8">
-            <div class="grid md:grid-cols-3 gap-6">
-                {{-- Hotel Image Carousel --}}
-                <div class="md:col-span-1">
-                    @if ($hotel->hotelGallery && $hotel->hotelGallery->images->isNotEmpty())
-                        <div
-                            x-data="{
-                                currentSlide: 0,
-                                totalSlides: {{ $hotel->hotelGallery->images->count() }},
-                                startX: 0,
-                                currentX: 0,
-                                isDragging: false,
-                                nextSlide() {
-                                    this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
-                                },
-                                prevSlide() {
-                                    this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
-                                },
-                                handleStart(e) {
-                                    this.startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
-                                    this.isDragging = true;
-                                },
-                                handleMove(e) {
-                                    if (!this.isDragging) return;
-                                    this.currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
-                                },
-                                handleEnd() {
-                                    if (!this.isDragging) return;
-                                    const diff = this.startX - this.currentX;
-                                    if (Math.abs(diff) > 50) {
-                                        if (diff > 0) {
-                                            this.nextSlide();
-                                        } else {
-                                            this.prevSlide();
-                                        }
-                                    }
-                                    this.isDragging = false;
-                                    this.startX = 0;
-                                    this.currentX = 0;
+        <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl overflow-hidden mb-6 lg:mb-8">
+            {{-- Hotel Image Carousel --}}
+            @if ($hotel->hotelGallery && $hotel->hotelGallery->images->isNotEmpty())
+                <div
+                    x-data="{
+                        currentSlide: 0,
+                        totalSlides: {{ $hotel->hotelGallery->images->count() }},
+                        startX: 0,
+                        currentX: 0,
+                        isDragging: false,
+                        nextSlide() {
+                            this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+                        },
+                        prevSlide() {
+                            this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+                        },
+                        handleStart(e) {
+                            this.startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                            this.isDragging = true;
+                        },
+                        handleMove(e) {
+                            if (!this.isDragging) return;
+                            this.currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                        },
+                        handleEnd() {
+                            if (!this.isDragging) return;
+                            const diff = this.startX - this.currentX;
+                            if (Math.abs(diff) > 50) {
+                                if (diff > 0) {
+                                    this.nextSlide();
+                                } else {
+                                    this.prevSlide();
                                 }
-                            }"
-                            class="relative w-full h-64 md:h-full overflow-hidden bg-gray-900 cursor-grab active:cursor-grabbing select-none"
-                            @touchstart="handleStart"
-                            @touchmove="handleMove"
-                            @touchend="handleEnd"
-                            @mousedown="handleStart"
-                            @mousemove="handleMove"
-                            @mouseup="handleEnd"
-                            @mouseleave="handleEnd">
+                            }
+                            this.isDragging = false;
+                            this.startX = 0;
+                            this.currentX = 0;
+                        }
+                    }"
+                    class="relative w-full h-48 lg:h-64 overflow-hidden bg-gray-900 cursor-grab active:cursor-grabbing select-none"
+                    @touchstart="handleStart"
+                    @touchmove="handleMove"
+                    @touchend="handleEnd"
+                    @mousedown="handleStart"
+                    @mousemove="handleMove"
+                    @mouseup="handleEnd"
+                    @mouseleave="handleEnd">
 
-                            {{-- Image Slides --}}
-                            @foreach ($hotel->hotelGallery->images as $index => $image)
-                                <div
-                                    x-show="currentSlide === {{ $index }}"
-                                    x-transition:enter="transition ease-out duration-300"
-                                    x-transition:enter-start="opacity-0"
-                                    x-transition:enter-end="opacity-100"
-                                    x-transition:leave="transition ease-in duration-300"
-                                    x-transition:leave-start="opacity-100"
-                                    x-transition:leave-end="opacity-0"
-                                    class="absolute inset-0 w-full h-full">
-                                    <img
-                                        src="{{ Storage::url($image->image_path) }}"
-                                        alt="{{ $hotel->name }} - Image {{ $index + 1 }}"
-                                        class="w-full h-full object-cover">
-                                </div>
-                            @endforeach
-
-                            {{-- Slide Indicators --}}
-                            @if ($hotel->hotelGallery->images->count() > 1)
-                                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                                    @foreach ($hotel->hotelGallery->images as $index => $image)
-                                        <button
-                                            @click="currentSlide = {{ $index }}"
-                                            class="w-2 h-2 rounded-full transition-all duration-300"
-                                            :class="currentSlide === {{ $index }} ? 'bg-white w-6' : 'bg-white/50'">
-                                        </button>
-                                    @endforeach
-                                </div>
-                            @endif
+                    {{-- Image Slides --}}
+                    @foreach ($hotel->hotelGallery->images as $index => $image)
+                        <div
+                            x-show="currentSlide === {{ $index }}"
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0"
+                            x-transition:enter-end="opacity-100"
+                            x-transition:leave="transition ease-in duration-300"
+                            x-transition:leave-start="opacity-100"
+                            x-transition:leave-end="opacity-0"
+                            class="absolute inset-0 w-full h-full">
+                            <img
+                                src="{{ Storage::url($image->image_path) }}"
+                                alt="{{ $hotel->name }} - Image {{ $index + 1 }}"
+                                class="w-full h-full object-cover">
                         </div>
-                    @else
-                        <div class="w-full h-64 md:h-full bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20 flex items-center justify-center">
-                            <svg class="w-24 h-24 text-brand-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
-                                </path>
-                            </svg>
+                    @endforeach
+
+                    {{-- Slide Indicators - On image at bottom --}}
+                    @if ($hotel->hotelGallery->images->count() > 1)
+                        <div class="absolute bottom-0 left-0 right-0 flex justify-center gap-2 pb-3 pt-6 bg-gradient-to-t from-black/40 to-transparent">
+                            @foreach ($hotel->hotelGallery->images as $index => $image)
+                                <button
+                                    @click="currentSlide = {{ $index }}"
+                                    class="w-2 h-2 lg:w-2.5 lg:h-2.5 rounded-full transition-all duration-300"
+                                    :class="currentSlide === {{ $index }} ? 'bg-white w-5 lg:w-6' : 'bg-gray-600'">
+                                </button>
+                            @endforeach
                         </div>
                     @endif
                 </div>
+            @else
+                <div class="w-full h-48 lg:h-64 bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20 flex items-center justify-center">
+                    <svg class="w-16 h-16 lg:w-24 lg:h-24 text-brand-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                        </path>
+                    </svg>
+                </div>
+            @endif
 
-                {{-- Hotel Info --}}
-                <div class="md:col-span-2 p-8">
-                    <div class="flex items-start justify-between mb-4">
-                        <div>
-                            <h1 class="text-4xl font-display font-bold text-brand-dark mb-2">{{ $hotel->name }}</h1>
-                            <div class="flex items-center gap-2 text-brand-accent mb-3">
-                                <span class="text-xl">{{ str_repeat('⭐', $hotel->star_rating) }}</span>
-                                <span class="text-sm text-gray-600">{{ $hotel->star_rating }}-Star Hotel</span>
-                            </div>
-                        </div>
+            {{-- Hotel Info --}}
+            <div class="p-4 lg:p-8">
+                <h1 class="text-xl lg:text-4xl font-display font-bold text-brand-dark mb-1 lg:mb-2">{{ $hotel->name }}</h1>
+                <div class="flex items-center gap-1 lg:gap-2 text-brand-accent mb-2 lg:mb-3">
+                    <span class="text-sm lg:text-xl">{{ str_repeat('⭐', $hotel->star_rating) }}</span>
+                    <span class="text-xs lg:text-sm text-gray-600">{{ $hotel->star_rating }}-Star</span>
+                </div>
+
+                <p class="text-xs lg:text-base text-gray-600 mb-4 lg:mb-6 line-clamp-2 lg:line-clamp-none">{{ $hotel->description }}</p>
+
+                {{-- Booking Details --}}
+                <div class="grid grid-cols-3 gap-2 lg:gap-4 p-3 lg:p-4 bg-brand-light/30 rounded-lg lg:rounded-xl">
+                    <div>
+                        <p class="text-xs lg:text-sm text-gray-600">Check-in</p>
+                        <p class="text-xs lg:text-base font-semibold text-brand-dark">{{ Carbon\Carbon::parse($checkIn)->format('M d') }}</p>
                     </div>
-
-                    <p class="text-gray-600 mb-6">{{ $hotel->description }}</p>
-
-                    {{-- Booking Details --}}
-                    <div class="grid grid-cols-3 gap-4 p-4 bg-brand-light/30 rounded-xl">
-                        <div>
-                            <p class="text-sm text-gray-600 mb-1">Check-in</p>
-                            <p class="font-semibold text-brand-dark">{{ Carbon\Carbon::parse($checkIn)->format('M d, Y') }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-600 mb-1">Check-out</p>
-                            <p class="font-semibold text-brand-dark">{{ Carbon\Carbon::parse($checkOut)->format('M d, Y') }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-600 mb-1">Guests</p>
-                            <p class="font-semibold text-brand-dark">{{ $guests }} {{ Str::plural('Guest', $guests) }}</p>
-                        </div>
+                    <div>
+                        <p class="text-xs lg:text-sm text-gray-600">Check-out</p>
+                        <p class="text-xs lg:text-base font-semibold text-brand-dark">{{ Carbon\Carbon::parse($checkOut)->format('M d') }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs lg:text-sm text-gray-600">Guests</p>
+                        <p class="text-xs lg:text-base font-semibold text-brand-dark">{{ $guests }}</p>
                     </div>
                 </div>
             </div>
@@ -182,17 +174,17 @@
                         $roomImage = $room->getPrimaryImage();
                     @endphp
 
-                    <div class="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group">
-                        <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-2xl lg:rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group">
+                        <div class="grid lg:grid-cols-3">
                             {{-- Room Image --}}
-                            <div class="md:col-span-1">
-                                <div class="relative h-64 md:h-full overflow-hidden bg-gray-200">
+                            <div class="lg:col-span-1">
+                                <div class="relative h-48 lg:h-full overflow-hidden bg-gray-200">
                                     @if ($roomImage)
                                         <img src="{{ Storage::url($roomImage->image_path) }}" alt="{{ $room->full_description }}"
                                             class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
                                 @else
                                     <div class="w-full h-full bg-gradient-to-br from-brand-primary/20 to-brand-secondary/20 flex items-center justify-center">
-                                        <svg class="w-16 h-16 text-brand-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-12 h-12 lg:w-16 lg:h-16 text-brand-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
                                             </path>
@@ -201,30 +193,30 @@
                                 @endif
 
                                 {{-- Availability Badge --}}
-                                <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full">
-                                    <span class="text-sm font-semibold text-brand-primary">{{ $availableCount }} available</span>
+                                <div class="absolute top-3 left-3 lg:top-4 lg:left-4 bg-white/95 backdrop-blur-sm px-2 py-1 lg:px-3 lg:py-1.5 rounded-full">
+                                    <span class="text-xs lg:text-sm font-semibold text-brand-primary">{{ $availableCount }} available</span>
                                 </div>
                                 </div>
                             </div>
 
                             {{-- Room Details --}}
-                            <div class="md:col-span-2 p-6 flex flex-col">
+                            <div class="lg:col-span-2 p-4 lg:p-6 flex flex-col">
                                 <div class="flex-grow">
-                                    <h3 class="text-2xl font-display font-bold text-brand-dark mb-2">
+                                    <h3 class="text-lg lg:text-2xl font-display font-bold text-brand-dark mb-1 lg:mb-2">
                                         {{ $room->full_description }}
                                     </h3>
 
-                                    <div class="flex flex-wrap gap-4 mb-4 text-sm text-gray-600">
+                                    <div class="flex flex-wrap gap-2 lg:gap-4 mb-3 lg:mb-4 text-xs lg:text-sm text-gray-600">
                                         <div class="flex items-center gap-1">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
                                                 </path>
                                             </svg>
-                                            <span>Up to {{ $room->max_occupancy }} guests</span>
+                                            <span>{{ $room->max_occupancy }} guests</span>
                                         </div>
                                         <div class="flex items-center gap-1">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
                                                 </path>
@@ -232,7 +224,7 @@
                                             <span>{{ ucfirst($room->bed_count) }} {{ ucfirst($room->bed_size) }}</span>
                                         </div>
                                         <div class="flex items-center gap-1">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-3 h-3 lg:w-4 lg:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
                                                 </path>
@@ -241,9 +233,9 @@
                                         </div>
                                     </div>
 
-                                    {{-- Amenities Preview --}}
+                                    {{-- Amenities Preview - Desktop Only --}}
                                     @if ($room->amenities->count() > 0)
-                                        <div class="mb-4">
+                                        <div class="hidden lg:block mb-4">
                                             <p class="text-sm font-semibold text-gray-700 mb-2">Amenities:</p>
                                             <div class="flex flex-wrap gap-2">
                                                 @foreach ($room->amenities->take(6) as $amenity)
@@ -262,11 +254,11 @@
                                 </div>
 
                                 {{-- Pricing & Action --}}
-                                <div class="flex items-end justify-between pt-4 border-t border-gray-100">
+                                <div class="flex items-end justify-between pt-3 lg:pt-4 border-t border-gray-100">
                                     <div>
-                                        <p class="text-sm text-gray-500 mb-1">Total for {{ $pricing['number_of_nights'] }} {{ Str::plural('night', $pricing['number_of_nights']) }}</p>
-                                        <p class="text-3xl font-bold text-brand-primary mb-1">MVR {{ number_format($pricing['total_price'], 2) }}</p>
-                                        <p class="text-sm text-gray-500">MVR {{ number_format($pricing['average_price_per_night'], 2) }} per night</p>
+                                        <p class="text-xs lg:text-sm text-gray-500">{{ $pricing['number_of_nights'] }} {{ Str::plural('night', $pricing['number_of_nights']) }}</p>
+                                        <p class="text-xl lg:text-3xl font-bold text-brand-primary">MVR {{ number_format($pricing['total_price'], 2) }}</p>
+                                        <p class="text-xs lg:text-sm text-gray-500">MVR {{ number_format($pricing['average_price_per_night'], 2) }}/night</p>
                                     </div>
 
                                     <a href="{{ route('booking.room.details', array_filter([
@@ -283,8 +275,8 @@
                                             'sortBy' => $sortBy !== 'price_asc' ? $sortBy : null,
                                         ])) }}"
                                         wire:navigate
-                                        class="bg-brand-secondary hover:bg-brand-secondary/90 text-white px-8 py-3 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg shadow-brand-secondary/30 whitespace-nowrap">
-                                        Select Room
+                                        class="bg-brand-secondary hover:bg-brand-secondary/90 text-white px-4 py-2 lg:px-8 lg:py-3 rounded-full text-sm lg:text-base font-semibold transition-all transform hover:scale-105 shadow-lg shadow-brand-secondary/30 whitespace-nowrap">
+                                        Select
                                     </a>
                                 </div>
                             </div>
