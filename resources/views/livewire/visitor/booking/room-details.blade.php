@@ -2,7 +2,19 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {{-- Back Button --}}
         <div class="mb-6">
-            <a href="{{ route('booking.hotel.rooms', ['hotel' => $room->hotel_id, 'checkIn' => $checkIn, 'checkOut' => $checkOut, 'guests' => $guests]) }}"
+            <a href="{{ route('booking.hotel.rooms', array_filter([
+                    'hotel' => $room->hotel_id,
+                    'checkIn' => $checkIn,
+                    'checkOut' => $checkOut,
+                    'guests' => $guests,
+                    'roomType' => $roomType ?: null,
+                    'view' => $view ?: null,
+                    'bedSize' => $bedSize ?: null,
+                    'bedCount' => $bedCount ?: null,
+                    'minPrice' => $minPrice ?: null,
+                    'maxPrice' => $maxPrice ?: null,
+                    'sortBy' => $sortBy !== 'price_asc' ? $sortBy : null,
+                ])) }}"
                 wire:navigate
                 class="inline-flex items-center gap-2 text-brand-primary hover:text-brand-primary/80 font-semibold transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -25,7 +37,18 @@
                         <p class="text-sm text-yellow-700">
                             <strong>Notice:</strong> You searched for {{ request('guests') }} guests, but this room can accommodate a maximum of {{ $room->max_occupancy }} guests.
                             The guest count has been adjusted automatically.
-                            <a href="{{ route('booking.search', ['checkIn' => $checkIn, 'checkOut' => $checkOut, 'guests' => request('guests')]) }}"
+                            <a href="{{ route('booking.search', array_filter([
+                                    'checkIn' => $checkIn,
+                                    'checkOut' => $checkOut,
+                                    'guests' => request('guests'),
+                                    'roomType' => $roomType ?: null,
+                                    'view' => $view ?: null,
+                                    'bedSize' => $bedSize ?: null,
+                                    'bedCount' => $bedCount ?: null,
+                                    'minPrice' => $minPrice ?: null,
+                                    'maxPrice' => $maxPrice ?: null,
+                                    'sortBy' => $sortBy !== 'price_asc' ? $sortBy : null,
+                                ])) }}"
                                wire:navigate
                                class="font-semibold underline hover:text-yellow-800">
                                 Search for rooms that can accommodate {{ request('guests') }} guests

@@ -38,6 +38,8 @@ class Search extends Component
         'view',
         'bedSize',
         'bedCount',
+        'minPrice',
+        'maxPrice',
         'sortBy',
     ];
 
@@ -59,13 +61,20 @@ class Search extends Component
 
     public function search()
     {
-        $this->validate([
+        $rules = [
             'checkIn' => 'required|date|after_or_equal:today',
             'checkOut' => 'required|date|after:checkIn',
             'guests' => 'required|integer|min:1|max:20',
             'minPrice' => 'nullable|numeric|min:0',
-            'maxPrice' => 'nullable|numeric|min:0|gte:minPrice',
-        ]);
+            'maxPrice' => 'nullable|numeric|min:0',
+        ];
+
+        // Only validate maxPrice >= minPrice if minPrice is actually set
+        if ($this->minPrice !== '' && $this->minPrice !== null) {
+            $rules['maxPrice'] .= '|gte:minPrice';
+        }
+
+        $this->validate($rules);
 
         $this->results = [];
         $this->searched = true;
@@ -142,6 +151,11 @@ class Search extends Component
                 default => $a['starting_price'] <=> $b['starting_price'],
             };
         });
+    }
+
+    public function updatedSortBy()
+    {
+        $this->applySorting();
     }
 
     public function clearFilters()

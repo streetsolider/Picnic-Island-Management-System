@@ -214,7 +214,7 @@
                 @if (count($results) > 0)
                     <div class="flex items-center gap-2">
                         <label class="text-sm font-medium text-gray-700">Sort by:</label>
-                        <select wire:model.live="sortBy" wire:change="applySorting"
+                        <select wire:model.live="sortBy"
                             class="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent">
                             <option value="price_asc">Price: Low to High</option>
                             <option value="price_desc">Price: High to Low</option>
@@ -288,6 +288,8 @@
                                         'view' => $view ?: null,
                                         'bedSize' => $bedSize ?: null,
                                         'bedCount' => $bedCount ?: null,
+                                        'minPrice' => $minPrice ?: null,
+                                        'maxPrice' => $maxPrice ?: null,
                                     ])) }}"
                                         wire:navigate
                                         class="bg-brand-secondary hover:bg-brand-secondary/90 text-white px-6 py-2.5 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg shadow-brand-secondary/30">

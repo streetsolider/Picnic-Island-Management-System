@@ -21,6 +21,8 @@ class HotelRooms extends Component
     public $view = '';
     public $bedSize = '';
     public $bedCount = '';
+    public $minPrice = '';
+    public $maxPrice = '';
 
     public $roomTypes = [];
 
@@ -33,6 +35,8 @@ class HotelRooms extends Component
         'view',
         'bedSize',
         'bedCount',
+        'minPrice',
+        'maxPrice',
     ];
 
     public function mount(Hotel $hotel)
@@ -64,7 +68,9 @@ class HotelRooms extends Component
             $this->roomType ?: null,
             $this->view ?: null,
             $this->bedSize ?: null,
-            $this->bedCount ?: null
+            $this->bedCount ?: null,
+            $this->minPrice ? floatval($this->minPrice) : null,
+            $this->maxPrice ? floatval($this->maxPrice) : null
         );
 
         // Group rooms by their unique configuration

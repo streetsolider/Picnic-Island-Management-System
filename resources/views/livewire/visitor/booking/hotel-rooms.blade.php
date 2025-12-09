@@ -2,7 +2,18 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {{-- Back Button --}}
         <div class="mb-6">
-            <a href="{{ route('booking.search', ['checkIn' => $checkIn, 'checkOut' => $checkOut, 'guests' => $guests]) }}"
+            <a href="{{ route('booking.search', array_filter([
+                    'checkIn' => $checkIn,
+                    'checkOut' => $checkOut,
+                    'guests' => $guests,
+                    'roomType' => $roomType ?: null,
+                    'view' => $view ?: null,
+                    'bedSize' => $bedSize ?: null,
+                    'bedCount' => $bedCount ?: null,
+                    'minPrice' => $minPrice ?: null,
+                    'maxPrice' => $maxPrice ?: null,
+                    'sortBy' => $sortBy !== 'price_asc' ? $sortBy : null,
+                ])) }}"
                 wire:navigate
                 class="inline-flex items-center gap-2 text-brand-primary hover:text-brand-primary/80 font-semibold transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -84,11 +95,11 @@
         {{-- Room Types Grid --}}
         @if (count($roomTypes) > 0)
             <div class="space-y-6">
-                @foreach ($roomTypes as $roomType)
+                @foreach ($roomTypes as $roomTypeItem)
                     @php
-                        $room = $roomType['room'];
-                        $pricing = $roomType['pricing'];
-                        $availableCount = $roomType['available_count'];
+                        $room = $roomTypeItem['room'];
+                        $pricing = $roomTypeItem['pricing'];
+                        $availableCount = $roomTypeItem['available_count'];
                         $roomImage = $room->getPrimaryImage();
                     @endphp
 
@@ -177,7 +188,19 @@
                                         <p class="text-sm text-gray-500">MVR {{ number_format($pricing['average_price_per_night'], 2) }} per night</p>
                                     </div>
 
-                                    <a href="{{ route('booking.room.details', ['room' => $room->id, 'checkIn' => $checkIn, 'checkOut' => $checkOut, 'guests' => $guests]) }}"
+                                    <a href="{{ route('booking.room.details', array_filter([
+                                            'room' => $room->id,
+                                            'checkIn' => $checkIn,
+                                            'checkOut' => $checkOut,
+                                            'guests' => $guests,
+                                            'roomType' => $roomType ?: null,
+                                            'view' => $view ?: null,
+                                            'bedSize' => $bedSize ?: null,
+                                            'bedCount' => $bedCount ?: null,
+                                            'minPrice' => $minPrice ?: null,
+                                            'maxPrice' => $maxPrice ?: null,
+                                            'sortBy' => $sortBy !== 'price_asc' ? $sortBy : null,
+                                        ])) }}"
                                         wire:navigate
                                         class="bg-brand-secondary hover:bg-brand-secondary/90 text-white px-8 py-3 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg shadow-brand-secondary/30 whitespace-nowrap">
                                         Select Room
@@ -198,7 +221,18 @@
                 </svg>
                 <h3 class="text-2xl font-display font-bold text-brand-dark mb-2">No Rooms Available</h3>
                 <p class="text-gray-600 mb-6">Unfortunately, there are no rooms available at this hotel for your selected dates and guest count.</p>
-                <a href="{{ route('booking.search', ['checkIn' => $checkIn, 'checkOut' => $checkOut, 'guests' => $guests]) }}"
+                <a href="{{ route('booking.search', array_filter([
+                        'checkIn' => $checkIn,
+                        'checkOut' => $checkOut,
+                        'guests' => $guests,
+                        'roomType' => $roomType ?: null,
+                        'view' => $view ?: null,
+                        'bedSize' => $bedSize ?: null,
+                        'bedCount' => $bedCount ?: null,
+                        'minPrice' => $minPrice ?: null,
+                        'maxPrice' => $maxPrice ?: null,
+                        'sortBy' => $sortBy !== 'price_asc' ? $sortBy : null,
+                    ])) }}"
                     wire:navigate
                     class="inline-block bg-brand-primary hover:bg-brand-primary/90 text-white px-8 py-3 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg shadow-brand-primary/30">
                     Back to Search

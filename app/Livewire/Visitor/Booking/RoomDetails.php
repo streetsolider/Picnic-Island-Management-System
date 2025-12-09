@@ -16,10 +16,26 @@ class RoomDetails extends Component
     public $pricing = null;
     public $isAvailable = true;
 
+    // Filters passed through from search
+    public $roomType = '';
+    public $view = '';
+    public $bedSize = '';
+    public $bedCount = '';
+    public $minPrice = '';
+    public $maxPrice = '';
+    public $sortBy = 'price_asc';
+
     protected $queryString = [
         'checkIn',
         'checkOut',
         'guests',
+        'roomType',
+        'view',
+        'bedSize',
+        'bedCount',
+        'minPrice',
+        'maxPrice',
+        'sortBy',
     ];
 
     public function mount(Room $room)
