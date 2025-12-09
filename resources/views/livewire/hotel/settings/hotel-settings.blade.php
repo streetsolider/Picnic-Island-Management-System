@@ -146,7 +146,6 @@
                                 <div>
                                     <p class="font-medium text-blue-700 dark:text-blue-400 mb-1">Check-in Time:</p>
                                     <ul class="list-disc list-inside space-y-1 text-xs">
-                                        <li>Allowed range: 12:00 PM to 4:00 PM</li>
                                         <li>Guests can check-in from this time onwards</li>
                                         <li>Early arrivals may request early check-in</li>
                                     </ul>
@@ -154,7 +153,6 @@
                                 <div>
                                     <p class="font-medium text-orange-700 dark:text-orange-400 mb-1">Check-out Time:</p>
                                     <ul class="list-disc list-inside space-y-1 text-xs">
-                                        <li>Allowed range: 10:00 AM to 2:00 PM</li>
                                         <li>Guests must vacate rooms by this time</li>
                                         <li>Late checkout available (up to 6:00 PM)</li>
                                         <li>Late checkout requests are FREE of charge</li>
@@ -286,15 +284,13 @@
                     type="time"
                     id="checkinTime"
                     wire:model="checkinTime"
-                    min="12:00"
-                    max="16:00"
                     class="block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
                 @error('checkinTime')
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                 @enderror
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    Between 12:00 PM and 4:00 PM
+                    Select your preferred check-in time
                 </p>
             </div>
 
@@ -307,15 +303,13 @@
                     type="time"
                     id="checkoutTime"
                     wire:model="checkoutTime"
-                    min="10:00"
-                    max="14:00"
                     class="block w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
                 @error('checkoutTime')
                     <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                 @enderror
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    Between 10:00 AM and 2:00 PM
+                    Select your preferred check-out time
                 </p>
             </div>
         </div>

@@ -107,28 +107,10 @@ class HotelSettings extends Component
             'checkinTime' => [
                 'required',
                 'regex:/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/',
-                function ($attribute, $value, $fail) {
-                    $time = Carbon::parse($value);
-                    $minTime = Carbon::parse('12:00');
-                    $maxTime = Carbon::parse('16:00');
-
-                    if ($time->lessThan($minTime) || $time->greaterThan($maxTime)) {
-                        $fail('Check-in time must be between 12:00 PM and 4:00 PM.');
-                    }
-                },
             ],
             'checkoutTime' => [
                 'required',
                 'regex:/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/',
-                function ($attribute, $value, $fail) {
-                    $time = Carbon::parse($value);
-                    $minTime = Carbon::parse('10:00');
-                    $maxTime = Carbon::parse('14:00');
-
-                    if ($time->lessThan($minTime) || $time->greaterThan($maxTime)) {
-                        $fail('Checkout time must be between 10:00 AM and 2:00 PM.');
-                    }
-                },
             ],
         ]);
 
