@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Seeders\TestDataSeeders;
 
 use App\Models\Guest;
 use App\Models\HotelBooking;
