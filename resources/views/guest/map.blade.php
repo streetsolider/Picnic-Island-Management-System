@@ -52,7 +52,7 @@
                     <div class="hidden md:flex items-center space-x-6">
                         <a href="{{ route('home') }}"
                             class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">Home</a>
-                        <a href="{{ route('map') }}" class="text-brand-primary font-semibold">Map</a>
+                        <span class="text-brand-primary font-semibold">Map</span>
                         @auth
                             <a href="{{ route('my-bookings') }}"
                                 class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">My
@@ -68,9 +68,9 @@
                         @else
                             <a href="{{ route('login') }}"
                                 class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">Login</a>
-                            <a href="{{ route('register') }}"
+                            <a href="{{ route('booking.search') }}"
                                 class="bg-brand-secondary hover:bg-brand-secondary/90 text-white px-6 py-2 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg shadow-brand-secondary/30">
-                                Register
+                                Book Now
                             </a>
                         @endauth
                     </div>
@@ -104,10 +104,9 @@
                             class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
                             Home
                         </a>
-                        <a href="{{ route('map') }}"
-                            class="block px-4 py-2 bg-brand-primary/5 text-brand-primary rounded-lg font-semibold">
+                        <span class="block px-4 py-2 bg-brand-primary/5 text-brand-primary rounded-lg font-semibold">
                             Map
-                        </a>
+                        </span>
                         @auth
                             <a href="{{ route('my-bookings') }}"
                                 class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
@@ -126,9 +125,9 @@
                                 class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
                                 Login
                             </a>
-                            <a href="{{ route('register') }}"
+                            <a href="{{ route('booking.search') }}"
                                 class="block px-4 py-2 bg-brand-secondary text-white hover:bg-brand-secondary/90 rounded-lg font-semibold text-center transition-colors">
-                                Register
+                                Book Now
                             </a>
                         @endauth
                     </div>
@@ -235,16 +234,18 @@
                                 <p class="text-gray-600 mb-6 leading-relaxed" x-text="mobileActiveMarker?.description"></p>
                                 
                                 <template x-if="mobileActiveMarker?.type === 'App\\Models\\Hotel'">
-                                    <template x-if="mobileActiveMarker?.isActive">
-                                        <a href="{{ route('booking.search') }}" class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-brand-primary active:bg-brand-primary/90 text-white rounded-xl font-bold text-lg transition-all shadow-lg">
-                                            Book Hotel
-                                        </a>
-                                    </template>
-                                    <template x-if="!mobileActiveMarker?.isActive">
-                                        <div class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-red-50 text-red-600 rounded-xl font-bold text-lg">
-                                            Currently Unavailable
-                                        </div>
-                                    </template>
+                                    <div>
+                                        <template x-if="mobileActiveMarker?.isActive">
+                                            <a href="{{ route('booking.search') }}" class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-brand-primary active:bg-brand-primary/90 text-white rounded-xl font-bold text-lg transition-all shadow-lg">
+                                                Book Hotel
+                                            </a>
+                                        </template>
+                                        <template x-if="!mobileActiveMarker?.isActive">
+                                            <div class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-red-50 text-red-600 rounded-xl font-bold text-lg">
+                                                Currently Unavailable
+                                            </div>
+                                        </template>
+                                    </div>
                                 </template>
 
                                 <template x-if="mobileActiveMarker?.type === 'App\\Models\\FerryTerminal'">
@@ -426,13 +427,22 @@
                                                         </svg>
                                                         Book Ferry Ticket
                                                     </a>
-                                                @else
-                                                    <div class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl font-semibold text-sm">
+                                                @elseif($marker->mappable_type === 'App\Models\ThemeParkActivity' || $marker->mappable_type === 'App\Models\ZoneType')
+                                                    <a href="{{ route('visitor.theme-park.activities') }}"
+                                                        class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-yellow-500 hover:bg-yellow-600 text-white rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                         </svg>
-                                                        View Details
-                                                    </div>
+                                                        Browse Theme Park
+                                                    </a>
+                                                @elseif($marker->mappable_type === 'App\Models\BeachService')
+                                                    <a href="{{ route('visitor.beach-activities.browse') }}"
+                                                        class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 17l6-6 4 4 8-8M3 17h18M21 7v14"></path>
+                                                        </svg>
+                                                        Browse Beach Activities
+                                                    </a>
                                                 @endif
 
                                                 {{-- Arrow pointer --}}

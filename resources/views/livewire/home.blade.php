@@ -7,7 +7,8 @@
             <div class="flex items-center justify-between h-20">
                 <div class="flex items-center space-x-3">
                     <img src="{{ asset('images/kabohera-logo.png') }}" alt="Kabohera Fun Island" class="h-10 w-auto">
-                    <span class="text-2xl font-display font-bold text-brand-dark hidden sm:inline">Kabohera Fun Island</span>
+                    <span class="text-2xl font-display font-bold text-brand-dark hidden sm:inline">Kabohera Fun
+                        Island</span>
                 </div>
 
                 <div class="hidden lg:flex items-center space-x-6">
@@ -21,7 +22,8 @@
                         class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">About</a>
                     @auth
                         <a href="{{ route('my-bookings') }}" wire:navigate
-                            class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">My Bookings</a>
+                            class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">My
+                            Bookings</a>
                         <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
                             <button type="submit"
@@ -36,8 +38,6 @@
                     @else
                         <a href="{{ route('login') }}" wire:navigate
                             class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">Login</a>
-                        <a href="{{ route('register') }}" wire:navigate
-                            class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">Register</a>
                         <a href="{{ route('booking.search') }}" wire:navigate
                             class="bg-brand-secondary hover:bg-brand-secondary/90 text-white px-6 py-2.5 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg shadow-brand-secondary/30">
                             Book Now
@@ -52,21 +52,18 @@
                             d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                     <svg x-show="mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
                     </svg>
                 </button>
             </div>
 
             {{-- Mobile/Tablet Menu --}}
-            <div x-show="mobileMenuOpen"
-                 x-transition:enter="transition ease-out duration-200"
-                 x-transition:enter-start="opacity-0 -translate-y-2"
-                 x-transition:enter-end="opacity-100 translate-y-0"
-                 x-transition:leave="transition ease-in duration-150"
-                 x-transition:leave-start="opacity-100 translate-y-0"
-                 x-transition:leave-end="opacity-0 -translate-y-2"
-                 @click.away="mobileMenuOpen = false"
-                 class="lg:hidden border-t border-gray-100 bg-white">
+            <div x-show="mobileMenuOpen" x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2"
+                @click.away="mobileMenuOpen = false" class="lg:hidden border-t border-gray-100 bg-white">
                 <div class="px-4 py-4 space-y-3">
                     <a href="#home" @click="mobileMenuOpen = false"
                         class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
@@ -107,10 +104,6 @@
                         <a href="{{ route('login') }}" wire:navigate
                             class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
                             Login
-                        </a>
-                        <a href="{{ route('register') }}" wire:navigate
-                            class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
-                            Register
                         </a>
                         <a href="{{ route('booking.search') }}" wire:navigate
                             class="block px-4 py-2 bg-brand-secondary text-white hover:bg-brand-secondary/90 rounded-lg font-semibold text-center transition-colors">
@@ -157,18 +150,18 @@
                         x-transition:enter="transition ease-out duration-700 delay-200"
                         x-transition:enter-start="opacity-0 translate-y-8"
                         x-transition:enter-end="opacity-100 translate-y-0">
-                        Discover Your <br>
+                        Welcome to <br>
                         <span
-                            class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">Perfect
-                            Escape</span>
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">Kabohera
+                            Fun Island</span>
                     </h1>
 
                     <p class="text-xl text-brand-dark/70 max-w-2xl mx-auto lg:mx-0 leading-relaxed" x-show="show"
                         x-transition:enter="transition ease-out duration-700 delay-400"
                         x-transition:enter-start="opacity-0 translate-y-8"
                         x-transition:enter-end="opacity-100 translate-y-0">
-                        Immerse yourself in the beauty of Kabohera Fun Island. Where turquoise waters meet golden sands,
-                        and adventure awaits at every turn.
+                        Your ultimate destination for fun, adventure, and relaxation! Enjoy thrilling theme park rides,
+                        exciting beach activities, and unforgettable island experiences for the whole family.
                     </p>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
@@ -207,13 +200,13 @@
                         <div class="aspect-[4/5] bg-gray-200 relative group">
                             {{-- Placeholder for Hero Image --}}
                             <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10"></div>
-                            <img src="https://images.unsplash.com/photo-1540206351-d6465b3ac5c1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
-                                alt="Island Resort"
+                            <img src="https://plus.unsplash.com/premium_photo-1691675470595-29d1d9b3081d?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.1.0"
+                                alt="Maldives Island"
                                 class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
 
                             <div class="absolute bottom-8 left-8 z-20 text-white">
-                                <p class="text-sm font-medium uppercase tracking-wider mb-2">Featured Resort</p>
-                                <h3 class="text-2xl font-display font-bold">Ocean View Paradise</h3>
+                                <p class="text-sm font-medium uppercase tracking-wider mb-2">Featured Hotel</p>
+                                <h3 class="text-2xl font-display font-bold">Paradise Bay Hotel</h3>
                                 <div class="flex items-center mt-2 space-x-1">
                                     <svg class="w-5 h-5 text-brand-accent" fill="currentColor" viewBox="0 0 20 20">
                                         <path
@@ -260,79 +253,126 @@
                     class="transition duration-700 ease-out">Our Services</h2>
                 <h3 class="text-4xl md:text-5xl font-display font-bold text-brand-dark mb-6"
                     :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
-                    class="transition duration-700 delay-100 ease-out">Experience Luxury & Adventure</h3>
+                    class="transition duration-700 delay-100 ease-out">Book Your Island Experience</h3>
                 <p class="text-xl text-gray-600"
                     :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
-                    class="transition duration-700 delay-200 ease-out">We provide everything you need for an
-                    unforgettable stay, from world-class accommodation to thrilling activities.</p>
+                    class="transition duration-700 delay-200 ease-out">Reserve your hotel stay and arrange ferry transport to make your island getaway seamless.</p>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-8">
-                @php
-                    $services = [
-                        ['title' => 'Luxury Hotels', 'desc' => 'Stay in our premium beachfront villas with private pools and stunning views.', 'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', 'color' => 'bg-blue-50 text-blue-600'],
-                        ['title' => 'Ferry Services', 'desc' => 'Seamless transport between islands with our modern fleet of high-speed ferries.', 'icon' => 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6', 'color' => 'bg-orange-50 text-orange-600'],
-                        ['title' => 'Theme Park', 'desc' => 'Endless fun for the whole family with rollercoasters, water rides, and shows.', 'icon' => 'M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'color' => 'bg-yellow-50 text-yellow-600'],
-                    ];
-                @endphp
-
-                @foreach($services as $index => $service)
-                    <div class="group p-8 rounded-3xl bg-gray-50 hover:bg-white border border-transparent hover:border-gray-100 hover:shadow-xl transition-all duration-300"
-                        x-data="{ shown: false }" x-intersect.threshold.20="shown = true"
-                        :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
-                        class="transition duration-700 ease-out" style="transition-delay: {{ $index * 150 }}ms">
-                        <div
-                            class="w-16 h-16 {{ $service['color'] }} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="{{ $service['icon'] }}"></path>
-                            </svg>
-                        </div>
-                        <h4 class="text-2xl font-display font-bold text-brand-dark mb-4">{{ $service['title'] }}</h4>
-                        <p class="text-gray-600 mb-6 leading-relaxed">{{ $service['desc'] }}</p>
-                        @if($service['title'] === 'Ferry Services')
-                            <a href="{{ route('ferry-tickets.browse') }}" wire:navigate
-                                class="inline-flex items-center text-brand-primary font-semibold group-hover:translate-x-2 transition-transform">
-                                Book Ferry Tickets <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                                </svg>
-                            </a>
-                        @elseif($service['title'] === 'Luxury Hotels')
-                            <a href="{{ route('booking.search') }}" wire:navigate
-                                class="inline-flex items-center text-brand-primary font-semibold group-hover:translate-x-2 transition-transform">
-                                Book Now <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                                </svg>
-                            </a>
-                        @else
-                            @auth
-                                <a href="{{ route('visitor.theme-park.activities') }}" wire:navigate
-                                    class="inline-flex items-center text-brand-primary font-semibold group-hover:translate-x-2 transition-transform">
-                                    Browse Activities <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                                    </svg>
-                                </a>
-                            @else
-                                <a href="{{ route('login') }}" wire:navigate
-                                    class="inline-flex items-center text-brand-primary font-semibold group-hover:translate-x-2 transition-transform">
-                                    Login to Explore <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                                    </svg>
-                                </a>
-                            @endauth
-                        @endif
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                {{-- Hotel Booking --}}
+                <div class="group p-8 rounded-3xl bg-gray-50 hover:bg-white border border-transparent hover:border-gray-100 hover:shadow-xl transition-all duration-300"
+                    x-data="{ shown: false }" x-intersect.threshold.20="shown = true"
+                    :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+                    class="transition duration-700 ease-out">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
                     </div>
-                @endforeach
+                    <h4 class="text-2xl font-display font-bold text-brand-dark mb-4">Hotel Booking</h4>
+                    <p class="text-gray-600 mb-6 leading-relaxed">Find and book comfortable accommodations for your island stay. Choose from a variety of rooms with stunning views.</p>
+                    <a href="{{ route('booking.search') }}" wire:navigate
+                        class="inline-flex items-center text-brand-primary font-semibold group-hover:translate-x-2 transition-transform">
+                        Book a Room <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </a>
+                </div>
+
+                {{-- Ferry Booking --}}
+                <div class="group p-8 rounded-3xl bg-gray-50 hover:bg-white border border-transparent hover:border-gray-100 hover:shadow-xl transition-all duration-300"
+                    x-data="{ shown: false }" x-intersect.threshold.20="shown = true"
+                    :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+                    class="transition duration-700 ease-out" style="transition-delay: 150ms">
+                    <div class="w-16 h-16 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-display font-bold text-brand-dark mb-4">Ferry Tickets</h4>
+                    <p class="text-gray-600 mb-6 leading-relaxed">Book your ferry transport to and from the island. Convenient schedules with comfortable vessels.</p>
+                    <a href="{{ route('ferry-tickets.browse') }}" wire:navigate
+                        class="inline-flex items-center text-brand-primary font-semibold group-hover:translate-x-2 transition-transform">
+                        Book Ferry <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </a>
+                </div>
             </div>
         </div>
     </section>
 
-    {{-- Color Theme Display Section --}}
-    <section class="py-20 bg-brand-dark text-white relative overflow-hidden">
+    {{-- Activities Section --}}
+    <section id="activities" class="py-24 bg-gradient-to-br from-brand-light via-blue-50 to-brand-primary/10 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16" x-data="{ shown: false }"
+                x-intersect.threshold.50="shown = true">
+                <h2 class="text-brand-secondary font-semibold tracking-wide uppercase mb-3"
+                    :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+                    class="transition duration-700 ease-out">Island Activities</h2>
+                <h3 class="text-4xl md:text-5xl font-display font-bold text-brand-dark mb-6"
+                    :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+                    class="transition duration-700 delay-100 ease-out">Fun & Adventure Awaits</h3>
+                <p class="text-xl text-gray-600"
+                    :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+                    class="transition duration-700 delay-200 ease-out">Explore exciting activities at our theme park and beautiful beach services.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                {{-- Theme Park --}}
+                <div class="group p-8 rounded-3xl bg-white hover:shadow-xl transition-all duration-300 border border-gray-100"
+                    x-data="{ shown: false }" x-intersect.threshold.20="shown = true"
+                    :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+                    class="transition duration-700 ease-out">
+                    <div class="w-16 h-16 bg-yellow-50 text-yellow-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-display font-bold text-brand-dark mb-4">Theme Park</h4>
+                    <p class="text-gray-600 mb-6 leading-relaxed">Experience thrilling rides, exciting shows, and family-friendly entertainment across our themed zones.</p>
+                    <a href="{{ route('visitor.theme-park.activities') }}" wire:navigate
+                        class="inline-flex items-center text-brand-primary font-semibold group-hover:translate-x-2 transition-transform">
+                        Browse Activities <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </a>
+                </div>
+
+                {{-- Beach Activities --}}
+                <div class="group p-8 rounded-3xl bg-white hover:shadow-xl transition-all duration-300 border border-gray-100"
+                    x-data="{ shown: false }" x-intersect.threshold.20="shown = true"
+                    :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+                    class="transition duration-700 ease-out" style="transition-delay: 150ms">
+                    <div class="w-16 h-16 bg-cyan-50 text-cyan-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 17l6-6 4 4 8-8M3 17h18M21 7v14"></path>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-display font-bold text-brand-dark mb-4">Beach Activities</h4>
+                    <p class="text-gray-600 mb-6 leading-relaxed">Enjoy water sports, beach excursions, and relaxation at our pristine beach locations.</p>
+                    <a href="{{ route('visitor.beach-activities.browse') }}" wire:navigate
+                        class="inline-flex items-center text-brand-primary font-semibold group-hover:translate-x-2 transition-transform">
+                        Browse Activities <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- About Us Section --}}
+    <section id="about" class="py-20 bg-brand-dark text-white relative overflow-hidden">
         {{-- Background Pattern --}}
         <div class="absolute inset-0 opacity-10"
             style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 30px 30px;"></div>
@@ -340,39 +380,36 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="grid md:grid-cols-2 gap-16 items-center">
                 <div x-data="{ shown: false }" x-intersect.threshold.50="shown = true">
-                    <h2 class="text-3xl md:text-4xl font-display font-bold mb-6"
+                    <h2 class="text-brand-secondary font-semibold tracking-wide uppercase mb-3"
                         :class="shown ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'"
-                        class="transition duration-700 ease-out">Designed for Paradise</h2>
+                        class="transition duration-700 ease-out">About Us</h2>
+                    <h3 class="text-3xl md:text-4xl font-display font-bold mb-6"
+                        :class="shown ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'"
+                        class="transition duration-700 delay-100 ease-out">Your Island Adventure Starts Here</h3>
+                    <p class="text-gray-400 text-lg mb-6 leading-relaxed"
+                        :class="shown ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'"
+                        class="transition duration-700 delay-150 ease-out">
+                        Kabohera Fun Island is a premier destination offering a complete island experience. From comfortable hotel accommodations to exciting theme park attractions and beautiful beach activities, we have everything you need for an unforgettable getaway.
+                    </p>
                     <p class="text-gray-400 text-lg mb-8 leading-relaxed"
                         :class="shown ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'"
-                        class="transition duration-700 delay-100 ease-out">
-                        Our visual identity reflects the natural beauty of the island. From the deep blues of the ocean
-                        to the warm hues of the sunset, every color tells a story.
+                        class="transition duration-700 delay-200 ease-out">
+                        Our commitment is to provide seamless booking experiences and exceptional service, ensuring every visitor creates lasting memories on our beautiful island.
                     </p>
 
-                    <div class="space-y-6" :class="shown ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'"
-                        class="transition duration-700 delay-200 ease-out">
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 h-16 rounded-2xl bg-brand-primary shadow-lg shadow-brand-primary/20"></div>
-                            <div>
-                                <p class="font-bold text-lg">Ocean Blue</p>
-                                <p class="text-gray-500 font-mono text-sm">#0EA5E9</p>
-                            </div>
+                    <div class="grid grid-cols-3 gap-6" :class="shown ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'"
+                        class="transition duration-700 delay-300 ease-out">
+                        <div class="text-center">
+                            <p class="text-3xl font-display font-bold text-brand-primary">500+</p>
+                            <p class="text-sm text-gray-400 mt-1">Happy Guests</p>
                         </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 h-16 rounded-2xl bg-brand-secondary shadow-lg shadow-brand-secondary/20">
-                            </div>
-                            <div>
-                                <p class="font-bold text-lg">Sunset Orange</p>
-                                <p class="text-gray-500 font-mono text-sm">#F97316</p>
-                            </div>
+                        <div class="text-center">
+                            <p class="text-3xl font-display font-bold text-brand-secondary">50+</p>
+                            <p class="text-sm text-gray-400 mt-1">Activities</p>
                         </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 h-16 rounded-2xl bg-brand-accent shadow-lg shadow-brand-accent/20"></div>
-                            <div>
-                                <p class="font-bold text-lg">Golden Sand</p>
-                                <p class="text-gray-500 font-mono text-sm">#FCD34D</p>
-                            </div>
+                        <div class="text-center">
+                            <p class="text-3xl font-display font-bold text-brand-accent">4.9</p>
+                            <p class="text-sm text-gray-400 mt-1">Rating</p>
                         </div>
                     </div>
                 </div>
@@ -381,21 +418,72 @@
                     <div class="grid grid-cols-2 gap-4" :class="shown ? 'opacity-100 scale-100' : 'opacity-0 scale-95'"
                         class="transition duration-1000 ease-out">
                         <div class="space-y-4 mt-8">
-                            <div class="h-40 bg-brand-light/10 rounded-2xl backdrop-blur-sm p-4 border border-white/10">
+                            <div class="h-40 rounded-2xl overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1540202404-a2f29016b523?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80"
+                                    alt="Beach view" class="w-full h-full object-cover">
                             </div>
-                            <div class="h-56 bg-brand-primary rounded-2xl p-6 flex flex-col justify-end">
-                                <p class="font-display font-bold text-2xl">Vibrant</p>
+                            <div class="h-56 rounded-2xl overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80"
+                                    alt="Hotel" class="w-full h-full object-cover">
                             </div>
                         </div>
                         <div class="space-y-4">
-                            <div class="h-56 bg-brand-secondary rounded-2xl p-6 flex flex-col justify-end">
-                                <p class="font-display font-bold text-2xl">Warm</p>
+                            <div class="h-56 rounded-2xl overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80"
+                                    alt="Beach activities" class="w-full h-full object-cover">
                             </div>
-                            <div class="h-40 bg-brand-light/10 rounded-2xl backdrop-blur-sm p-4 border border-white/10">
+                            <div class="h-40 rounded-2xl overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?ixlib=rb-1.2.1&auto=format&fit=crop&w=400&q=80"
+                                    alt="Fun park" class="w-full h-full object-cover">
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- Island Map Section --}}
+    <section id="map" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12" x-data="{ shown: false }"
+                x-intersect.threshold.50="shown = true">
+                <h2 class="text-brand-secondary font-semibold tracking-wide uppercase mb-3"
+                    :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+                    class="transition duration-700 ease-out">Explore the Island</h2>
+                <h3 class="text-4xl md:text-5xl font-display font-bold text-brand-dark mb-6"
+                    :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+                    class="transition duration-700 delay-100 ease-out">Island Map</h3>
+                <p class="text-xl text-gray-600"
+                    :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'"
+                    class="transition duration-700 delay-200 ease-out">Discover all the amazing locations on Kabohera Island - from hotels and beaches to theme parks and ferry terminals.</p>
+            </div>
+
+            <div class="flex justify-center" x-data="{ shown: false }" x-intersect.threshold.20="shown = true"
+                :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+                class="transition duration-700 ease-out">
+                <a href="{{ route('map') }}" wire:navigate
+                    class="group relative overflow-hidden rounded-3xl shadow-2xl shadow-brand-primary/20 hover:shadow-3xl transition-all duration-500 max-w-4xl w-full">
+                    {{-- Map Preview Image --}}
+                    <div class="aspect-[16/9] bg-gradient-to-br from-brand-primary/10 to-brand-secondary/10 relative">
+                        <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80"
+                            alt="Island Map Preview"
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+
+                        {{-- Overlay Content --}}
+                        <div class="absolute inset-0 flex flex-col items-center justify-center text-white">
+                            <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-2xl font-display font-bold mb-2">View Interactive Map</h4>
+                            <p class="text-white/80 text-center max-w-md px-4">Click to explore hotels, theme parks, beach services, and ferry terminals</p>
+                        </div>
+                    </div>
+                </a>
             </div>
         </div>
     </section>
@@ -406,7 +494,8 @@
             <div class="grid md:grid-cols-4 gap-12 mb-12">
                 <div class="col-span-1 md:col-span-2">
                     <div class="flex items-center space-x-3 mb-6">
-                        <img src="{{ asset('images/kabohera-logo.png') }}" alt="Kabohera Fun Island" class="h-10 w-auto">
+                        <img src="{{ asset('images/kabohera-logo.png') }}" alt="Kabohera Fun Island"
+                            class="h-10 w-auto">
                         <span class="text-2xl font-display font-bold">Kabohera Fun Island</span>
                     </div>
                     <p class="text-gray-400 max-w-md leading-relaxed">
@@ -418,10 +507,10 @@
                 <div>
                     <h4 class="font-bold text-lg mb-6">Quick Links</h4>
                     <ul class="space-y-4 text-gray-400">
-                        <li><a href="#" class="hover:text-brand-primary transition-colors">About Us</a></li>
-                        <li><a href="#" class="hover:text-brand-primary transition-colors">Our Services</a></li>
-                        <li><a href="#" class="hover:text-brand-primary transition-colors">Destinations</a></li>
-                        <li><a href="#" class="hover:text-brand-primary transition-colors">Contact</a></li>
+                        <li><a href="#about" class="hover:text-brand-primary transition-colors">About Us</a></li>
+                        <li><a href="#services" class="hover:text-brand-primary transition-colors">Our Services</a></li>
+                        <li><a href="#activities" class="hover:text-brand-primary transition-colors">Activities</a></li>
+                        <li><a href="#map" class="hover:text-brand-primary transition-colors">Island Map</a></li>
                     </ul>
                 </div>
 

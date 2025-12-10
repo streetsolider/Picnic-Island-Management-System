@@ -80,7 +80,7 @@
     <div class="min-h-screen">
         {{-- Navigation --}}
         <nav x-data="{ scrolled: false, mobileMenuOpen: false }" @scroll.window="scrolled = (window.pageYOffset > 20)"
-            :class="{ 'bg-white/95 backdrop-blur-md shadow-md': scrolled, 'bg-white shadow-sm': !scrolled }"
+            :class="{ 'bg-white/90 backdrop-blur-md shadow-sm': scrolled, 'bg-transparent': !scrolled }"
             class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
@@ -97,9 +97,6 @@
                         <a href="{{ route('home') }}"
                             class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium"
                             wire:navigate>Home</a>
-                        <a href="{{ route('map') }}"
-                            class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium"
-                            wire:navigate>Map</a>
                         @auth
                             <a href="{{ route('my-bookings') }}"
                                 class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium"
@@ -175,9 +172,9 @@
                         @else
                             <a href="{{ route('login') }}"
                                 class="text-brand-dark/80 hover:text-brand-primary transition-colors font-medium">Login</a>
-                            <a href="{{ route('register') }}"
+                            <a href="{{ route('booking.search') }}"
                                 class="bg-brand-secondary hover:bg-brand-secondary/90 text-white px-6 py-2 rounded-full font-semibold transition-all transform hover:scale-105 shadow-lg shadow-brand-secondary/30">
-                                Register
+                                Book Now
                             </a>
                         @endauth
                     </div>
@@ -210,10 +207,6 @@
                         <a href="{{ route('home') }}" wire:navigate
                             class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
                             Home
-                        </a>
-                        <a href="{{ route('map') }}" wire:navigate
-                            class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
-                            Map
                         </a>
                         @auth
                             <a href="{{ route('my-bookings') }}" wire:navigate
@@ -263,9 +256,9 @@
                                 class="block px-4 py-2 text-brand-dark hover:bg-brand-primary/5 hover:text-brand-primary rounded-lg font-medium transition-colors">
                                 Login
                             </a>
-                            <a href="{{ route('register') }}" wire:navigate
+                            <a href="{{ route('booking.search') }}" wire:navigate
                                 class="block px-4 py-2 bg-brand-secondary text-white hover:bg-brand-secondary/90 rounded-lg font-semibold text-center transition-colors">
-                                Register
+                                Book Now
                             </a>
                         @endauth
                     </div>
