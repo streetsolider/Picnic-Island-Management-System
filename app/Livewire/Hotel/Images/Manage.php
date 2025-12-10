@@ -385,6 +385,13 @@ class Manage extends Component
     public function confirmDeleteGallery($galleryId)
     {
         $this->deletingGalleryId = $galleryId;
+        $this->dispatch('open-modal', 'delete-gallery-modal');
+    }
+
+    public function closeDeleteGalleryModal()
+    {
+        $this->deletingGalleryId = null;
+        $this->dispatch('close-modal', 'delete-gallery-modal');
     }
 
     public function deleteGallery()
@@ -400,7 +407,7 @@ class Manage extends Component
             $this->showToast = now()->timestamp;
             $this->toastType = 'danger';
             $this->toastMessage = 'Cannot delete gallery that is assigned to rooms. Please unassign it first.';
-            $this->deletingGalleryId = null;
+            $this->closeDeleteGalleryModal();
             return;
         }
 
@@ -418,7 +425,7 @@ class Manage extends Component
 
         $gallery->delete();
 
-        $this->deletingGalleryId = null;
+        $this->closeDeleteGalleryModal();
 
         // Show success toast
         $this->showToast = now()->timestamp;

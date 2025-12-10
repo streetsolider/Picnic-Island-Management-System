@@ -63,7 +63,6 @@
                         </x-admin.button.secondary>
                         <button
                             wire:click.stop="confirmDeleteGallery({{ $gallery->id }})"
-                            x-data x-on:click="$dispatch('open-modal', 'delete-gallery-modal')"
                             type="button"
                             class="inline-flex items-center justify-center px-3 py-2 text-sm rounded-md bg-red-600 dark:bg-red-500 text-white hover:bg-red-700 dark:hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-offset-gray-800 transition-colors">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -360,12 +359,3 @@
         </form>
     </div>
 </x-overlays.modal>
-
-{{-- Delete Gallery Confirmation Modal --}}
-<x-admin.modal.confirmation
-    name="delete-gallery-modal"
-    title="Delete Gallery?"
-    description="Are you sure you want to delete this gallery? All images in this gallery will be permanently deleted. This action cannot be undone."
-    method="deleteGallery"
-    confirmText="Yes, Delete Gallery"
-/>

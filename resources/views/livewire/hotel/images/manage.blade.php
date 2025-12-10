@@ -46,10 +46,12 @@
     {{-- Delete Gallery Confirmation Modal --}}
     <x-admin.modal.confirmation
         name="delete-gallery-modal"
+        :show="$deletingGalleryId !== null"
         title="Delete Gallery?"
         description="Are you sure you want to delete this gallery? All images in this gallery will be permanently deleted."
         method="deleteGallery"
         confirmText="Yes, Delete Gallery"
+        x-on:close="$wire.closeDeleteGalleryModal()"
     />
 
     {{-- Toast Notifications --}}
