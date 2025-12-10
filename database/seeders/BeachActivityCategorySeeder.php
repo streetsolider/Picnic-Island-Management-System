@@ -2,6 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\BeachActivityCategory;
+use App\Models\BeachService;
+use App\Models\Staff;
+use App\Enums\StaffRole;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +17,10 @@ class BeachActivityCategorySeeder extends Seeder
      */
     public function run(): void
     {
+        // Get beach staff members
+        $beachStaff = Staff::where('role', StaffRole::BEACH_STAFF)
+            ->where('is_active', true)
+            ->get();
         $categories = [
             [
                 'name' => 'Water Sports',
@@ -250,12 +258,28 @@ class BeachActivityCategorySeeder extends Seeder
             ];
         }
 
-        // Insert all beach services
-        DB::table('beach_services')->insert(array_merge($waterSports, $beachSports, $beachHuts));
+        // Merge all beach services
+        $allServices = array_merge($waterSports, $beachSports, $beachHuts);
+
+        // Insert beach services with staff assignments
+        foreach ($allServices as $index => $serviceData) {
+            // Assign staff if available (round-robin)
+            if ($beachStaff->isNotEmpty()) {
+                $serviceData['assigned_staff_id'] = $beachStaff[$index % $beachStaff->count()]->id;
+            }
+
+            BeachService::create($serviceData);
+        }
 
         $this->command->info('Beach services seeded successfully!');
         $this->command->info('- 7 Water Sports');
         $this->command->info('- 2 Beach Sports');
         $this->command->info('- 8 Beach Huts');
+
+        if ($beachStaff->isNotEmpty()) {
+            $this->command->info('✓ All beach services assigned to beach staff');
+        } else {
+            $this->command->warn('⚠ No beach staff found - services created without staff assignments');
+        }
     }
 }

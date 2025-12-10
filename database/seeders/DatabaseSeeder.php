@@ -109,8 +109,9 @@ class DatabaseSeeder extends Seeder
         $this->call(FerryRouteSeeder::class);
         $this->call(FerryScheduleSeeder::class);
 
-        // Seed theme park zones
+        // Seed theme park zones and activities
         $this->call(ThemeParkZoneSeeder::class);
+        $this->call(ThemeParkActivitySeeder::class);
 
         // Seed beach services and categories
         $this->call(BeachActivityCategorySeeder::class);

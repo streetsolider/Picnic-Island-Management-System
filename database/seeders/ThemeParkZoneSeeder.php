@@ -10,57 +10,40 @@ class ThemeParkZoneSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     * Note: Zones are managed by Theme Park Manager, not assigned to individual staff
      */
     public function run(): void
     {
         $zones = [
             [
-                'name' => 'Adventure Zone 1',
+                'name' => 'Adventure Zone',
                 'zone_type' => 'Adventure',
-                'description' => 'High-energy activities and thrill rides for adventurous visitors.',
+                'description' => 'High-energy activities and outdoor adventures for thrill seekers.',
+                'opening_time' => '09:00:00',
+                'closing_time' => '21:00:00',
                 'is_active' => true,
             ],
             [
-                'name' => 'Water Park North',
+                'name' => 'Water Park',
                 'zone_type' => 'Water Park',
-                'description' => 'Exciting water slides, wave pools, and lazy rivers.',
+                'description' => 'Exciting water slides, wave pools, and aquatic attractions.',
+                'opening_time' => '09:00:00',
+                'closing_time' => '21:00:00',
                 'is_active' => true,
             ],
             [
-                'name' => 'Kids Kingdom Central',
-                'zone_type' => 'Kids Area',
-                'description' => 'Safe and fun activities designed for children under 12.',
-                'is_active' => true,
-            ],
-            [
-                'name' => 'Entertainment Plaza',
+                'name' => 'Entertainment Zone',
                 'zone_type' => 'Entertainment',
                 'description' => 'Live shows, performances, and interactive entertainment.',
+                'opening_time' => '09:00:00',
+                'closing_time' => '21:00:00',
                 'is_active' => true,
             ],
             [
-                'name' => 'Thrill Riders West',
-                'zone_type' => 'Thrill Rides',
-                'description' => 'Extreme rides for adrenaline junkies.',
-                'is_active' => true,
-            ],
-            [
-                'name' => 'Family Fun Zone East',
-                'zone_type' => 'Family',
-                'description' => 'Activities suitable for all ages and families.',
-                'is_active' => true,
-            ],
-            [
-                'name' => 'Adventure Zone 2',
-                'zone_type' => 'Adventure',
-                'description' => 'Another adventure zone with different activities.',
-                'is_active' => true,
-            ],
-            [
-                'name' => 'Water Park South',
-                'zone_type' => 'Water Park',
-                'description' => 'Additional water park facilities with tropical theme.',
+                'name' => 'Ride Zone',
+                'zone_type' => 'Rides',
+                'description' => 'Thrilling rides and attractions for all ages.',
+                'opening_time' => '09:00:00',
+                'closing_time' => '21:00:00',
                 'is_active' => true,
             ],
         ];
@@ -68,5 +51,7 @@ class ThemeParkZoneSeeder extends Seeder
         foreach ($zones as $zoneData) {
             ThemeParkZone::create($zoneData);
         }
+
+        $this->command->info('✓ Theme park zones seeded');
     }
 }
