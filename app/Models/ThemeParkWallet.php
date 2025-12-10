@@ -29,11 +29,11 @@ class ThemeParkWallet extends Model
     ];
 
     /**
-     * Get the user that owns this wallet.
+     * Get the user (guest) that owns this wallet.
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Guest::class, 'user_id');
     }
 
     /**

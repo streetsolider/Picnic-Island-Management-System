@@ -42,11 +42,11 @@ class ThemeParkTicketRedemption extends Model
     }
 
     /**
-     * Get the user that made this redemption.
+     * Get the user (guest) that made this redemption.
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Guest::class, 'user_id');
     }
 
     /**

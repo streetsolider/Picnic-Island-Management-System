@@ -50,11 +50,11 @@ class ThemeParkWalletTransaction extends Model
     }
 
     /**
-     * Get the user that owns this transaction.
+     * Get the user (guest) that owns this transaction.
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Guest::class, 'user_id');
     }
 
     /**
