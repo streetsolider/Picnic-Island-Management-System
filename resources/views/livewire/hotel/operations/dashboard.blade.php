@@ -268,7 +268,7 @@
                                 Room {{ $booking->room->room_number }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                                {{ $booking->checked_in_at->format('M d, H:i') }}
+                                {{ $booking->checked_in_at?->format('M d, H:i') ?? 'Not checked in yet' }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
                                 {{ $booking->check_out_date->format('M d, Y') }}
@@ -331,7 +331,7 @@
                                 Room {{ $booking->room->room_number }}
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                                {{ $booking->checked_in_at->format('M d, H:i') }}
+                                {{ $booking->checked_in_at?->format('M d, H:i') ?? 'Not checked in yet' }}
                             </td>
                             <td class="px-6 py-4 text-sm">
                                 @php

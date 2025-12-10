@@ -92,8 +92,8 @@ class Dashboard extends Component
             // Get booking stats
             $this->bookingStats = $this->analyticsService->getBookingStats($this->startDate, $this->endDate);
 
-            // Get payment stats
-            $this->paymentStats = $this->analyticsService->getPaymentStats($this->startDate, $this->endDate);
+            // Get payment stats - REMOVED as per request
+            // $this->paymentStats = $this->analyticsService->getPaymentStats($this->startDate, $this->endDate);
 
             // Get guest stats
             $this->guestStats = $this->analyticsService->getGuestStats();
