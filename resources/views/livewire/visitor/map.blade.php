@@ -286,6 +286,22 @@
                                                         </svg>
                                                         Book Ferry Ticket
                                                     </a>
+                                                @elseif($marker->mappable_type === 'App\Models\ThemeParkActivity')
+                                                    <a href="{{ route('visitor.theme-park.browse', ['selectedActivity' => $marker->mappable->id]) }}"
+                                                        class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-yellow-500 hover:bg-yellow-600 text-white rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                                        </svg>
+                                                        View Activity
+                                                    </a>
+                                                @elseif($marker->mappable_type === 'App\Models\BeachService')
+                                                    <a href="{{ route('visitor.beach-activities.browse', ['categoryFilter' => $marker->mappable->beach_activity_category_id]) }}"
+                                                        class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                                        </svg>
+                                                        View Service
+                                                    </a>
                                                 @else
                                                     <div class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl font-semibold text-sm">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

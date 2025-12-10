@@ -25,6 +25,9 @@ Route::get('/beach-activities', \App\Livewire\Visitor\BeachActivities\Browse::cl
 // Public Beach Activity Service Details (no auth required)
 Route::get('/beach-activities/service/{service}', \App\Livewire\Visitor\BeachActivities\ServiceDetails::class)->name('visitor.beach-activities.details');
 
+// Public Theme Park Activities Browse (no auth required)
+Route::get('/theme-park-activities', \App\Livewire\Visitor\ThemePark\Browse::class)->name('visitor.theme-park.browse');
+
 // Public Map
 Route::get('/map', \App\Livewire\Visitor\Map::class)->name('map');
 
