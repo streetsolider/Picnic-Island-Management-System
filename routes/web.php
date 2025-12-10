@@ -198,9 +198,6 @@ Route::middleware(['auth:staff'])->group(function () {
         Route::get('map', \App\Livewire\Admin\Map\MapManager::class)->name('map.manager');
     });
 
-    // Component Library Demo - Accessible to all staff
-    Route::get('/components-demo', \App\Livewire\Admin\ComponentsDemo::class)->name('components-demo');
-
     // Profile for staff
     Route::view('/staff/profile', 'profile')->name('staff.profile');
 });
