@@ -207,16 +207,16 @@
             <div>
                 <h3 class="text-sm font-medium text-gray-500 mb-2">Ferry Terminal</h3>
                 <div class="space-y-2">
-                    @forelse($ferryTerminals as $terminal)
-                        <div draggable="true" @dragstart="startDrag($event, 'ferry', {{ $terminal->id }})"
+                    @if($showFerryTerminal)
+                        <div draggable="true" @dragstart="startDrag($event, 'ferry', 1)"
                             class="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded cursor-move hover:bg-gray-100 dark:hover:bg-gray-600 transition">
                             <img src="{{ asset('images/map/ferry_pin.png') }}"
                                 class="w-6 h-6 object-cover rounded-full border border-red-500">
-                            <span class="text-sm text-gray-700 dark:text-gray-300">{{ $terminal->name }}</span>
+                            <span class="text-sm text-gray-700 dark:text-gray-300">Ferry Terminal</span>
                         </div>
-                    @empty
+                    @else
                         <p class="text-xs text-gray-400">Ferry terminal already placed.</p>
-                    @endforelse
+                    @endif
                 </div>
             </div>
         </div>

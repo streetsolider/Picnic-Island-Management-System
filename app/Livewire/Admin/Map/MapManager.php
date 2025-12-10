@@ -20,7 +20,7 @@ class MapManager extends Component
     public $hotels = [];
     public $themeParkActivities = [];
     public $beachServices = [];
-    public $ferryTerminals = [];
+    public $showFerryTerminal = true; // Always show unless placed
     public $mapImage;
     public $currentMapPath;
     public $showResetConfirmation = false;
@@ -44,8 +44,8 @@ class MapManager extends Component
         $this->beachServices = BeachService::active()
             ->whereDoesntHave('mapMarker')->get();
 
-        $this->ferryTerminals = FerryTerminal::active()
-            ->whereDoesntHave('mapMarker')->get();
+        // Check if ferry terminal marker already exists
+        $this->showFerryTerminal = !MapMarker::where('mappable_type', FerryTerminal::class)->exists();
     }
 
     public function uploadMapImage()
@@ -89,11 +89,31 @@ class MapManager extends Component
 
     public function addMarker($type, $id, $x, $y)
     {
+        // Special handling for ferry terminal
+        if ($type === 'ferry') {
+            // Get or create the ferry terminal
+            $ferryTerminal = FerryTerminal::firstOrCreate(
+                ['name' => 'Ferry Terminal'],
+                [
+                    'description' => 'Ferry terminal for booking ferry tickets to and from Picnic Island',
+                    'is_active' => true,
+                ]
+            );
+
+            MapMarker::create([
+                'mappable_type' => FerryTerminal::class,
+                'mappable_id' => $ferryTerminal->id,
+                'x_position' => $x,
+                'y_position' => $y,
+            ]);
+            $this->loadData();
+            return;
+        }
+
         $modelClass = match ($type) {
             'hotel' => Hotel::class,
             'themepark' => ThemeParkActivity::class,
             'beach' => BeachService::class,
-            'ferry' => FerryTerminal::class,
             default => null,
         };
 
