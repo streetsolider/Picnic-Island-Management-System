@@ -22,10 +22,10 @@
 
             @foreach($filters as $key => $label)
                     <button wire:click="applyDateFilter('{{ $key }}')" wire:key="filter-{{ $key }}" class="px-3 py-1 text-xs font-medium rounded-md transition-colors
-                            {{ $dateFilter === $key
+                                    {{ $dateFilter === $key
                 ? 'bg-indigo-600 text-white'
                 : 'bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700' 
-                            }}">
+                                    }}">
                         {{ $label }}
                     </button>
             @endforeach
@@ -284,19 +284,20 @@
             {{-- Legend --}}
             <div class="mt-4 space-y-2">
                 <div class="flex justify-between items-center text-xs">
-                    <span class="flex items-center"><span
+                    <span class="flex items-center text-gray-900 dark:text-gray-100"><span
                             class="w-2 h-2 rounded-full bg-indigo-500 mr-2"></span>Hotels</span>
                     <span class="font-medium text-gray-900 dark:text-white">MVR
                         {{ number_format($revenueData['hotel_revenue'] ?? 0) }}</span>
                 </div>
                 <div class="flex justify-between items-center text-xs">
-                    <span class="flex items-center"><span
+                    <span class="flex items-center text-gray-900 dark:text-gray-100"><span
                             class="w-2 h-2 rounded-full bg-teal-400 mr-2"></span>Beach</span>
                     <span class="font-medium text-gray-900 dark:text-white">MVR
                         {{ number_format($revenueData['beach_revenue'] ?? 0) }}</span>
                 </div>
                 <div class="flex justify-between items-center text-xs">
-                    <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-purple-500 mr-2"></span>Theme
+                    <span class="flex items-center text-gray-900 dark:text-gray-100"><span
+                            class="w-2 h-2 rounded-full bg-purple-500 mr-2"></span>Theme
                         Park</span>
                     <span class="font-medium text-gray-900 dark:text-white">MVR
                         {{ number_format($revenueData['theme_park_revenue'] ?? 0) }}</span>
