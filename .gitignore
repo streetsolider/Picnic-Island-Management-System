@@ -23,4 +23,9 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 .claude
-claude.md
+CLAUDE.md
+development.txt
+
+# Google OAuth Credentials
+client_secret_*.json
+google_oauth_credentials.json

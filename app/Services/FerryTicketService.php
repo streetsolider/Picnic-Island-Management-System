@@ -1,0 +1,443 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Ferry\FerrySchedule;
+use App\Models\Ferry\FerryTicket;
+use App\Models\Ferry\FerryRoute;
+use App\Models\HotelBooking;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Exception;
+
+class FerryTicketService
+{
+    /**
+     * Get available schedules for a date/route with capacity check
+     *
+     * @param string $date
+     * @param int|null $routeId
+     * @param int $passengers
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getAvailableSchedules(string $date, ?int $routeId = null, int $passengers = 1)
+    {
+        $travelDate = Carbon::parse($date);
+        $dayOfWeek = $travelDate->format('l'); // Monday, Tuesday, etc.
+        $isToday = $travelDate->isToday();
+        $currentTime = now();
+
+        $query = FerrySchedule::with(['route', 'vessel'])
+            ->whereHas('route', function ($q) {
+                $q->where('is_active', true);
+            })
+            ->whereHas('vessel', function ($q) {
+                $q->where('is_active', true);
+            })
+            ->whereJsonContains('days_of_week', $dayOfWeek);
+
+        if ($routeId) {
+            $query->where('ferry_route_id', $routeId);
+        }
+
+        $schedules = $query->get();
+
+        // Filter by capacity and departure time
+        return $schedules->filter(function ($schedule) use ($date, $passengers, $isToday, $currentTime) {
+            // Check capacity first
+            if (!$schedule->hasCapacity($date, $passengers)) {
+                return false;
+            }
+
+            // If travel date is today, ensure departure time hasn't passed
+            if ($isToday) {
+                $departureTime = Carbon::parse($schedule->departure_time->format('H:i'));
+
+                // If departure time has already passed, don't show this schedule
+                if ($departureTime->lessThan($currentTime)) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+    }
+
+    /**
+     * CRITICAL: Validate guest has valid hotel booking
+     *
+     * @param int $guestId
+     * @return array ['valid' => bool, 'booking' => HotelBooking|null, 'errors' => []]
+     */
+    public function validateHotelBooking(int $guestId): array
+    {
+        // Find either upcoming confirmed bookings OR currently active checked-in bookings
+        $booking = HotelBooking::where('guest_id', $guestId)
+            ->where(function ($query) {
+                $query->where(function ($q) {
+                    // Upcoming confirmed bookings
+                    $q->where('status', 'confirmed')
+                      ->where('check_in_date', '>=', now()->toDateString());
+                })->orWhere(function ($q) {
+                    // Currently active checked-in bookings
+                    $q->where('status', 'checked_in')
+                      ->where('check_in_date', '<=', now()->toDateString())
+                      ->where('check_out_date', '>=', now()->toDateString());
+                });
+            })
+            ->orderBy('check_in_date', 'asc')
+            ->first();
+
+        if (!$booking) {
+            return [
+                'valid' => false,
+                'booking' => null,
+                'errors' => ['No valid hotel booking found. You must have a confirmed or checked-in hotel booking to purchase ferry tickets.'],
+            ];
+        }
+
+        return [
+            'valid' => true,
+            'booking' => $booking,
+            'errors' => [],
+        ];
+    }
+
+    /**
+     * Validate ticket purchase requirements
+     *
+     * @param array $data
+     * @return array ['valid' => bool, 'errors' => []]
+     */
+    public function validateBooking(array $data): array
+    {
+        $errors = [];
+
+        // Validate travel date
+        $travelDate = Carbon::parse($data['travel_date']);
+        $today = Carbon::today();
+
+        if ($travelDate->lt($today)) {
+            $errors[] = 'Travel date cannot be in the past.';
+        }
+
+        // Validate hotel booking
+        $hotelBooking = HotelBooking::with(['hotel', 'lateCheckoutRequest'])->find($data['hotel_booking_id']);
+        if (!$hotelBooking) {
+            $errors[] = 'Hotel booking not found.';
+        } elseif (!in_array($hotelBooking->status, ['confirmed', 'checked_in'])) {
+            $errors[] = 'Hotel booking must be confirmed or checked-in.';
+        } else {
+            // Validate travel date is within hotel booking date range
+            $checkInDate = $hotelBooking->check_in_date->format('Y-m-d');
+            $checkOutDate = $hotelBooking->check_out_date->format('Y-m-d');
+
+            if ($data['travel_date'] < $checkInDate || $data['travel_date'] > $checkOutDate) {
+                $errors[] = "Ferry ticket must be for a date within your hotel stay ({$checkInDate} to {$checkOutDate}).";
+            }
+        }
+
+        // Validate schedule
+        $schedule = FerrySchedule::find($data['ferry_schedule_id']);
+        if (!$schedule) {
+            $errors[] = 'Ferry schedule not found.';
+        } else {
+            // Validate route is active
+            if (!$schedule->route || !$schedule->route->is_active) {
+                $errors[] = 'This ferry route is not currently active.';
+            }
+
+            // Validate vessel is active
+            if (!$schedule->vessel || !$schedule->vessel->is_active) {
+                $errors[] = 'This ferry vessel is not currently active.';
+            }
+
+            // Validate departure time hasn't passed if travel date is today
+            if ($travelDate->isToday()) {
+                $departureTime = Carbon::parse($schedule->departure_time->format('H:i'));
+                if ($departureTime->lessThan(now())) {
+                    $errors[] = 'This ferry schedule has already departed. Please select a future departure time.';
+                }
+            }
+
+            // Validate capacity
+            if (!$schedule->hasCapacity($data['travel_date'], $data['number_of_passengers'])) {
+                $available = $schedule->getAvailableSeats($data['travel_date']);
+                $errors[] = "Insufficient capacity. Only {$available} seats available.";
+            }
+        }
+
+        // Determine direction from route
+        $direction = null;
+        if ($schedule && $schedule->route) {
+            $direction = $schedule->route->destination === 'Picnic Island' ? 'to_island' : 'from_island';
+        }
+
+        // Validate direction and booking flow
+        if ($hotelBooking && $direction) {
+            $hasArrival = $hotelBooking->hasArrivalFerry();
+
+            // Rule: Must book arrival (to_island) before departure (from_island)
+            if ($direction === 'from_island' && !$hasArrival) {
+                $errors[] = 'You must book your arrival ferry to the island first before booking a departure ferry.';
+            }
+
+            // Rule: Cannot book multiple arrival tickets (everyone arrives together)
+            if ($direction === 'to_island' && $hasArrival) {
+                $errors[] = 'You have already booked an arrival ferry for this hotel stay. All passengers must arrive together on the same ferry.';
+            }
+
+            // Rule: Total departure passengers (across all departure tickets) cannot exceed arrival passengers
+            if ($direction === 'from_island' && $hasArrival) {
+                $arrivalTicket = $hotelBooking->arrivalFerryTicket;
+                if ($arrivalTicket) {
+                    $totalDeparturePassengers = $hotelBooking->getTotalDeparturePassengers();
+                    $remainingPassengers = $arrivalTicket->number_of_passengers - $totalDeparturePassengers;
+
+                    if ($data['number_of_passengers'] > $remainingPassengers) {
+                        $errors[] = "Cannot book {$data['number_of_passengers']} passengers. Only {$remainingPassengers} passenger(s) remaining from your arrival of {$arrivalTicket->number_of_passengers}. (Already departed: {$totalDeparturePassengers})";
+                    }
+                }
+            }
+
+            // Rule: Arrival passengers cannot exceed room max occupancy
+            if ($direction === 'to_island') {
+                $maxOccupancy = $hotelBooking->room->max_occupancy;
+                if ($data['number_of_passengers'] > $maxOccupancy) {
+                    $errors[] = "Number of passengers ({$data['number_of_passengers']}) cannot exceed your room's maximum occupancy ({$maxOccupancy} persons).";
+                }
+            }
+
+            // Rule: Departure ferry on checkout day must be after checkout time + 30 min buffer
+            if ($direction === 'from_island' && $schedule) {
+                $travelDateCarbon = Carbon::parse($data['travel_date']);
+
+                // Check if departure is on checkout day
+                if ($travelDateCarbon->isSameDay($hotelBooking->check_out_date)) {
+                    // Get effective checkout time (considers late checkout approval)
+                    $effectiveCheckout = $hotelBooking->getEffectiveCheckoutTime();
+
+                    // Get ferry departure time on the travel date
+                    $ferryDepartureTime = Carbon::parse(
+                        $data['travel_date'] . ' ' . $schedule->departure_time->format('H:i:s')
+                    );
+
+                    // Add 30 minute buffer to checkout time
+                    $minimumDepartureTime = $effectiveCheckout->copy()->addMinutes(30);
+
+                    // Ensure ferry departs at least 30 minutes after checkout
+                    if ($ferryDepartureTime->lessThan($minimumDepartureTime)) {
+                        $checkoutTimeFormatted = $effectiveCheckout->format('g:i A');
+                        $ferryTimeFormatted = $ferryDepartureTime->format('g:i A');
+                        $minimumTimeFormatted = $minimumDepartureTime->format('g:i A');
+
+                        $errors[] = "Departure ferry at {$ferryTimeFormatted} is too close to your checkout time ({$checkoutTimeFormatted}). " .
+                                   "Please select a ferry departing at {$minimumTimeFormatted} or later to allow sufficient time for checkout.";
+                    }
+                }
+            }
+        }
+
+        return [
+            'valid' => empty($errors),
+            'errors' => $errors,
+        ];
+    }
+
+    /**
+     * Create a new ferry ticket
+     *
+     * @param array $data
+     * @return FerryTicket
+     * @throws Exception
+     */
+    public function createTicket(array $data): FerryTicket
+    {
+        // Validate booking
+        $validation = $this->validateBooking($data);
+        if (!$validation['valid']) {
+            throw new Exception('Ticket validation failed: ' . implode(', ', $validation['errors']));
+        }
+
+        $schedule = FerrySchedule::with(['route', 'vessel'])->findOrFail($data['ferry_schedule_id']);
+
+        // Determine direction from route
+        $direction = $schedule->route->destination === 'Picnic Island' ? 'to_island' : 'from_island';
+
+        // Ferry service is FREE - no pricing
+        $pricePerPassenger = 0;
+        $totalPrice = 0;
+
+        // Create ticket in a transaction
+        return DB::transaction(function () use ($data, $schedule, $direction, $pricePerPassenger, $totalPrice) {
+            $ticket = FerryTicket::create([
+                'guest_id' => $data['guest_id'],
+                'hotel_booking_id' => $data['hotel_booking_id'],
+                'ferry_schedule_id' => $schedule->id,
+                'ferry_route_id' => $schedule->ferry_route_id,
+                'ferry_vessel_id' => $schedule->ferry_vessel_id,
+                'direction' => $direction,
+                'travel_date' => $data['travel_date'],
+                'number_of_passengers' => $data['number_of_passengers'],
+                'price_per_passenger' => $pricePerPassenger,
+                'total_price' => $totalPrice,
+                'payment_status' => $data['payment_status'] ?? 'paid',
+                'payment_method' => $data['payment_method'] ?? 'online',
+                'status' => 'confirmed',
+            ]);
+
+            return $ticket;
+        });
+    }
+
+    /**
+     * Cancel a ferry ticket
+     *
+     * @param FerryTicket $ticket
+     * @param string|null $reason
+     * @return bool
+     */
+    public function cancelTicket(FerryTicket $ticket, ?string $reason = null): bool
+    {
+        if (!$ticket->canBeCancelled()) {
+            throw new Exception('This ticket cannot be cancelled.');
+        }
+
+        return $ticket->cancel($reason);
+    }
+
+    /**
+     * Validate and mark ticket as used by operator
+     *
+     * @param string $ticketReference
+     * @param int $staffId
+     * @return array ['success' => bool, 'ticket' => FerryTicket|null, 'message' => string]
+     */
+    public function validateTicket(string $ticketReference, int $staffId): array
+    {
+        $ticket = FerryTicket::with(['guest', 'schedule.route', 'schedule.vessel'])
+            ->where('ticket_reference', $ticketReference)
+            ->first();
+
+        if (!$ticket) {
+            return [
+                'success' => false,
+                'ticket' => null,
+                'message' => 'Ticket not found.',
+            ];
+        }
+
+        if ($ticket->status === 'used') {
+            return [
+                'success' => false,
+                'ticket' => $ticket,
+                'message' => 'This ticket has already been used.',
+            ];
+        }
+
+        if ($ticket->status === 'cancelled') {
+            return [
+                'success' => false,
+                'ticket' => $ticket,
+                'message' => 'This ticket has been cancelled.',
+            ];
+        }
+
+        if ($ticket->status === 'expired') {
+            return [
+                'success' => false,
+                'ticket' => $ticket,
+                'message' => 'This ticket has expired.',
+            ];
+        }
+
+        if (!$ticket->canBeUsed()) {
+            return [
+                'success' => false,
+                'ticket' => $ticket,
+                'message' => 'This ticket is not valid for today.',
+            ];
+        }
+
+        // Mark as used
+        $ticket->markAsUsed($staffId);
+
+        return [
+            'success' => true,
+            'ticket' => $ticket,
+            'message' => 'Ticket validated successfully.',
+        ];
+    }
+
+    /**
+     * Get operator statistics for dashboard
+     *
+     * @param int $vesselId
+     * @return array
+     */
+    public function getOperatorStats(int $vesselId): array
+    {
+        $vessel = \App\Models\Ferry\FerryVessel::find($vesselId);
+
+        if (!$vessel) {
+            return [
+                'today_passengers' => 0,
+                'upcoming_trips' => 0,
+                'total_tickets_month' => 0,
+                'total_revenue_month' => 0,
+            ];
+        }
+
+        $today = now()->toDateString();
+        $startOfMonth = now()->startOfMonth()->toDateString();
+        $endOfMonth = now()->endOfMonth()->toDateString();
+
+        $todayPassengers = FerryTicket::where('ferry_vessel_id', $vessel->id)
+            ->where('travel_date', $today)
+            ->where('status', 'confirmed')
+            ->sum('number_of_passengers');
+
+        $upcomingTrips = FerrySchedule::where('ferry_vessel_id', $vessel->id)
+            ->whereHas('tickets', function ($q) {
+                $q->where('travel_date', '>=', now()->toDateString())
+                  ->where('status', 'confirmed');
+            })
+            ->distinct('id')
+            ->count();
+
+        $monthTickets = FerryTicket::where('ferry_vessel_id', $vessel->id)
+            ->whereBetween('travel_date', [$startOfMonth, $endOfMonth])
+            ->where('status', '!=', 'cancelled')
+            ->count();
+
+        $monthRevenue = FerryTicket::where('ferry_vessel_id', $vessel->id)
+            ->whereBetween('travel_date', [$startOfMonth, $endOfMonth])
+            ->where('payment_status', 'paid')
+            ->sum('total_price');
+
+        return [
+            'today_passengers' => $todayPassengers,
+            'upcoming_trips' => $upcomingTrips,
+            'total_tickets_month' => $monthTickets,
+            'total_revenue_month' => $monthRevenue,
+        ];
+    }
+
+    /**
+     * Get passenger list for a schedule/date
+     *
+     * @param int $scheduleId
+     * @param string $date
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getPassengerList(int $scheduleId, string $date)
+    {
+        return FerryTicket::with(['guest', 'hotelBooking'])
+            ->where('ferry_schedule_id', $scheduleId)
+            ->where('travel_date', $date)
+            ->whereIn('status', ['confirmed', 'used'])
+            ->orderByRaw("FIELD(status, 'used', 'confirmed')")
+            ->orderBy('created_at', 'asc')
+            ->get();
+    }
+}

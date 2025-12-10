@@ -1,0 +1,372 @@
+<div>
+    {{-- Hero Section --}}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+                    <div class="text-center">
+                        <h1 class="text-4xl md:text-5xl font-display font-bold text-brand-dark mb-4">
+                            Explore <span
+                                class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">Kabohera
+                                Island</span>
+                        </h1>
+                        <p class="text-xl text-gray-600">Discover hotels, theme parks, beach services, and ferry terminal across the
+                            island</p>
+                    </div>
+                </div>
+
+                {{-- Map Container --}}
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
+                    <div class="bg-white rounded-3xl shadow-2xl shadow-brand-primary/10" x-data="{
+                activeMarkerId: null,
+                scale: 1,
+                mobileActiveMarker: null,
+
+                toggleMarker(markerId) {
+                    this.activeMarkerId = this.activeMarkerId === markerId ? null : markerId;
+                },
+
+                triggerMobileCard(data, id) {
+                    this.mobileActiveMarker = data;
+                    window.dispatchEvent(new CustomEvent('set-active-marker', { detail: id }));
+                },
+
+                closeMobileCard() {
+                    this.mobileActiveMarker = null;
+                    window.dispatchEvent(new CustomEvent('set-active-marker', { detail: null }));
+                },
+
+                init() {
+                    const elem = this.$refs.mapContainer;
+                    this.panzoom = window.Panzoom(elem, {
+                        maxScale: 4,
+                        minScale: 1,
+                        contain: 'outside',
+                        startScale: 1
+                    });
+                    
+                    elem.addEventListener('panzoomchange', (e) => {
+                        this.scale = e.detail.scale;
+                    });
+
+                    elem.parentElement.addEventListener('wheel', this.panzoom.zoomWithWheel);
+                },
+                zoomIn() { this.panzoom.zoomIn() },
+                zoomOut() { this.panzoom.zoomOut() },
+                reset() { this.panzoom.reset() }
+            }"
+            @open-mobile-card.stop="triggerMobileCard($event.detail.data, $event.detail.id)">
+                        {{-- Mobile Bottom Sheet & Tablet Modal --}}
+                        <div x-show="mobileActiveMarker" 
+                            x-cloak
+                            class="fixed inset-0 z-[200]"
+                            aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                            
+                            {{-- Backdrop --}}
+                            <div x-show="mobileActiveMarker"
+                                x-transition:enter="ease-out duration-300"
+                                x-transition:enter-start="opacity-0"
+                                x-transition:enter-end="opacity-100"
+                                x-transition:leave="ease-in duration-200"
+                                x-transition:leave-start="opacity-100"
+                                x-transition:leave-end="opacity-0"
+                                class="fixed inset-0 bg-gray-500/75 transition-opacity" 
+                                @click="closeMobileCard()"></div>
+
+                            {{-- Panel --}}
+                            <div class="fixed inset-x-0 bottom-0 md:inset-auto md:bottom-8 md:left-1/2 md:-translate-x-1/2 md:w-[28rem] md:rounded-2xl z-10 w-full overflow-y-auto bg-white rounded-t-3xl shadow-xl p-6 sm:p-8 transform transition-all"
+                                x-show="mobileActiveMarker"
+                                x-transition:enter="ease-out duration-300"
+                                x-transition:enter-start="translate-y-full md:opacity-0 md:scale-95"
+                                x-transition:enter-end="translate-y-0 md:opacity-100 md:scale-100"
+                                x-transition:leave="ease-in duration-200"
+                                x-transition:leave-start="translate-y-0 md:opacity-100 md:scale-100"
+                                x-transition:leave-end="translate-y-full md:opacity-0 md:scale-95">
+                                
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex items-center gap-3">
+                                        <img :src="mobileActiveMarker?.image" class="w-10 h-10 rounded-full border border-gray-200" alt="">
+                                        <h3 class="text-xl font-bold text-gray-900" x-text="mobileActiveMarker?.name"></h3>
+                                    </div>
+                                    <button @click="closeMobileCard()" class="text-gray-400 hover:text-gray-500">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <p class="text-gray-600 mb-6 leading-relaxed" x-text="mobileActiveMarker?.description"></p>
+                                
+                                <template x-if="mobileActiveMarker?.type === 'App\\Models\\Hotel'">
+                                    <template x-if="mobileActiveMarker?.isActive">
+                                        <a href="{{ route('booking.search') }}" class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-brand-primary active:bg-brand-primary/90 text-white rounded-xl font-bold text-lg transition-all shadow-lg">
+                                            Book Hotel
+                                        </a>
+                                    </template>
+                                    <template x-if="!mobileActiveMarker?.isActive">
+                                        <div class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-red-50 text-red-600 rounded-xl font-bold text-lg">
+                                            Currently Unavailable
+                                        </div>
+                                    </template>
+                                </template>
+
+                                <template x-if="mobileActiveMarker?.type === 'App\\Models\\FerryTerminal'">
+                                    <a href="{{ route('ferry-tickets.browse') }}" class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-amber-500 active:bg-amber-600 text-white rounded-xl font-bold text-lg transition-all shadow-lg">
+                                        Book Ferry Ticket
+                                    </a>
+                                </template>
+
+                                <template x-if="mobileActiveMarker?.type !== 'App\\Models\\Hotel' && mobileActiveMarker?.type !== 'App\\Models\\FerryTerminal'">
+                                    <div class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold text-lg">
+                                        View Details
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        {{-- Controls --}}
+                        <div class="absolute bottom-6 right-6 z-20 flex flex-col gap-2">
+                            <button @click="zoomIn()"
+                                class="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-brand-dark hover:bg-gray-50 focus:outline-none transition-transform active:scale-95"
+                                type="button" aria-label="Zoom In">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </button>
+                            <button @click="zoomOut()"
+                                class="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-brand-dark hover:bg-gray-50 focus:outline-none transition-transform active:scale-95"
+                                type="button" aria-label="Zoom Out">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4">
+                                    </path>
+                                </svg>
+                            </button>
+                            <button @click="reset()"
+                                class="w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-brand-dark hover:bg-gray-50 focus:outline-none transition-transform active:scale-95"
+                                type="button" aria-label="Reset Zoom">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        {{-- Legend --}}
+                        <div
+                            class="bg-gradient-to-r from-brand-primary/5 to-brand-secondary/5 p-4 border-b border-gray-100">
+                            <div class="flex flex-wrap justify-center gap-6 text-sm">
+                                <div class="flex items-center gap-2">
+                                    <img src="{{ asset('images/map/hotel_pin.png') }}"
+                                        class="w-6 h-6 rounded-full border-2 border-brand-primary shadow-sm" alt="Hotel">
+                                    <span class="font-semibold text-brand-dark">Hotels</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <img src="{{ asset('images/map/themepark_pin.png') }}"
+                                        class="w-6 h-6 rounded-full border-2 border-yellow-400 shadow-sm" alt="Theme Park">
+                                    <span class="font-semibold text-brand-dark">Theme Parks</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <img src="{{ asset('images/map/beach_pin.png') }}"
+                                        class="w-6 h-6 rounded-full border-2 border-green-500 shadow-sm" alt="Beach">
+                                    <span class="font-semibold text-brand-dark">Beach Services</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <img src="{{ asset('images/map/ferry_pin.png') }}"
+                                        class="w-6 h-6 rounded-full border-2 border-red-500 shadow-sm" alt="Ferry">
+                                    <span class="font-semibold text-brand-dark">Ferry Terminal</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Map --}}
+                        <div
+                            class="p-4 sm:p-6 lg:p-8 relative bg-gradient-to-br from-blue-50 to-brand-primary/5 overflow-hidden rounded-2xl">
+                            <div x-ref="mapContainer" class="relative origin-top-left">
+                                {{-- Map Image --}}
+                                <img src="{{ str_starts_with($mapImagePath, 'images/') ? asset($mapImagePath) : asset('storage/' . $mapImagePath) }}"
+                                    class="w-full h-auto object-cover rounded-2xl shadow-xl">
+
+                                {{-- Markers --}}
+                                @foreach($markers as $marker)
+                                    <div class="absolute hover:z-50 origin-center"
+                                        :class="{ 'z-50': showTooltip || isActive, 'z-10': !showTooltip && !isActive }"
+                                        :style="`left: {{ $marker->x_position }}%; top: {{ $marker->y_position }}%; transform: translate(-50%, -50%) scale(${1/scale})`"
+                                        x-data="{
+                                            showTooltip: false,
+                                            isActive: false, // Local active state for mobile z-index
+                                            markerId: {{ $marker->id }},
+                                            // Data for mobile card
+                                            markerData: {
+                                                name: '{{ addslashes($marker->mappable->name ?? 'Location') }}',
+                                                description: '{{ addslashes($marker->mappable->description ?? 'Explore this amazing location on Kabohera Island') }}',
+                                                type: '{{ $marker->mappable_type }}',
+                                                isActive: {{ $marker->mappable->is_active ?? 'true' }},
+                                                image: '{{ $marker->mappable_type === 'App\Models\Hotel' ? asset('images/map/hotel_pin.png') : ($marker->mappable_type === 'App\Models\ThemeParkActivity' ? asset('images/map/themepark_pin.png') : asset('images/map/beach_pin.png')) }}'
+                                            },
+                                            toggle() {
+                                                if (window.matchMedia('(hover: none), (pointer: coarse)').matches) {
+                                                    $dispatch('open-mobile-card', { data: this.markerData, id: this.markerId });
+                                                }
+                                            },
+                                            hoverOn() { if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) this.showTooltip = true },
+                                            hoverOff() { if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) this.showTooltip = false },
+                                            handleActiveChange(e) {
+                                                this.isActive = (e.detail === this.markerId);
+                                            }
+                                        }"
+                                        @mouseenter="hoverOn"
+                                        @mouseleave="hoverOff"
+                                        @click.outside="showTooltip = false"
+                                        @set-active-marker.window="handleActiveChange($event)">
+
+                                        <button @click="toggle" class="transition-all duration-200 focus:outline-none group relative">
+
+                                            @if($marker->mappable_type === 'App\Models\Hotel')
+                                                <img src="{{ asset('images/map/hotel_pin.png') }}"
+                                                    class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-brand-primary rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
+                                            @elseif($marker->mappable_type === 'App\Models\ThemeParkActivity')
+                                                <img src="{{ asset('images/map/themepark_pin.png') }}"
+                                                    class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-yellow-400 rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
+                                            @elseif($marker->mappable_type === 'App\Models\BeachService')
+                                                <img src="{{ asset('images/map/beach_pin.png') }}"
+                                                    class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-green-500 rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
+                                            @elseif($marker->mappable_type === 'App\Models\FerryTerminal')
+                                                <img src="{{ asset('images/map/ferry_pin.png') }}"
+                                                    class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-[3px] border-red-500 rounded-full object-cover shadow-lg group-hover:scale-125 group-hover:shadow-xl transition-all">
+                                            @endif
+
+                                            <span class="sr-only">{{ $marker->mappable->name ?? 'Marker' }}</span>
+                                        </button>
+
+                                        {{-- Card Tooltip (Desktop Only) --}}
+                                        <div x-show="showTooltip"
+                                            x-cloak
+                                            x-transition:enter="transition ease-out duration-200"
+                                            x-transition:enter-start="opacity-0 translate-y-2"
+                                            x-transition:enter-end="opacity-100 translate-y-0"
+                                            x-transition:leave="transition ease-in duration-150"
+                                            x-transition:leave-start="opacity-100 translate-y-0"
+                                            x-transition:leave-end="opacity-0 translate-y-2"
+                                            class="hidden md:block absolute bottom-full left-1/2 -translate-x-1/2 pb-4 z-[100] origin-bottom"
+                                            style="width: max-content">
+
+                                            <div class="bg-white rounded-2xl shadow-2xl p-5 w-72 border border-gray-100 relative">
+                                                {{-- Location Name --}}
+                                                <h4 class="text-lg font-bold text-brand-dark mb-2 pr-6">
+                                                    {{ $marker->mappable->name ?? 'Location' }}
+                                                </h4>
+
+                                                {{-- Description --}}
+                                                <p class="text-sm text-gray-600 mb-4 leading-relaxed line-clamp-3">
+                                                    {{ $marker->mappable->description ?? 'Explore this amazing location on Kabohera Island' }}
+                                                </p>
+
+                                                {{-- Action Button --}}
+                                                @if($marker->mappable_type === 'App\Models\Hotel')
+                                                    @if($marker->mappable->is_active ?? true)
+                                                        <a href="{{ route('booking.search') }}"
+                                                            class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-brand-primary hover:bg-brand-primary/90 text-white rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                            </svg>
+                                                            Book Hotel
+                                                        </a>
+                                                    @else
+                                                        <div class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-red-50 text-red-600 rounded-xl font-semibold text-sm">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                            </svg>
+                                                            Currently Unavailable
+                                                        </div>
+                                                    @endif
+                                                @elseif($marker->mappable_type === 'App\Models\FerryTerminal')
+                                                    <a href="{{ route('ferry-tickets.browse') }}"
+                                                        class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                                        </svg>
+                                                        Book Ferry Ticket
+                                                    </a>
+                                                @elseif($marker->mappable_type === 'App\Models\ThemeParkActivity')
+                                                    <a href="{{ route('visitor.theme-park.browse', ['selectedActivity' => $marker->mappable->id]) }}"
+                                                        class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-yellow-500 hover:bg-yellow-600 text-white rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                                        </svg>
+                                                        View Activity
+                                                    </a>
+                                                @elseif($marker->mappable_type === 'App\Models\BeachService')
+                                                    <a href="{{ route('visitor.beach-activities.browse', ['categoryFilter' => $marker->mappable->beach_activity_category_id]) }}"
+                                                        class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold text-sm transition-all shadow-md hover:shadow-lg">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                                        </svg>
+                                                        View Service
+                                                    </a>
+                                                @else
+                                                    <div class="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl font-semibold text-sm">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                        </svg>
+                                                        View Details
+                                                    </div>
+                                                @endif
+
+                                                {{-- Arrow pointer --}}
+                                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-px text-white drop-shadow-sm">
+                                                     <svg width="24" height="12" viewBox="0 0 24 12" fill="currentColor">
+                                                        <path d="M0 0L12 12L24 0H0Z" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+
+                            </div>
+                        </div>
+
+                        {{-- Empty State --}}
+                        @if($markers->isEmpty())
+                            <div class="p-12 text-center">
+                                <svg class="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7">
+                                    </path>
+                                </svg>
+                                <h3 class="text-xl font-display font-bold text-brand-dark mb-2">
+                                    Map Coming Soon
+                                </h3>
+                                <p class="text-gray-600">
+                                    We're currently placing locations on the map. Check back soon!
+                                </p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Info Section --}}
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+                    <div class="bg-white rounded-2xl shadow-lg p-6">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0">
+                                <svg class="w-6 h-6 text-brand-primary" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-display font-bold text-brand-dark mb-2">How to Use the Map</h4>
+                                <p class="text-gray-600 text-sm leading-relaxed">
+                                    Click on any marker to view details about hotels, theme parks, beach
+                                    services, and ferry terminal.
+                                    You can book directly from the location popup or browse our full selection of
+                                    accommodations, activities, and ferry tickets.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</div>

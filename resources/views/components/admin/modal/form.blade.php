@@ -1,0 +1,69 @@
+@props([
+    'name',
+    'show' => false,
+    'title' => null,
+    'maxWidth' => '2xl',
+    'submitText' => 'Save',
+    'cancelText' => 'Cancel',
+    'submitColor' => 'primary', // primary, danger, warning, success
+    'loading' => null, // Target for wire:loading
+])
+
+<x-admin.modal.base
+    :name="$name"
+    :show="$show"
+    :title="$title"
+    :maxWidth="$maxWidth"
+    {{ $attributes->whereStartsWith('x-') }}
+>
+    <form {{ $attributes->whereDoesntStartWith('x-') }}>
+        <div class="space-y-6">
+            {{ $slot }}
+        </div>
+
+        <div class="mt-6 flex justify-end gap-3">
+            <x-admin.button.secondary
+                type="button"
+                x-on:click="$dispatch('close')"
+                wire:loading.attr="disabled"
+                :wire:target="$loading"
+            >
+                {{ $cancelText }}
+            </x-admin.button.secondary>
+
+            @if($submitColor === 'danger')
+                <x-admin.button.danger
+                    type="submit"
+                    wire:loading.attr="disabled"
+                    :wire:target="$loading"
+                >
+                    {{ $submitText }}
+                </x-admin.button.danger>
+            @elseif($submitColor === 'warning')
+                <x-admin.button.warning
+                    type="submit"
+                    wire:loading.attr="disabled"
+                    :wire:target="$loading"
+                >
+                    {{ $submitText }}
+                </x-admin.button.warning>
+            @elseif($submitColor === 'success')
+                <x-admin.button.success
+                    type="submit"
+                    wire:loading.attr="disabled"
+                    :wire:target="$loading"
+                >
+                    {{ $submitText }}
+                </x-admin.button.success>
+            @else
+                <x-admin.button.primary
+                    type="submit"
+                    wire:loading.attr="disabled"
+                    :wire:target="$loading"
+                >
+                    {{ $submitText }}
+                </x-admin.button.primary>
+            @endif
+        </div>
+    </form>
+</x-admin.modal.base>
