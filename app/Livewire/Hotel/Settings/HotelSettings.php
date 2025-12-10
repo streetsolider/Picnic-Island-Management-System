@@ -25,6 +25,8 @@ class HotelSettings extends Component
     public $uploadingHotelGalleryImages = [];
     public $refreshKey = 0;
     public $showUploadModal = false;
+    public $showDeleteImageModal = false;
+    public $imageToDelete = null;
 
     public function mount()
     {
@@ -50,7 +52,9 @@ class HotelSettings extends Component
         // Close any open modals and reset their state
         $this->showEditModal = false;
         $this->showUploadModal = false;
+        $this->showDeleteImageModal = false;
         $this->uploadingHotelGalleryImages = [];
+        $this->imageToDelete = null;
         $this->resetValidation();
 
         // Reload times for the newly selected hotel
@@ -98,6 +102,7 @@ class HotelSettings extends Component
         $this->showEditModal = false;
         $this->reset(['checkinTime', 'checkoutTime']);
         $this->resetValidation();
+        $this->dispatch('close-modal', 'edit-hotel-times');
     }
 
     public function save()
@@ -156,6 +161,7 @@ class HotelSettings extends Component
         $this->showUploadModal = false;
         $this->uploadingHotelGalleryImages = [];
         $this->resetValidation();
+        $this->dispatch('close-modal', 'upload-hotel-gallery-images');
     }
 
     public function uploadHotelGalleryImages()
@@ -269,12 +275,32 @@ class HotelSettings extends Component
         $this->refreshKey++;
     }
 
-    public function deleteHotelGalleryImage($imageId)
+    public function openDeleteImageModal($imageId)
     {
-        $image = GalleryImage::findOrFail($imageId);
+        $this->imageToDelete = $imageId;
+        $this->showDeleteImageModal = true;
+        $this->dispatch('open-modal', 'delete-hotel-image');
+    }
+
+    public function closeDeleteImageModal()
+    {
+        $this->showDeleteImageModal = false;
+        $this->imageToDelete = null;
+        $this->dispatch('close-modal', 'delete-hotel-image');
+    }
+
+    public function deleteHotelGalleryImage()
+    {
+        if (!$this->imageToDelete) {
+            return;
+        }
+
+        $image = GalleryImage::findOrFail($this->imageToDelete);
         Storage::disk('public')->delete($image->image_path);
         $image->delete();
         $this->loadHotelGalleryImages();
+
+        $this->closeDeleteImageModal();
 
         session()->flash('message', 'Hotel image deleted successfully!');
         $this->refreshKey++;
