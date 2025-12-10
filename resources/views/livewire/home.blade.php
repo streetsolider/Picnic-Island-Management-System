@@ -221,7 +221,7 @@
                     </div>
 
                     {{-- Floating Cards --}}
-                    <div class="absolute -bottom-10 -left-10 bg-white p-4 rounded-2xl shadow-xl z-20 animate-bounce-slow"
+                    <div class="absolute top-6 right-6 bg-white p-4 rounded-2xl shadow-xl z-20 animate-bounce-slow"
                         x-show="show" x-transition:enter="transition ease-out duration-700 delay-500"
                         x-transition:enter-start="opacity-0 scale-50" x-transition:enter-end="opacity-100 scale-100">
                         <div class="flex items-center gap-3">
