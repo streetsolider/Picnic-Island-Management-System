@@ -104,8 +104,10 @@ class DatabaseSeeder extends Seeder
         // Seed promotional discounts
         $this->call(\Database\Seeders\Hotel\PromotionalDiscountSeeder::class);
 
-        // Seed ferry vessels
+        // Seed ferry infrastructure
         $this->call(FerryVesselSeeder::class);
+        $this->call(FerryRouteSeeder::class);
+        $this->call(FerryScheduleSeeder::class);
 
         // Seed theme park zones
         $this->call(ThemeParkZoneSeeder::class);

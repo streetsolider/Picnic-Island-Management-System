@@ -21,39 +21,42 @@ class FerryVesselSeeder extends Seeder
             ->get();
 
         $vessels = [
+            // 2 Ferries with 50 passenger capacity
             [
                 'name' => 'Island Express',
                 'registration_number' => 'FRY-001-PI',
                 'vessel_type' => 'Ferry',
-                'capacity' => 150,
+                'capacity' => 50,
                 'is_active' => true,
             ],
             [
                 'name' => 'Ocean Breeze',
                 'registration_number' => 'FRY-002-PI',
                 'vessel_type' => 'Ferry',
-                'capacity' => 200,
-                'is_active' => true,
-            ],
-            [
-                'name' => 'Swift Voyager',
-                'registration_number' => 'SPB-003-PI',
-                'vessel_type' => 'Speed Boat',
                 'capacity' => 50,
                 'is_active' => true,
             ],
+            // 2 Speed Boats with 30 people capacity
             [
-                'name' => 'Sea Star',
-                'registration_number' => 'BOT-004-PI',
-                'vessel_type' => 'Boat',
+                'name' => 'Swift Voyager',
+                'registration_number' => 'SPB-001-PI',
+                'vessel_type' => 'Speed Boat',
                 'capacity' => 30,
                 'is_active' => true,
             ],
             [
+                'name' => 'Sea Runner',
+                'registration_number' => 'SPB-002-PI',
+                'vessel_type' => 'Speed Boat',
+                'capacity' => 30,
+                'is_active' => true,
+            ],
+            // 1 Boat with 100 person capacity
+            [
                 'name' => 'Paradise Cruiser',
-                'registration_number' => 'FRY-005-PI',
-                'vessel_type' => 'Ferry',
-                'capacity' => 180,
+                'registration_number' => 'BOT-001-PI',
+                'vessel_type' => 'Boat',
+                'capacity' => 100,
                 'is_active' => true,
             ],
         ];
