@@ -103,7 +103,29 @@ Start all Docker services using Laravel Sail:
 ./vendor/bin/sail artisan migrate
 ```
 
-#### 7. Build Frontend Assets
+#### 7. Seed the Database
+
+Create default users and sample data:
+
+```bash
+./vendor/bin/sail artisan db:seed
+```
+
+**To refresh the database with updated seeders** (drops all tables and re-runs migrations + seeders):
+
+```bash
+./vendor/bin/sail artisan migrate:fresh --seed
+```
+
+This will create:
+- **Admin**: admin@picnicisland.com (password: `password`)
+- **Hotel Manager**: hotel@picnicisland.com (password: `password`)
+- **Ferry Operator**: ferry@picnicisland.com (password: `password`)
+- **Theme Park Staff**: themepark@picnicisland.com (password: `password`)
+- **Beach Staff**: beach@picnicisland.com (password: `password`)
+- Sample hotels, rooms, ferry routes, theme park zones, and beach services
+
+#### 8. Build Frontend Assets
 
 For development:
 
