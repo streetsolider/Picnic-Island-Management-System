@@ -323,6 +323,7 @@
 
     <!-- Upload Hotel Gallery Images Modal -->
     <x-admin.modal.form
+        wire:key="upload-modal-{{ $hotel->id }}"
         name="upload-hotel-gallery-images"
         :show="$showUploadModal"
         title="Upload Hotel Images"

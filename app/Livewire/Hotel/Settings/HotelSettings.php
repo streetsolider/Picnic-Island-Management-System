@@ -146,9 +146,16 @@ class HotelSettings extends Component
 
     public function openHotelGalleryUploadModal()
     {
+        // Auto-create hotel gallery if it doesn't exist
         if (!$this->hotel->hotelGallery) {
-            session()->flash('error', 'Hotel gallery not initialized. Please contact administrator.');
-            return;
+            Gallery::create([
+                'hotel_id' => $this->hotel->id,
+                'name' => $this->hotel->name . ' Gallery',
+                'type' => Gallery::TYPE_HOTEL,
+            ]);
+
+            // Refresh the hotel to get the new gallery relationship
+            $this->hotel->refresh();
         }
 
         $this->uploadingHotelGalleryImages = [];
