@@ -15,6 +15,7 @@ class RoomDetails extends Component
     public $guests = 2;
     public $pricing = null;
     public $isAvailable = true;
+    public $pricingError = null;
 
     // Filters passed through from search
     public $roomType = '';
@@ -74,21 +75,38 @@ class RoomDetails extends Component
 
     public function calculatePricing()
     {
+        $this->pricingError = null;
+        $this->pricing = null;
+
+        // Validate dates first
+        $checkInDate = Carbon::parse($this->checkIn);
+        $checkOutDate = Carbon::parse($this->checkOut);
+
+        if ($checkOutDate->lte($checkInDate)) {
+            $this->pricingError = 'Check-out date must be after check-in date.';
+            return;
+        }
+
         // Check availability
         $this->isAvailable = $this->room->isAvailableForDates($this->checkIn, $this->checkOut);
 
         if (!$this->isAvailable) {
-            $this->pricing = null;
             return;
         }
 
         // Calculate pricing
-        $pricingCalculator = app(PricingCalculator::class);
-        $this->pricing = $pricingCalculator->calculateRoomPrice(
-            $this->room,
-            Carbon::parse($this->checkIn),
-            Carbon::parse($this->checkOut)
-        );
+        try {
+            $pricingCalculator = app(PricingCalculator::class);
+            $this->pricing = $pricingCalculator->calculateRoomPrice(
+                $this->room,
+                $checkInDate,
+                $checkOutDate
+            );
+        } catch (\InvalidArgumentException $e) {
+            $this->pricingError = $e->getMessage();
+        } catch (\Exception $e) {
+            $this->pricingError = 'Unable to calculate pricing. Please try different dates.';
+        }
     }
 
     public function bookNow()

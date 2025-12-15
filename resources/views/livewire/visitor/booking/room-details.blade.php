@@ -419,7 +419,12 @@
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-3xl shadow-2xl p-6 sticky top-8">
                     <div class="mb-6">
-                        @if ($pricing)
+                        @if ($pricingError)
+                            <div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
+                                <p class="text-red-600 font-semibold">Invalid Dates</p>
+                                <p class="text-red-500 text-sm">{{ $pricingError }}</p>
+                            </div>
+                        @elseif ($pricing)
                             <div class="mb-2">
                                 <span class="text-3xl font-bold text-brand-primary">MVR
                                     {{ number_format($pricing['total_price'], 2) }}</span>
@@ -490,9 +495,15 @@
                     @endif
 
                     {{-- Book Now Button --}}
-                    <button wire:click="bookNow" @if(!$isAvailable) disabled @endif
+                    <button wire:click="bookNow" @if(!$isAvailable || $pricingError) disabled @endif
                         class="w-full bg-brand-secondary hover:bg-brand-secondary/90 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-6 py-4 rounded-xl font-semibold text-lg transition-all transform hover:scale-105 shadow-lg shadow-brand-secondary/30 disabled:shadow-none disabled:transform-none">
-                        {{ $isAvailable ? 'Book Now' : 'Unavailable' }}
+                        @if ($pricingError)
+                            Invalid Dates
+                        @elseif ($isAvailable)
+                            Book Now
+                        @else
+                            Unavailable
+                        @endif
                     </button>
 
                     @guest
